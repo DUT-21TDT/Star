@@ -1,14 +1,10 @@
 package com.pbl.star.entities;
 
-import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.Gender;
 import com.pbl.star.enums.UserRole;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +22,7 @@ import java.time.LocalDate;
 public class User {
     @Id
     @Column(name = "user_id")
-    private Ulid id;
+    private String id;
 
     @Column(name = "username")
     private String username;
@@ -35,12 +31,14 @@ public class User {
     private String password;
 
     @Column(name = "role")
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
     @Column(name = "register_at")
     private Instant registerAt;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
     @Column(name = "email")
@@ -62,12 +60,13 @@ public class User {
     private String bio;
 
     @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(name = "private_profile")
     private boolean privateProfile;
 
     public User() {
-        this.id = UlidCreator.getUlid();
+        this.id = UlidCreator.getUlid().toString();
     }
 }
