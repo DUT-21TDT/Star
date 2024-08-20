@@ -4,11 +4,13 @@ import com.github.f4b6a3.ulid.UlidCreator;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.Gender;
 import com.pbl.star.enums.UserRole;
+import com.pbl.star.utils.IdGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -21,6 +23,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class User {
     @Id
+    @GeneratedValue(generator = "ulid")
+    @GenericGenerator(name = "ulid", type = IdGenerator.class)
     @Column(name = "user_id")
     private String id;
 

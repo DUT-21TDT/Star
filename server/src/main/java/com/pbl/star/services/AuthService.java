@@ -40,11 +40,10 @@ public class AuthService {
         LocalDate parsed_DateOfBirth = LocalDate.parse(signUpParams.getDateOfBirth(), dateTimeFormatter);
 
         User newUser = User.builder()
-                .id(UlidCreator.getUlid().toString())
                 .username(signUpParams.getUsername())
                 .role(UserRole.USER)
                 .registerAt(Instant.now())
-                .status(AccountStatus.ACTIVE)
+                .status(AccountStatus.INACTIVE)
                 .email(signUpParams.getEmail())
                 .password(hashedPassword)
                 .firstName(signUpParams.getFirstName())
@@ -56,6 +55,8 @@ public class AuthService {
 
         userRepository.save(newUser);
 
+        // send confirmation email
+
         return new SignUpResponse(newUser.getId(), newUser.getUsername());
     }
 
@@ -66,15 +67,17 @@ public class AuthService {
         // Check confirm password
         AuthUtil.validateConfirmPassword(signUpParams.getPassword(), signUpParams.getConfirmPassword());
 
-        // Check if username and email already exist
+        // Check if username already exist
         if (userRepository.existsByUsername(signUpParams.getUsername())) {
             throw new UserAlreadyExistException("Username already exists");
         }
 
-        // TODO: Check if email is valid
-
-        if (userRepository.existsByEmail(signUpParams.getEmail())) {
+        if (userRepository.existsValidAccountByEmail(signUpParams.getEmail())) {
             throw new UserAlreadyExistException("Email already exists");
         }
+    }
+
+    public String confirmSignup(String token) {
+        return null;
     }
 }

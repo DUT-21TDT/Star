@@ -24,4 +24,9 @@ public class AuthController {
     public ResponseEntity<?> signup(@RequestBody SignUpParams signUpParams) {
         return ResponseEntity.ok(authService.signUpByEmail(signUpParams));
     }
+
+    @GetMapping("/confirm-signup")
+    public ResponseEntity<?> confirmSignup(@RequestParam String token) {
+        return ResponseEntity.ok(authService.confirmSignup(token));
+    }
 }
