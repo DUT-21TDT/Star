@@ -1,15 +1,11 @@
 package com.pbl.star.entities;
 
-import com.github.f4b6a3.ulid.UlidCreator;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.Gender;
 import com.pbl.star.enums.UserRole;
 import com.pbl.star.utils.IdGenerator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.Instant;
@@ -21,6 +17,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(generator = "ulid")
@@ -28,7 +25,7 @@ public class User {
     @Column(name = "user_id")
     private String id;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "password")
@@ -69,8 +66,4 @@ public class User {
 
     @Column(name = "private_profile")
     private boolean privateProfile;
-
-    public User() {
-        this.id = UlidCreator.getUlid().toString();
-    }
 }
