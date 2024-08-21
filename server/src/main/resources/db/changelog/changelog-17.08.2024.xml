@@ -5,7 +5,7 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1_createTable_User" author="Quang Nguyen">
-        <createTable tableName="User">
+        <createTable tableName="user">
             <!-- Account information -->
             <column name="user_id" type="CHAR(26)">
                 <constraints primaryKey="true" nullable="false"/>
@@ -19,7 +19,7 @@
             <column name="role" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="register_at" type="TIMESTAMP">
+            <column name="register_at" type="TIMESTAMP WITH TIMEZONE">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="VARCHAR(20)">
@@ -33,7 +33,7 @@
             <column name="avatar_url" type="TEXT"/>
             <column name="bio" type="NVARCHAR(200)"/>
             <column name="gender" type="VARCHAR(20)"/>
-            <column name="private_profile" type="BIT"/>
+            <column name="private_profile" type="BOOLEAN"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
