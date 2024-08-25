@@ -4,8 +4,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="db/changelog/changelog-17.08.2024.xml" />
-    <include file="db/changelog/changelog-20.08.2024.xml" />
-    <include file="db/changelog/changelog-24.08.2024.xml" />
-    <include file="db/changelog/changelog-02.09.2024.xml" />
+    <changeSet id="3_remove_nonnull_password" author="Quang Nguyen">
+        <sql>
+            ALTER TABLE "user"
+            ALTER COLUMN password DROP NOT NULL;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
