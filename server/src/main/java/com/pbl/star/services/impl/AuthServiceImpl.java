@@ -41,11 +41,15 @@ public class AuthServiceImpl implements AuthService {
         String hashedPassword = passwordEncoder.encode(signUpParams.getPassword());
 
         // Handle date of birth parsing
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate parsed_DateOfBirth = LocalDate.parse(signUpParams.getDateOfBirth(), dateTimeFormatter);
+        LocalDate parsed_DateOfBirth = null;
+        if (signUpParams.getDateOfBirth() != null && !signUpParams.getDateOfBirth().isBlank()) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            parsed_DateOfBirth = LocalDate.parse(signUpParams.getDateOfBirth(), dateTimeFormatter);
+        }
+
 
         User newUser = User.builder()
-                .username(signUpParams.getUsername())
+                .username(signUpParams.getUsername().toLowerCase())
                 .role(UserRole.USER)
                 .registerAt(Instant.now())
                 .status(AccountStatus.INACTIVE)
@@ -65,8 +69,8 @@ public class AuthServiceImpl implements AuthService {
         // Check required fields
         AuthUtil.validateSignupRequiredFields(signUpParams);
 
-        // Check confirm password
-        AuthUtil.validateConfirmPassword(signUpParams.getPassword(), signUpParams.getConfirmPassword());
+        // Check sign up rules
+        AuthUtil.validateSignUpRules(signUpParams);
 
         // Check if username already exist
         if (userRepository.existsByUsername(signUpParams.getUsername())) {
