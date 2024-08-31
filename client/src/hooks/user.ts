@@ -1,6 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
-import { createNewUser, fetchAllUser } from "../service/userAPI";
+import {
+  createNewUser,
+  fetchAllUser,
+  confirmAccount,
+} from "../service/userAPI";
 
 const useFetchAllUser = () => {
   return useQuery({
@@ -11,9 +15,15 @@ const useFetchAllUser = () => {
 
 const usePostNewUser = () => {
   return useMutation({
-    mutationKey: QUERY_KEY.postNewUser(),
     mutationFn: createNewUser,
   });
 };
 
-export { useFetchAllUser, usePostNewUser };
+const useConfirmAccount = (token: string | null) => {
+  return useQuery({
+    queryKey: QUERY_KEY.confirmNewUser(),
+    queryFn: () => confirmAccount(token),
+  });
+};
+
+export { useFetchAllUser, usePostNewUser, useConfirmAccount };

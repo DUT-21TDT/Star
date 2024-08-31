@@ -28,12 +28,23 @@ const createNewUser = async (data: IUser) => {
       dateOfBirth: "",
       gender: "",
     };
-    console.log(dataToSend);
     const response = await instance.post("/auth/signup", dataToSend);
     return response.data;
   } catch (error) {
     console.log(error);
   }
 };
+const confirmAccount = async (token: string | null) => {
+  try {
+    if (token != null) {
+      const response = await instance.get(
+        `/auth/confirm-signup?token=${token}`
+      );
+      return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-export { fetchAllUser, createNewUser };
+export { fetchAllUser, createNewUser, confirmAccount };

@@ -40,7 +40,7 @@ public class SignUpListenerImpl implements SignUpListener {
         String recipientAddress = user.getEmail();
         String subject = "Registration Confirmation";
         String confirmationUrl
-                = "http://localhost:8080/api/v1/auth/confirm-signup?token=" + token.getToken();
+                = "http://localhost:5173/confirm-signup?token=" + token.getToken();
 
         MimeBodyPart confirmationUrlPart = new MimeBodyPart();
         confirmationUrlPart.setText("<a href='" + confirmationUrl + "'>Confirm</a>", "UTF-8", "html");

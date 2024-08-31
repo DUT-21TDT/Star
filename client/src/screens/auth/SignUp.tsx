@@ -12,7 +12,6 @@ import {
 } from "antd";
 import googleIcon from "../../assets/images/devicon_google.png";
 import { usePostNewUser } from "../../hooks/user";
-import { useNavigate } from "react-router-dom";
 
 interface SubmitButtonProps {
   form: FormInstance;
@@ -63,7 +62,6 @@ const SubmitButton: React.FC<React.PropsWithChildren<SubmitButtonProps>> = ({
 const SignUp: React.FC = () => {
   const [form] = Form.useForm();
   const { mutate: postNewUser } = usePostNewUser();
-  const navigate = useNavigate();
   const validateForm = (
     form: IForm
   ): {
@@ -125,9 +123,9 @@ const SignUp: React.FC = () => {
         onSuccess: () => {
           notification.success({
             message: "User Created Successfully",
-            description: "The user has been created and added to the system.",
+            description:
+              "Your account has been created. Please check your email to confirm your registration.",
           });
-          navigate("/login");
         },
 
         onError: (err) => {
@@ -212,7 +210,7 @@ const SignUp: React.FC = () => {
               />
             </Form.Item>
             <Form.Item
-              name="confirm_password"
+              name="confirmPassword"
               rules={[
                 {
                   required: true,
