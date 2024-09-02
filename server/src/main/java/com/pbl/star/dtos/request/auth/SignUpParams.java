@@ -1,4 +1,4 @@
-package com.pbl.star.dtos.request;
+package com.pbl.star.dtos.request.auth;
 
 import com.pbl.star.enums.Gender;
 import lombok.AllArgsConstructor;
