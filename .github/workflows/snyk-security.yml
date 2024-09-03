@@ -41,8 +41,9 @@ jobs:
       # Snyk test for Java (server) and save SARIF report
       - name: Snyk test for Java
         run: |
+          echo $SNYK_TOKEN
           cd server
-          snyk auth
+          snyk auth $SNYK_TOKEN
           snyk test --all-projects --sarif-file-output=snyk-java.sarif || true
 
       # Install Node.js dependencies for React (client)
@@ -60,7 +61,7 @@ jobs:
       - name: Snyk test for React
         run: |
           cd client
-          snyk auth
+          snyk auth $SNYK_TOKEN
           snyk test --sarif-file-output=snyk-react.sarif || true
 
       # Merge SARIF files and upload the result to GitHub Code Scanning
