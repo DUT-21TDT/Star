@@ -18,20 +18,10 @@ const fetchAllUser = async () => {
 
 const createNewUser = async (data: IUser) => {
   try {
-    const dataToSend = {
-      username: data.username,
-      email: data.email,
-      password: data.password,
-      confirmPassword: data.confirmPassword,
-      firstName: "",
-      lastName: "",
-      dateOfBirth: "",
-      gender: "",
-    };
-    const response = await instance.post("/auth/signup", dataToSend);
+    const response = await instance.post("/auth/signup", data);
     return response.data;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    throw new Error(error.response.data);
   }
 };
 const confirmAccount = async (token: string | null) => {
