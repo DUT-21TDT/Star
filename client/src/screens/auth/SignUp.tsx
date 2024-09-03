@@ -1,15 +1,7 @@
 import React from "react";
 import imageSignup from "../../assets/images/login.webp";
 import type { FormInstance } from "antd";
-import {
-  Button,
-  Divider,
-  Form,
-  Input,
-  QRCode,
-  message,
-  notification,
-} from "antd";
+import { Button, Divider, Form, Input, QRCode, message } from "antd";
 import googleIcon from "../../assets/images/devicon_google.png";
 import { usePostNewUser } from "../../hooks/user";
 
@@ -121,17 +113,15 @@ const SignUp: React.FC = () => {
     } else {
       postNewUser(values, {
         onSuccess: () => {
-          notification.success({
-            message: "User Created Successfully",
-            description:
+          message.success({
+            content:
               "Your account has been created. Please check your email to confirm your registration.",
+            duration: 4,
           });
         },
-
         onError: (err) => {
-          notification.error({
-            message: "User Creation Failed",
-            description: `There was an error creating the user: ${err.message}. Please try again.`,
+          message.error({
+            content: `${err.message}`,
           });
         },
       });

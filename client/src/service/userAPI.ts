@@ -20,6 +20,7 @@ const createNewUser = async (data: IUser) => {
   try {
     const response = await instance.post("/auth/signup", data);
     return response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new Error(error.response.data);
   }
@@ -32,8 +33,9 @@ const confirmAccount = async (token: string | null) => {
       );
       return response.data;
     }
-  } catch (error) {
-    console.log(error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error : any) {
+      throw new Error(error.response.data);
   }
 };
 
