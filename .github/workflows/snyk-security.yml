@@ -35,6 +35,7 @@ jobs:
       - name: Build with Gradle
         run: |
           cd server
+          chmod +x gradlew
           ./gradlew build
 
       # Snyk test for Java (server) and save SARIF report
