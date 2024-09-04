@@ -1,0 +1,6 @@
+# Ignore all files and directories except the necessary ones
+*
+!.dockerignore
+!Dockerfile
+!package.json
+!src/
