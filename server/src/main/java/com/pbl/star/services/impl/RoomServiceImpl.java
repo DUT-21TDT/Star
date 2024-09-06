@@ -1,5 +1,6 @@
 package com.pbl.star.services.impl;
 
+import com.pbl.star.dtos.query.room.RoomOverviewDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.entities.Room;
 import com.pbl.star.exceptions.EntityConflictException;
@@ -13,11 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
+
+    @Override
+    public List<RoomOverviewDTO> getRoomsOverview() {
+        return roomRepository.getRoomsOverview();
+    }
 
     @Override
     @Transactional
