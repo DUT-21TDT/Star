@@ -4,7 +4,9 @@ import type { FormInstance } from "antd";
 import { Button, Divider, Form, Input, QRCode, message } from "antd";
 import googleIcon from "../../assets/images/devicon_google.png";
 import { usePostNewUser } from "../../hooks/user";
-
+import { ConfigProvider } from "antd";
+import { SignUpTheme } from "../../utils/theme";
+import { Link } from "react-router-dom";
 interface SubmitButtonProps {
   form: FormInstance;
 }
@@ -129,146 +131,150 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-full relative bg-white">
-      <div
-        className="h-[45%] bg-cover bg-center"
-        style={{ backgroundImage: `url(${imageSignup})` }}
-      ></div>
-      <div className="w-[450px] h-auto border border-black/15 absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2 p-5 rounded-[20px] bg-white">
-        <div className="text-center">
-          <h1 className="text-[19px] font-bold mb-3">Welcome to Star</h1>
-        </div>
-        <div>
-          <Form
-            form={form}
-            name="validateOnly"
-            layout="vertical"
-            autoComplete="off"
-            onFinish={handleSubmitFormSignUp}
-          >
-            <Form.Item
-              name="email"
-              rules={[{ required: true, message: "Please input your email!" }]}
-            >
-              <Input
-                style={{
-                  backgroundColor: "#f5f5f5",
-                  height: "50px",
-                  borderRadius: "10px",
-                  border: "none",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                }}
-                placeholder="Email"
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="username"
-              rules={[
-                { required: true, message: "Please input your username!" },
-              ]}
-            >
-              <Input
-                style={{
-                  backgroundColor: "#f5f5f5",
-                  height: "50px",
-                  borderRadius: "10px",
-                  border: "none",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                }}
-                placeholder="Username"
-              />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              rules={[
-                { required: true, message: "Please input your password!" },
-              ]}
-            >
-              <Input.Password
-                style={{
-                  backgroundColor: "#f5f5f5",
-                  height: "50px",
-                  borderRadius: "10px",
-                  border: "none",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                }}
-                placeholder="Password"
-              />
-            </Form.Item>
-            <Form.Item
-              name="confirmPassword"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your confirm password!",
-                },
-              ]}
-            >
-              <Input.Password
-                style={{
-                  backgroundColor: "#f5f5f5",
-                  height: "50px",
-                  borderRadius: "10px",
-                  border: "none",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                }}
-                placeholder="Confirm Password"
-              />
-            </Form.Item>
-            <Form.Item>
-              <SubmitButton form={form}>Sign up</SubmitButton>
-            </Form.Item>
-          </Form>
-        </div>
-        <div>
-          <p className="text-center">
-            Already have an account?{" "}
-            <a href="/login" className="text-[#1890ff]">
-              Login
-            </a>
-          </p>
-        </div>
-        <Divider style={{ color: "#bdbdbd" }}>or</Divider>
-        <div className="border border-black/15 p-[20px_25px] rounded-[15px] flex items-center justify-between gap-2 cursor-pointer">
-          <div className="w-[35px] h-[35px]">
-            <img
-              src={googleIcon}
-              alt=""
-              className="w-full h-full object-cover object-center"
-            />
+    <ConfigProvider theme={SignUpTheme}>
+      <div className="h-screen w-full relative bg-white">
+        <div
+          className="h-[45%] bg-cover bg-center"
+          style={{ backgroundImage: `url(${imageSignup})` }}
+        ></div>
+        <div className="w-[450px] h-auto border border-black/15 absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2 p-5 rounded-[20px] bg-white">
+          <div className="text-center">
+            <h1 className="text-[19px] font-bold mb-3">Welcome to Star</h1>
           </div>
-          <div className="text-[16px] font-bold">Continue with Google</div>
           <div>
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+            <Form
+              form={form}
+              name="validateOnly"
+              layout="vertical"
+              autoComplete="off"
+              onFinish={handleSubmitFormSignUp}
             >
-              <path
-                d="M10 17L15 12L10 7"
-                stroke="grey"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              <Form.Item
+                name="email"
+                rules={[
+                  { required: true, message: "Please input your email!" },
+                ]}
+              >
+                <Input
+                  style={{
+                    backgroundColor: "#f5f5f5",
+                    height: "50px",
+                    borderRadius: "10px",
+                    border: "none",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
+                  placeholder="Email"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="username"
+                rules={[
+                  { required: true, message: "Please input your username!" },
+                ]}
+              >
+                <Input
+                  style={{
+                    backgroundColor: "#f5f5f5",
+                    height: "50px",
+                    borderRadius: "10px",
+                    border: "none",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
+                  placeholder="Username"
+                />
+              </Form.Item>
+              <Form.Item
+                name="password"
+                rules={[
+                  { required: true, message: "Please input your password!" },
+                ]}
+              >
+                <Input.Password
+                  style={{
+                    backgroundColor: "#f5f5f5",
+                    height: "50px",
+                    borderRadius: "10px",
+                    border: "none",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
+                  placeholder="Password"
+                />
+              </Form.Item>
+              <Form.Item
+                name="confirmPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your confirm password!",
+                  },
+                ]}
+              >
+                <Input.Password
+                  style={{
+                    backgroundColor: "#f5f5f5",
+                    height: "50px",
+                    borderRadius: "10px",
+                    border: "none",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
+                  placeholder="Confirm Password"
+                />
+              </Form.Item>
+              <Form.Item>
+                <SubmitButton form={form}>Sign up</SubmitButton>
+              </Form.Item>
+            </Form>
+          </div>
+          <div>
+            <p className="text-center">
+              Already have an account?{" "}
+              <Link to="/login" className="text-[#1890ff]">
+                Login
+              </Link>
+            </p>
+          </div>
+          <Divider style={{ color: "#bdbdbd" }}>or</Divider>
+          <div className="border border-black/15 p-[20px_25px] rounded-[15px] flex items-center justify-between gap-2 cursor-pointer">
+            <div className="w-[35px] h-[35px]">
+              <img
+                src={googleIcon}
+                alt=""
+                className="w-full h-full object-cover object-center"
               />
-            </svg>
+            </div>
+            <div className="text-[16px] font-bold">Continue with Google</div>
+            <div>
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 17L15 12L10 7"
+                  stroke="grey"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="w-[250px] h-[250px] absolute right-0 bottom-0 p-5 flex flex-col items-center justify-center gap-2">
-        <div className="text-[13px] text-gray-400 font-normal">
-          Scan to get the app
-        </div>
+        <div className="w-[250px] h-[250px] absolute right-0 bottom-0 p-5 flex flex-col items-center justify-center gap-2">
+          <div className="text-[13px] text-gray-400 font-normal">
+            Scan to get the app
+          </div>
 
-        <QRCode type="canvas" value="https://ant.design/" />
+          <QRCode type="canvas" value="https://ant.design/" />
+        </div>
       </div>
-    </div>
+    </ConfigProvider>
   );
 };
 

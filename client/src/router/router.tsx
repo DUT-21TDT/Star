@@ -3,6 +3,8 @@ import NotFound from "../screens/error/not-found";
 import { LayoutAdmin, LayoutUser } from "./layout";
 import SignUp from "../screens/auth/SignUp";
 import Confirm from "../screens/auth/Confirm";
+import Login from "../screens/auth/Login";
+import Callback from "../screens/auth/Callback";
 
 const router = createBrowserRouter(
   [
@@ -23,12 +25,17 @@ const router = createBrowserRouter(
     },
     {
       path: "/login",
-      element: <div>login page</div>,
+      element: <Login />,
       errorElement: <NotFound />,
     },
     {
       path: "/confirm-signup",
       element: <Confirm />,
+      errorElement: <NotFound />,
+    },
+    {
+      path: "/callback",
+      element: <Callback />,
       errorElement: <NotFound />,
     },
   ],
