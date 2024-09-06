@@ -1,6 +1,6 @@
 package com.pbl.star.mapper;
 
-import com.pbl.star.dtos.request.SignUpParams;
+import com.pbl.star.dtos.request.auth.SignUpParams;
 import com.pbl.star.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
