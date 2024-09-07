@@ -5,7 +5,8 @@ import {
   fetchAllUser,
   confirmAccount,
   getTokenFromCode,
-  getDataCurrentUser,
+  // getDataCurrentUser,
+  getCurrentUserFromToken,
 } from "../service/userAPI";
 
 const useFetchAllUser = () => {
@@ -41,24 +42,41 @@ const useGetTokenFromCode = (code: string) => {
     isError,
   };
 };
-const useGetCurrentUserFromToken = () => {
+
+const useGetUserFromToken = (token: string | null) => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: QUERY_KEY.getDataCurrentUser(),
-    queryFn: getDataCurrentUser,
+    queryKey: QUERY_KEY.getCurrentUserFromToken(),
+    queryFn: () => getCurrentUserFromToken(token),
   });
   return {
     data: {
-      role: data?.authorities[0]?.authority,
-      name: data?.name,
+      name: data?.sub,
+      role: data?.roles[0],
     },
     isLoading,
     isError,
   };
 };
+
+// const useGetCurrentUserFromToken = () => {
+//   const { data, isLoading, isError } = useQuery({
+//     queryKey: QUERY_KEY.getDataCurrentUser(),
+//     queryFn: getDataCurrentUser,
+//   });
+//   return {
+//     data: {
+//       role: data?.authorities[0]?.authority,
+//       name: data?.name,
+//     },
+//     isLoading,
+//     isError,
+//   };
+// };
 export {
   useFetchAllUser,
   usePostNewUser,
   useConfirmAccount,
   useGetTokenFromCode,
-  useGetCurrentUserFromToken,
+  // useGetCurrentUserFromToken,
+  useGetUserFromToken
 };

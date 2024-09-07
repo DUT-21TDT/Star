@@ -1,21 +1,24 @@
 import { Result, Spin } from "antd";
 import {
-  useGetCurrentUserFromToken,
   useGetTokenFromCode,
 } from "../../hooks/user";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { getCurrentUserFromToken } from "../../service/userAPI";
+
+type CurrentUser = {
+  name: String;
+  role: String;
+};
+
 const Callback: React.FC = () => {
   const code = new URLSearchParams(window.location.search).get("code") || "";
   const { access_token, refresh_token, id_token, isLoading, isError } =
     useGetTokenFromCode(code);
-  const {
-    data: currentUser,
-    isLoading: isGetDataUserLoading,
-    isError: isGetDataUserError,
-  } = useGetCurrentUserFromToken();
+
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);  // const { data: currentUser, isLoading: isGetDataUserLoading, isError: isGetDataUserError } = useGetUserFromToken(access_token);
 
   const navigate = useNavigate();
 
@@ -32,16 +35,23 @@ const Callback: React.FC = () => {
       Cookies.set("access_token", access_token);
       Cookies.set("refresh_token", refresh_token);
       Cookies.set("id_token", id_token);
+
+      getCurrentUserFromToken(access_token).then((res) => {
+        setCurrentUser({
+          name: res.sub,
+          role: res.roles[0],
+        });
+      });
     }
   }, [access_token, refresh_token, id_token]);
   return (
     <>
-      {(isLoading || isGetDataUserLoading) && (
+      {(isLoading) && (
         <div className="flex items-center justify-center mt-8">
           <Spin indicator={<LoadingOutlined spin />} size="large" />
         </div>
       )}
-      {(isError || isGetDataUserError) && (
+      {(isError) && (
         <Result
           status="error"
           title="Something went wrong"

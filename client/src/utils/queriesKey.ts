@@ -4,5 +4,6 @@ export const QUERY_KEY = {
   confirmNewUser: () => ["confirmNewUser"],
   postLogin: () => ["postLogin"],
   getTokenFromCode: () => ["getTokenFromCode"],
-  getDataCurrentUser: () => ["getDataCurrentUser"],
+  // getDataCurrentUser: () => ["getDataCurrentUser"],
+  getCurrentUserFromToken: () => ["getCurrentUserFromToken"],
 };

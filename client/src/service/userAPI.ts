@@ -68,20 +68,41 @@ const getTokenFromCode = async (code: string) => {
   }
 };
 
-const getDataCurrentUser = async () => {
+// const getDataCurrentUser = async () => {
+//   try {
+//     const token = Cookies.get("access_token");
+//     if (token !== null) {
+//       const response = await instance.get("/home/me", {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+//       return response.data;
+//     }
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   } catch (error: any) {
+//     throw new Error(error.response.data);
+//   }
+// };
+
+const getCurrentUserFromToken = async (token: string | null) => {
   try {
-    const token = Cookies.get("access_token");
-    if (token !== null) {
-      const response = await instance.get("/home/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    throw new Error(error.response.data);
+    const introspectUrl = import.meta.env.VITE_BACKEND_AUTH_URL + "/oauth2/introspect"
+    const clientId = import.meta.env.VITE_CLIENT_ID;
+    const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
+    const response = await axios.post(introspectUrl, {
+      token: token,
+      token_type_hint: "access_token",
+    }, {
+      headers: {
+        Authorization: 'Basic ' + btoa(`${clientId}:${clientSecret}`),
+        'Content-Type': "application/x-www-form-urlencoded",
+      },
+      withCredentials: true
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -90,5 +111,6 @@ export {
   createNewUser,
   confirmAccount,
   getTokenFromCode,
-  getDataCurrentUser,
+  // getDataCurrentUser,
+  getCurrentUserFromToken
 };
