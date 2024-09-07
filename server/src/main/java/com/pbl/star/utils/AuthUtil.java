@@ -36,13 +36,13 @@ public class AuthUtil {
 
     private static void validateUsername(String username) {
         if (!USERNAME_PATTERN.matcher(username).matches()) {
-            throw new InvalidSignUpFormException("Username must be between 6 and 30 characters long and can only contain letters, numbers, and special characters . _");
+            throw new InvalidSignUpParamsException("Username must be between 6 and 30 characters long and can only contain letters, numbers, and special characters . _");
         }
     }
 
     private static void validatePassword(String password) {
         if (!PASSWORD_PATTERN.matcher(password).matches()) {
-            throw new InvalidSignUpFormException("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.");
+            throw new InvalidSignUpParamsException("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.");
         }
     }
 
