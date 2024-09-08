@@ -41,7 +41,7 @@ jobs:
           BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
           cd server
-          docker build --build-arg DATASOURCE_URL="${{ env.DATASOURCE_URL }}" --build-arg DATASOURCE_USERNAME="${{ env.DATASOURCE_USERNAME }}" --build-arg DATASOURCE_PASSWORD="${{ env.DATASOURCE_PASSWORD }}" -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}"" .
+          docker build --build-arg DATASOURCE_URL="${{ env.DATASOURCE_URL }}" --build-arg DATASOURCE_USERNAME="${{ env.DATASOURCE_USERNAME }}" --build-arg DATASOURCE_PASSWORD="${{ env.DATASOURCE_PASSWORD }}" -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
           docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
           docker push "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
 
