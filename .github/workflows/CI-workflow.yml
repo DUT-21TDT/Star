@@ -46,7 +46,6 @@ jobs:
           docker build --build-arg DATASOURCE_URL="${{ env.DATASOURCE_URL }}" --build-arg DATASOURCE_USERNAME="${{ env.DATASOURCE_USERNAME }}" --build-arg DATASOURCE_PASSWORD="${{ env.DATASOURCE_PASSWORD }}" -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
           docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
       - name: Push Server Image to ECR
-        id: ecr
         uses: jwalton/gh-ecr-push@v2
         with:
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -63,7 +62,6 @@ jobs:
           docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
           docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
       - name: Push CLIENT Image to ECR
-        id: ecr
         uses: jwalton/gh-ecr-push@v2
         with:
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
