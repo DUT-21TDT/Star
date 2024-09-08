@@ -9,8 +9,11 @@ on:
 jobs:
   build:
     env:
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
+      SHA: ${{ steps.short-sha.outputs.sha }}
+      BRANCH: ${{ steps.extract_branch.outputs.branch }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,22 +33,16 @@ jobs:
 
       - name: Build server
         env:
-          # IN SECRETS
           DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
           DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
           DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
           ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL }}
           ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL }}
-          ECR_USERNAME: ${{ secrets.ECR_USERNAME }}
-          ECR_PASSWORD: ${{ secrets.ECR_PASSWORD }}
-
-          # IN REPO
-          SHA: ${{ steps.short-sha.outputs.sha }}
-          BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
           cd server
           docker build --build-arg DATASOURCE_URL="${{ env.DATASOURCE_URL }}" --build-arg DATASOURCE_USERNAME="${{ env.DATASOURCE_USERNAME }}" --build-arg DATASOURCE_PASSWORD="${{ env.DATASOURCE_PASSWORD }}" -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
           docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+
       - name: Push Server Image to ECR
         uses: jwalton/gh-ecr-push@v2
         with:
@@ -55,14 +52,12 @@ jobs:
           image: "${{ env.ECR_SERVER_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
 
       - name: Build client
-        env:
-          SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
           cd client
-          # Make sure Dockerfile is in the `client` directory
           docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
           docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-      - name: Push CLIENT Image to ECR
+
+      - name: Push Client Image to ECR
         uses: jwalton/gh-ecr-push@v2
         with:
           access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
