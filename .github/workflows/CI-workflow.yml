@@ -2,9 +2,9 @@ name: CI Phase
 
 on:
   push:
-    branches: ["SSMP-31-Implement-CI-CD-pipeline"]
+    branches: ["SSMP-31-Implement-CI-CD-pipeline", "main", "develop"]
   pull_request:
-    branches: ["SSMP-31-Implement-CI-CD-pipeline"]
+    branches: ["SSMP-31-Implement-CI-CD-pipeline", "main", "develop"]
 
 jobs:
   build:
@@ -17,18 +17,33 @@ jobs:
         with:
           length: 6
 
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
       - name: Check Docker version
         run: docker --version
 
       - name: Build server
         env:
+          # IN SECRETS
           DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
           DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
           DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
+          ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL }}
+          ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL }}
+          ECR_USERNAME: ${{ secrets.ECR_USERNAME }}
+          ECR_PASSWORD: ${{ secrets.ECR_PASSWORD }}
+
+          # IN REPO
           SHA: ${{ steps.short-sha.outputs.sha }}
+          BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
           cd server
-          docker build --build-arg DATASOURCE_URL="${{ env.DATASOURCE_URL }}" --build-arg DATASOURCE_USERNAME="${{ env.DATASOURCE_USERNAME }}" --build-arg DATASOURCE_PASSWORD="${{ env.DATASOURCE_PASSWORD }}" -t star_server:${{ env.SHA }} .
+          docker build --build-arg DATASOURCE_URL="${{ env.DATASOURCE_URL }}" --build-arg DATASOURCE_USERNAME="${{ env.DATASOURCE_USERNAME }}" --build-arg DATASOURCE_PASSWORD="${{ env.DATASOURCE_PASSWORD }}" -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}"" .
+          docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+          docker push "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
 
       - name: Build client
         env:
@@ -36,4 +51,6 @@ jobs:
         run: |
           cd client
           # Make sure Dockerfile is in the `client` directory
-          docker build -t star_client:${{ env.SHA }} .
+          docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
+          docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+          docker push "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
