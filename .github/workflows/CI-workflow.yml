@@ -48,6 +48,8 @@ jobs:
         env:
           SHA: ${{ steps.short-sha.outputs.sha }}
           BRANCH: ${{ steps.extract_branch.outputs.branch }}
+          ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL }}
+          ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL }}
         with:
           access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
@@ -65,6 +67,8 @@ jobs:
         env:
           SHA: ${{ steps.short-sha.outputs.sha }}
           BRANCH: ${{ steps.extract_branch.outputs.branch }}
+          ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL }}
+          ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL }}
         with:
           access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
