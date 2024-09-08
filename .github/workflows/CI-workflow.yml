@@ -35,6 +35,8 @@ jobs:
           ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL }}
           ECR_USERNAME: ${{ secrets.ECR_USERNAME }}
           ECR_PASSWORD: ${{ secrets.ECR_PASSWORD }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
           # IN REPO
           SHA: ${{ steps.short-sha.outputs.sha }}
@@ -43,7 +45,14 @@ jobs:
           cd server
           docker build --build-arg DATASOURCE_URL="${{ env.DATASOURCE_URL }}" --build-arg DATASOURCE_USERNAME="${{ env.DATASOURCE_USERNAME }}" --build-arg DATASOURCE_PASSWORD="${{ env.DATASOURCE_PASSWORD }}" -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
           docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-          docker push "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+      - name: Push Server Image to ECR
+        id: ecr
+        uses: jwalton/gh-ecr-push@v2
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ap-southeast-1
+          image: "${{ env.ECR_SERVER_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
 
       - name: Build client
         env:
@@ -53,4 +62,12 @@ jobs:
           # Make sure Dockerfile is in the `client` directory
           docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
           docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-          docker push "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+      - name: Push CLIENT Image to ECR
+        id: ecr
+        uses: jwalton/gh-ecr-push@v2
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ap-southeast-1
+          image: "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
+
