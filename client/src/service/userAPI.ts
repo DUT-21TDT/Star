@@ -106,11 +106,38 @@ const getCurrentUserFromToken = async (token: string | null) => {
   }
 };
 
+const logOut = async () => {
+  try {
+    const logoutUrl = import.meta.env.VITE_BACKEND_AUTH_URL + "/connect/logout";
+    const idToken = Cookies.get("id_token");
+
+    if (!idToken) {
+      throw new Error("idToken is null");
+    }
+    
+    const clientId = import.meta.env.VITE_CLIENT_ID;
+
+    await instance.post(logoutUrl, {
+      id_token_hint: idToken,
+      client_id: clientId,
+    }, 
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      withCredentials: true
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   fetchAllUser,
   createNewUser,
   confirmAccount,
   getTokenFromCode,
   // getDataCurrentUser,
-  getCurrentUserFromToken
+  getCurrentUserFromToken,
+  logOut
 };

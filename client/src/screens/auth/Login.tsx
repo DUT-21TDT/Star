@@ -26,6 +26,7 @@ const Login: React.FC = () => {
   if (sessionStorage.getItem("isGoogleLogin")) {
     sessionStorage.removeItem("isGoogleLogin")
     window.location.href = urlGoogleLogin
+    return null
   }
 
   return (
