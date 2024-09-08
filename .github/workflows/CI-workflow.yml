@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: benjlevesque/short-sha@v3.0
         id: short-sha
         with:
@@ -27,11 +28,17 @@ jobs:
           SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
           cd server
-          docker build --build-arg DATASOURCE_URL=${{ secrets.DATASOURCE_URL }} --build-arg DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} --build-arg DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }} -t star_server:${{ env.SHA }} .
+          # Make sure Dockerfile is in the `server` directory
+          docker build \
+            --build-arg DATASOURCE_URL=${{ secrets.DATASOURCE_URL }} \
+            --build-arg DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} \
+            --build-arg DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }} \
+            -t star_server:${{ env.SHA }} .
 
       - name: Build client
         env:
           SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
           cd client
+          # Make sure Dockerfile is in the `client` directory
           docker build -t star_client:${{ env.SHA }} .
