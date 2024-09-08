@@ -28,12 +28,7 @@ jobs:
           SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
           cd server
-          # Make sure Dockerfile is in the `server` directory
-          docker build \
-            --build-arg DATASOURCE_URL=${{ secrets.DATASOURCE_URL }} \
-            --build-arg DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} \
-            --build-arg DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }} \
-            -t star_server:${{ env.SHA }} .
+          docker build --build-arg DATASOURCE_URL=${{ env.DATASOURCE_URL }} --build-arg DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }} --build-arg DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }} -t star_server:${{ env.SHA }} .
 
       - name: Build client
         env:
