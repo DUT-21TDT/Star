@@ -28,7 +28,7 @@ jobs:
           SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
           cd server
-          docker build --build-arg DATASOURCE_URL=${{ env.DATASOURCE_URL }} --build-arg DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }} --build-arg DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }} -t star_server:${{ env.SHA }} .
+          docker build -t star_server:${{ env.SHA }} . --build-arg DATASOURCE_URL=${{ env.DATASOURCE_URL }} --build-arg DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }} --build-arg DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }} 
 
       - name: Build client
         env:
