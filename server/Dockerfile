@@ -29,10 +29,5 @@ COPY --from=build /app/build/libs/*.jar /run/server-0.0.1-SNAPSHOT.jar
 # Expose port 8080 for the application
 EXPOSE 8080
 
-# Set environment variables for runtime (optional, can also be passed at runtime)
-ENV DATASOURCE_URL=${DATASOURCE_URL}
-ENV DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
-ENV DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
-
 # Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "/run/server-0.0.1-SNAPSHOT.jar"]
