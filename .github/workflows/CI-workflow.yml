@@ -1,0 +1,28 @@
+name: CI Phase
+
+on:
+  push:
+    branches: ["SSMP-31-Implement-CI-CD-pipeline"]
+  pull_request:
+    branches: ["SSMP-31-Implement-CI-CD-pipeline"]
+
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Docker version
+        run: docker --version
+
+
+      - name: Build server
+        run: |
+          cd server
+          docker build -t server .
+
+
+      - name: Build client
+        run: |
+          cd client
+          docker build -t client .

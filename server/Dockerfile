@@ -5,6 +5,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN gradle init --type java-application --overwrite 
+
 RUN ./gradlew build -DskipTests=true
 
 # PRODUCTION STAGE
@@ -14,7 +16,7 @@ RUN apk add openjdk21-jre
 
 WORKDIR /run
 
-COPY --from=build /app/build/libs/server-0.0.1-SNAPSHOT.jar /run/server-0.0.1-SNAPSHOT.jar
+COPY --from=build /app/build/libs/*.jar /run/server-0.0.1-SNAPSHOT.jar
 
 EXPOSE 8080
 
