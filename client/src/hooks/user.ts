@@ -72,11 +72,27 @@ const useGetUserFromToken = (token: string | null) => {
 //     isError,
 //   };
 // };
+
+const useGoogleLogin = () => {
+  const urlAuthLogin = `${import.meta.env.VITE_BACKEND_AUTH_URL}/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
+
+  const handleGoogleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (sessionStorage.getItem("isGoogleLogin") === null) {
+      sessionStorage.setItem("isGoogleLogin", "true");
+      window.location.href = urlAuthLogin;
+    }
+  };
+
+  return { handleGoogleLogin };
+};
+
 export {
   useFetchAllUser,
   usePostNewUser,
   useConfirmAccount,
   useGetTokenFromCode,
   // useGetCurrentUserFromToken,
-  useGetUserFromToken
+  useGetUserFromToken,
+  useGoogleLogin
 };

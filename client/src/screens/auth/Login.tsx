@@ -1,11 +1,11 @@
 import React from "react";
 import imageSignup from "../../assets/images/login.webp";
 import { ConfigProvider, Divider, message, QRCode } from "antd";
-import googleIcon from "../../assets/images/devicon_google.png";
 import { Link } from "react-router-dom";
 import { LoginTheme } from "../../utils/theme";
 import "../../assets/css/login.css";
 import axios from "axios";
+import GoogleLoginButton from "../../components/GoogleLoginButton";
 
 const Login: React.FC = () => {
 
@@ -14,14 +14,6 @@ const Login: React.FC = () => {
     }&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
 
   const urlGoogleLogin = `${import.meta.env.VITE_BACKEND_AUTH_URL}/oauth2/authorization/google`;
-
-  const handleGoogleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    if (sessionStorage.getItem("isGoogleLogin") === null) {
-      sessionStorage.setItem("isGoogleLogin", "true");
-      window.location.href = urlAuthLogin
-    }
-  };
 
   if (sessionStorage.getItem("isGoogleLogin")) {
     sessionStorage.removeItem("isGoogleLogin")
@@ -110,34 +102,7 @@ const Login: React.FC = () => {
             </p>
           </div>
           <Divider style={{ color: "#bdbdbd" }}>or</Divider>
-          <a onClick={handleGoogleLogin}>
-            <div className="border border-black/15 p-[20px_25px] rounded-[15px] flex items-center justify-between gap-2 cursor-pointer">
-              <div className="w-[35px] h-[35px]">
-                <img
-                  src={googleIcon}
-                  alt=""
-                  className="w-full h-full object-cover object-center"
-                />
-              </div>
-              <div className="text-[16px] font-bold">Continue with Google</div>
-              <div>
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 17L15 12L10 7"
-                    stroke="grey"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </div>
-          </a>
+          <GoogleLoginButton />
         </div>
         <div className="w-[250px] h-[250px] absolute right-0 bottom-0 p-5 flex flex-col items-center justify-center gap-2">
           <div className="text-[13px] text-gray-400 font-normal">
