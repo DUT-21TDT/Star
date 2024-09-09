@@ -25,4 +25,13 @@ const LoginTheme = {
   },
 };
 
-export { SignUpTheme, LoginTheme, globalTheme };
+const adminTheme = {
+  components: {
+    Menu: {
+      itemSelectedBg: "#0832de",
+      itemSelectedColor: "white",
+    },
+  },
+};
+
+export { SignUpTheme, LoginTheme, adminTheme, globalTheme };

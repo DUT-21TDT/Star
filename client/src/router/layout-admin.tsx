@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Layout, Menu, theme } from "antd";
+import { ConfigProvider, Layout, Menu, theme } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import HeaderAdmin from "../components/layout-admin/header-admin";
 import {
@@ -9,6 +9,7 @@ import {
   UserOutlined,
   DeploymentUnitOutlined,
 } from "@ant-design/icons";
+import { adminTheme } from "../utils/theme";
 
 const { Sider, Content } = Layout;
 
@@ -43,33 +44,35 @@ const LayoutAdmin = () => {
   }));
 
   return (
-    <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed} theme="light">
-        <div className="w-full h-[100px] flex items-center justify-center p-[10px] text-[24px] text-[#013CC6] font-medium">
-          Star
-        </div>
-        <Menu
-          mode="inline"
-          defaultSelectedKeys={[`${currentKey === 0 ? 1 : currentKey}`]}
-          items={items}
-        />
-      </Sider>
+    <ConfigProvider theme={adminTheme}>
       <Layout>
-        <HeaderAdmin collapsed={collapsed} setCollapsed={setCollapsed} />
-        <Content
-          style={{
-            margin: "24px 16px",
-            padding: 24,
-            minHeight: 500,
-            maxHeight: "100%",
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          <Outlet />
-        </Content>
+        <Sider trigger={null} collapsible collapsed={collapsed} theme="light">
+          <div className="w-full h-[100px] flex items-center justify-center p-[10px] text-[24px] text-[#013CC6] font-medium">
+            Star
+          </div>
+          <Menu
+            mode="inline"
+            defaultSelectedKeys={[`${currentKey === 0 ? 1 : currentKey}`]}
+            items={items}
+          />
+        </Sider>
+        <Layout>
+          <HeaderAdmin collapsed={collapsed} setCollapsed={setCollapsed} />
+          <Content
+            style={{
+              margin: "24px 16px",
+              padding: 24,
+              minHeight: 500,
+              maxHeight: "100%",
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+          >
+            <Outlet />
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </ConfigProvider>
   );
 };
 export default LayoutAdmin;

@@ -47,7 +47,6 @@ const columns: TableProps<DataType>["columns"] = [
 
 const Room: React.FC = () => {
   const { data, isLoading, isError } = useFetchAllRoom();
-  console.log(data);
   return (
     <>
       {isLoading ? (
@@ -55,7 +54,7 @@ const Room: React.FC = () => {
           <Spin indicator={<LoadingOutlined spin />} size="large" />
         </div>
       ) : isError ? (
-        <div>isError</div>
+        <div>Something went wrongs</div>
       ) : (
         <div>
           <Table

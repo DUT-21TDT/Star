@@ -1,7 +1,5 @@
 import { Result, Spin } from "antd";
-import {
-  useGetTokenFromCode,
-} from "../../hooks/user";
+import { useGetTokenFromCode } from "../../hooks/user";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
@@ -9,8 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { getCurrentUserFromToken } from "../../service/userAPI";
 
 type CurrentUser = {
-  name: String;
-  role: String;
+  name: string;
+  role: string;
 };
 
 const Callback: React.FC = () => {
@@ -18,7 +16,7 @@ const Callback: React.FC = () => {
   const { access_token, refresh_token, id_token, isLoading, isError } =
     useGetTokenFromCode(code);
 
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);  // const { data: currentUser, isLoading: isGetDataUserLoading, isError: isGetDataUserError } = useGetUserFromToken(access_token);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null); // const { data: currentUser, isLoading: isGetDataUserLoading, isError: isGetDataUserError } = useGetUserFromToken(access_token);
 
   const navigate = useNavigate();
 
@@ -46,12 +44,12 @@ const Callback: React.FC = () => {
   }, [access_token, refresh_token, id_token]);
   return (
     <>
-      {(isLoading) && (
+      {isLoading && (
         <div className="flex items-center justify-center mt-8">
           <Spin indicator={<LoadingOutlined spin />} size="large" />
         </div>
       )}
-      {(isError) && (
+      {isError && (
         <Result
           status="error"
           title="Something went wrong"
