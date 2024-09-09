@@ -69,7 +69,7 @@ const Room: React.FC = () => {
               ),
               rowExpandable: (record) => record.name !== "Not Expandable",
             }}
-            pagination={{ position: ["bottomCenter"], pageSize: 6 }}
+            pagination={{ position: ["bottomCenter"], pageSize: 4 }}
           />
         </div>
       )}
