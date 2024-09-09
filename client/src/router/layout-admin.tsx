@@ -27,7 +27,7 @@ const LayoutAdmin = () => {
     urls.findIndex(
       (url) => url && location.pathname.startsWith(`/admin/${url}`)
     ) + 1;
-  const label = ["Dashboard", "User", "Posts", "Rooms"];
+  const label = ["Dashboard", "User", "Post", "Room"];
   const icons = [
     <HomeOutlined />,
     <UserOutlined />,
@@ -61,7 +61,7 @@ const LayoutAdmin = () => {
             margin: "24px 16px",
             padding: 24,
             minHeight: 500,
-            maxHeight: `calc(100vh - 64px)`,
+            maxHeight: "100%",
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}
