@@ -2,6 +2,7 @@ package com.pbl.star.repositories;
 
 import com.pbl.star.entities.User;
 import com.pbl.star.enums.AccountStatus;
+import com.pbl.star.enums.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     Boolean existsValidAccountByEmail(String email);
 
     List<User> findByEmailAndStatus(String email, AccountStatus accountStatus);
+
+    @Query("SELECT u.role FROM User u WHERE u.username = ?1")
+    UserRole getRoleByUsername(String username);
 }
