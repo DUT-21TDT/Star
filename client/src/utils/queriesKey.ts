@@ -6,4 +6,5 @@ export const QUERY_KEY = {
   getTokenFromCode: () => ["getTokenFromCode"],
   // getDataCurrentUser: () => ["getDataCurrentUser"],
   getCurrentUserFromToken: () => ["getCurrentUserFromToken"],
+  fetchAllRoom: () => ["fetchAllRoom"],
 };
