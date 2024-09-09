@@ -12,7 +12,7 @@ import com.pbl.star.mapper.UserSignUpMapper;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.VerificationTokenRepository;
 import com.pbl.star.services.AuthService;
-import com.pbl.star.utils.AuthUtil;
+import com.pbl.star.utils.SignUpValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,10 +42,10 @@ public class AuthServiceImpl implements AuthService {
 
     private void validateSignUpInformation(SignUpParams signUpParams) {
         // Check required fields
-        AuthUtil.validateSignupRequiredFields(signUpParams);
+        SignUpValidator.validateSignupRequiredFields(signUpParams);
 
         // Check sign up rules
-        AuthUtil.validateSignUpRules(signUpParams);
+        SignUpValidator.validateSignUpRules(signUpParams);
 
         // Check if username already exist
         if (userRepository.existsByUsername(signUpParams.getUsername())) {
