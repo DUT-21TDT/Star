@@ -106,7 +106,28 @@ const getCurrentUserFromToken = async (token: string | null) => {
   }
 };
 
-const logOut = async () => {
+const revokeToken = async () => {
+  try {
+    const revokeUrl = import.meta.env.VITE_BACKEND_AUTH_URL + "/oauth2/revoke";
+    const refreshToken = Cookies.get("refresh_token");
+    const clientId = import.meta.env.VITE_CLIENT_ID;
+    const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
+
+    await instance.post(revokeUrl, {
+      token: refreshToken,
+      token_type_hint: "refresh_token",
+    }, {
+      headers: {
+        Authorization: 'Basic ' + btoa(`${clientId}:${clientSecret}`),
+        'Content-Type': "application/x-www-form-urlencoded",
+      },
+    })
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const endSession = async () => {
   try {
     const logoutUrl = import.meta.env.VITE_BACKEND_AUTH_URL + "/connect/logout";
     const idToken = Cookies.get("id_token");
@@ -139,5 +160,6 @@ export {
   getTokenFromCode,
   // getDataCurrentUser,
   getCurrentUserFromToken,
-  logOut
+  revokeToken,
+  endSession
 };

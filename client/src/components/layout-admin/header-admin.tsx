@@ -4,7 +4,7 @@ import { SearchOutlined, BellOutlined } from "@ant-design/icons";
 import react from "../../assets/images/QR.svg";
 import type { MenuProps } from "antd";
 import Cookies from "js-cookie";
-import { logOut } from "../../service/userAPI";
+import { endSession, revokeToken } from "../../service/userAPI";
 
 interface IProps {
   collapsed: boolean;
@@ -15,7 +15,8 @@ const { Header } = Layout;
 const HeaderAdmin = (props: IProps) => {
   const { collapsed, setCollapsed } = props;
   const handleLogout = async () => {
-    await logOut();
+    await revokeToken();
+    await endSession();
     Cookies.remove("JSESSIONID");
     Cookies.remove("id_token");
     Cookies.remove("refresh_token");
