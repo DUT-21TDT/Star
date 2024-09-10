@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/room")
+@RequestMapping("/rooms")
 public class RoomController {
 
     private final RoomUsecase roomUsecase;

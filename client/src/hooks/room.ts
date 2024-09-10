@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
 import { getAllRoom } from "../service/roomAPI";
+import { format } from "date-fns";
+
 interface DataType {
   id: number;
   key: number;
@@ -22,7 +24,7 @@ const useFetchAllRoom = () => {
           key: item.id,
           name: item.name,
           description: item.description,
-          createdAt: item.createdAt,
+          createdAt: format(new Date(item.createdAt), "HH:mm dd-MM-yyyy"),
           participantsCount: item.participantsCount,
         };
       }) || [],

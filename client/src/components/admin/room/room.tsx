@@ -28,7 +28,7 @@ const columns: TableProps<DataType>["columns"] = [
     sorter: (a, b) => a.participantsCount - b.participantsCount,
   },
   {
-    title: "Created",
+    title: "Created at",
     dataIndex: "createdAt",
     key: "createdAt",
   },
