@@ -4,6 +4,7 @@ import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.usecase.RoomUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -20,9 +21,17 @@ public class RoomController {
         return ResponseEntity.ok(roomUsecase.getAllRooms());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createRoom(@RequestBody @ModelAttribute CreateRoomParams params) {
         String roomId = roomUsecase.createRoom(params);
         return ResponseEntity.ok(Map.of("id", roomId));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<?> deleteRoom(@PathVariable String roomId) {
+        roomUsecase.deleteRoom(roomId);
+        return ResponseEntity.ok().build();
     }
 }
