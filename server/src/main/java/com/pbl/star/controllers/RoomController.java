@@ -21,15 +21,15 @@ public class RoomController {
         return ResponseEntity.ok(roomUsecase.getAllRooms());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> createRoom(@RequestBody @ModelAttribute CreateRoomParams params) {
         String roomId = roomUsecase.createRoom(params);
         return ResponseEntity.ok(Map.of("id", roomId));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{roomId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteRoom(@PathVariable String roomId) {
         roomUsecase.deleteRoom(roomId);
         return ResponseEntity.ok().build();
