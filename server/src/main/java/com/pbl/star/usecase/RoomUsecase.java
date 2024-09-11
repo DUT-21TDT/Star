@@ -9,4 +9,5 @@ public interface RoomUsecase {
     List<RoomOverviewDTO> getAllRooms();
     String createRoom(CreateRoomParams params);
     void deleteRoom(String roomId);
+    void updateRoom(String roomId, CreateRoomParams params);
 }

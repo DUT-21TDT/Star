@@ -55,4 +55,20 @@ public class RoomServiceImpl implements RoomService {
 
         roomRepository.deleteById(roomId);
     }
+
+    @Override
+    public void updateRoom(String roomId, CreateRoomParams params) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("Room with id " + roomId + " does not exist"));
+
+        if (params.getName() != null && !params.getName().isEmpty()) {
+            room.setName(params.getName());
+        }
+
+        if (params.getDescription() != null) {
+            room.setDescription(params.getDescription());
+        }
+
+        roomRepository.save(room);
+    }
 }

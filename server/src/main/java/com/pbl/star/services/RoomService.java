@@ -9,4 +9,5 @@ public interface RoomService {
     List<RoomOverviewDTO> getRoomsOverview();
     String createRoom(CreateRoomParams params);
     void deleteRoom(String roomId);
+    void updateRoom(String roomId, CreateRoomParams params);
 }

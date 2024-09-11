@@ -29,4 +29,9 @@ public class RoomUsecaseImpl implements RoomUsecase {
     public void deleteRoom(String roomId) {
         roomService.deleteRoom(roomId);
     }
+
+    @Override
+    public void updateRoom(String roomId, CreateRoomParams params) {
+        roomService.updateRoom(roomId, params);
+    }
 }

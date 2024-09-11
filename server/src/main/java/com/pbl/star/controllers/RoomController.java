@@ -34,4 +34,11 @@ public class RoomController {
         roomUsecase.deleteRoom(roomId);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/{roomId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> updateRoom(@PathVariable String roomId, @RequestBody @ModelAttribute CreateRoomParams params) {
+        roomUsecase.updateRoom(roomId, params);
+        return ResponseEntity.ok().build();
+    }
 }
