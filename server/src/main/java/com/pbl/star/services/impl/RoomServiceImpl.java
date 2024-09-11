@@ -4,6 +4,7 @@ import com.pbl.star.dtos.query.room.RoomOverviewDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.entities.Room;
 import com.pbl.star.exceptions.EntityConflictException;
+import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.RequiredFieldMissingException;
 import com.pbl.star.mapper.RoomCreationMapper;
 import com.pbl.star.repositories.RoomRepository;
@@ -43,5 +44,21 @@ public class RoomServiceImpl implements RoomService {
         room.setCreatedAt(Instant.now());
 
         return roomRepository.save(room).getId();
+    }
+
+    @Override
+    public void updateRoom(String roomId, CreateRoomParams params) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("Room with id " + roomId + " does not exist"));
+
+        if (params.getName() != null && !params.getName().isEmpty()) {
+            room.setName(params.getName());
+        }
+
+        if (params.getDescription() != null) {
+            room.setDescription(params.getDescription());
+        }
+
+        roomRepository.save(room);
     }
 }
