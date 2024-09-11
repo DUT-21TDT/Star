@@ -8,4 +8,5 @@ import java.util.List;
 public interface RoomService {
     List<RoomOverviewDTO> getRoomsOverview();
     String createRoom(CreateRoomParams params);
+    void deleteRoom(String roomId);
 }
