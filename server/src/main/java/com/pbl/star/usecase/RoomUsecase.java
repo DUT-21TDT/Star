@@ -8,4 +8,5 @@ import java.util.List;
 public interface RoomUsecase {
     List<RoomOverviewDTO> getAllRooms();
     String createRoom(CreateRoomParams params);
+    void deleteRoom(String roomId);
 }
