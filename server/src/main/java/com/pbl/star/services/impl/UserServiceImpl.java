@@ -1,5 +1,6 @@
 package com.pbl.star.services.impl;
 
+import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.query.user.PublicProfile;
 import com.pbl.star.dtos.response.user.PublicProfileResponse;
 import com.pbl.star.enums.UserRole;
@@ -44,5 +45,15 @@ public class UserServiceImpl implements UserService {
     public Collection<GrantedAuthority> getUserAuthorities(String username) {
         UserRole role = userRepository.getRoleByUsername(username);
         return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public PersonalInformation getPersonalInformation(String username) {
+        PersonalInformation personalInformation = userRepository.getPersonalInformation(username);
+        if (personalInformation == null) {
+            throw new EntityNotFoundException("User not found");
+        }
+
+        return personalInformation;
     }
 }
