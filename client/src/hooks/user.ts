@@ -36,18 +36,10 @@ const useGetTokenFromCode = (code: string) => {
 };
 
 const useGetUserFromToken = (token: string | null) => {
-  const { data, isLoading, isError } = useQuery({
+  return useQuery({
     queryKey: QUERY_KEY.getCurrentUserFromToken(token),
     queryFn: () => getCurrentUserFromToken(token),
   });
-  return {
-    data: {
-      name: data?.sub,
-      role: data?.roles[0],
-    },
-    isLoading,
-    isError,
-  };
 };
 
 const useGoogleLogin = () => {

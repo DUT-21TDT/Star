@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUserFromToken } from "../../service/userAPI";
+import { useAppDispatch } from "../../redux/store/hook";
+import { storeInformationUser } from "../../redux/slice/user-slice";
 
 type CurrentUser = {
   name: string;
@@ -16,17 +18,10 @@ const Callback: React.FC = () => {
   const { access_token, refresh_token, id_token, isLoading, isError } =
     useGetTokenFromCode(code);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  // const { data: currentUser, isLoading: isGetDataUserLoading, isError: isGetDataUserError } = useGetUserFromToken(access_token);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (currentUser?.role === "USER") {
-      navigate("/");
-    } else if (currentUser?.role === "ADMIN") {
-      navigate("/admin");
-    }
-  }, [currentUser, navigate]);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (access_token && refresh_token && id_token) {
@@ -36,12 +31,28 @@ const Callback: React.FC = () => {
 
       getCurrentUserFromToken(access_token).then((res) => {
         setCurrentUser({
-          name: res.sub,
-          role: res.roles[0],
+          name: res?.sub,
+          role: res?.roles[0],
         });
+
+        //store user data in redux
+        dispatch(
+          storeInformationUser({
+            name: res?.sub,
+            role: res?.roles[0],
+          })
+        );
       });
     }
-  }, [access_token, refresh_token, id_token]);
+  }, [access_token, refresh_token, id_token, dispatch]);
+
+  useEffect(() => {
+    if (currentUser?.role === "USER") {
+      navigate("/");
+    } else if (currentUser?.role === "ADMIN") {
+      navigate("/admin");
+    }
+  }, [currentUser, navigate]);
   return (
     <>
       {isLoading && (

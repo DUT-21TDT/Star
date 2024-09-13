@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
-import { createRoom, deleteRoom, getAllRoom } from "../service/roomAPI";
+import {
+  createRoom,
+  deleteRoom,
+  editRoom,
+  getAllRoom,
+} from "../service/roomAPI";
 import { format } from "date-fns";
 
 interface DataType {
@@ -53,4 +58,10 @@ const useDeleteRoom = () => {
     mutationFn: deleteRoom,
   });
 };
-export { useFetchAllRoom, useCreateRoom, useDeleteRoom };
+
+const useEditRoom = () => {
+  return useMutation({
+    mutationFn: editRoom,
+  });
+};
+export { useFetchAllRoom, useCreateRoom, useDeleteRoom, useEditRoom };

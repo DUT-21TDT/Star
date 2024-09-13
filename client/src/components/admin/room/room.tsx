@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Space, Spin, Table, Popconfirm, message } from "antd";
 import type { TableProps } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -7,6 +7,7 @@ import { useDeleteRoom, useFetchAllRoom } from "../../../hooks/room";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
+import ModalEditRoom from "./modal-edit-room";
 
 interface DataType {
   id: number;
@@ -18,6 +19,8 @@ interface DataType {
 }
 
 const Room: React.FC = () => {
+  const [openModalEdit, setOpenModalEdit] = useState<boolean>(false);
+  const [dataEditRoom, setDataEditRoom] = useState<DataType | null>(null);
   const { mutate: deleteRoom } = useDeleteRoom();
   const queryClient = useQueryClient();
   const confirm = (
@@ -59,21 +62,30 @@ const Room: React.FC = () => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Space size="small">
-          <Button icon={<EditOutlined />} className="border-none" />
-          <Popconfirm
-            title="Delete the room"
-            description="Are you sure to delete this room?"
-            onConfirm={(e) => confirm(e, record)}
-            cancelText="No"
-            placement="topRight"
-          >
+        <>
+          <Space size="small">
             <Button
-              icon={<DeleteOutlined className="text-[red]" />}
+              icon={<EditOutlined />}
               className="border-none"
+              onClick={() => {
+                setOpenModalEdit(true);
+                setDataEditRoom(record);
+              }}
             />
-          </Popconfirm>
-        </Space>
+            <Popconfirm
+              title="Delete the room"
+              description="Are you sure to delete this room?"
+              onConfirm={(e) => confirm(e, record)}
+              cancelText="No"
+              placement="topRight"
+            >
+              <Button
+                icon={<DeleteOutlined className="text-[red]" />}
+                className="border-none"
+              />
+            </Popconfirm>
+          </Space>
+        </>
       ),
     },
   ];
@@ -107,6 +119,11 @@ const Room: React.FC = () => {
               rowExpandable: (record) => record.name !== "Not Expandable",
             }}
             pagination={{ position: ["bottomCenter"], pageSize: 4 }}
+          />
+          <ModalEditRoom
+            openModalEdit={openModalEdit}
+            setOpenModalEdit={setOpenModalEdit}
+            data={dataEditRoom}
           />
         </div>
       )}

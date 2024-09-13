@@ -4,8 +4,8 @@ import SignUp from "../screens/auth/SignUp";
 import Confirm from "../screens/auth/Confirm";
 import Login from "../screens/auth/Login";
 import Callback from "../screens/auth/Callback";
-import LayoutUser from "./layout-user";
-import LayoutAdmin from "./layout-admin";
+import LayoutUser from "../screens/layout/layout-user";
+import LayoutAdmin from "../screens/layout/layout-admin";
 import Room from "../components/admin/room/room";
 
 const router = createBrowserRouter(

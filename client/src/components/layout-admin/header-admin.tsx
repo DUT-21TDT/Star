@@ -5,6 +5,8 @@ import react from "../../assets/images/QR.svg";
 import type { MenuProps } from "antd";
 import Cookies from "js-cookie";
 import { endSession, revokeToken } from "../../service/userAPI";
+import { useAppDispatch } from "../../redux/store/hook";
+import { removeInformationUser } from "../../redux/slice/user-slice";
 
 interface IProps {
   collapsed: boolean;
@@ -14,6 +16,7 @@ interface IProps {
 const { Header } = Layout;
 const HeaderAdmin = (props: IProps) => {
   const { collapsed, setCollapsed } = props;
+  const dispatch = useAppDispatch();
   const handleLogout = async () => {
     await revokeToken();
     await endSession();
@@ -21,6 +24,7 @@ const HeaderAdmin = (props: IProps) => {
     Cookies.remove("id_token");
     Cookies.remove("refresh_token");
     Cookies.remove("access_token");
+    dispatch(removeInformationUser());
     window.location.href = "/login";
   };
   const items: MenuProps["items"] = [
