@@ -75,6 +75,9 @@ public class AuthServiceImpl implements AuthService {
         user.setStatus(AccountStatus.ACTIVE);
         userRepository.save(user);
 
+        // Remove all verification token with the same user
+        verificationTokenRepository.deleteAll(verificationTokenRepository.findByUser(user));
+
         // Remove all inactive account with the same email
         userRepository.deleteAll(userRepository.findByEmailAndStatus(user.getEmail(), AccountStatus.INACTIVE));
 
