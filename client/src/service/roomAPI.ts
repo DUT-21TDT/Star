@@ -18,4 +18,9 @@ const createRoom = async (data: DataCreateRoom) => {
   const response = await instance.post("/rooms", fomData);
   return response.data;
 };
-export { getAllRoom, createRoom };
+
+const deleteRoom = async (id: string) => {
+  const response = await instance.delete(`/rooms/${id}`);
+  return response.data;
+};
+export { getAllRoom, createRoom, deleteRoom };
