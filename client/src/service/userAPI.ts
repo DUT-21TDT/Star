@@ -1,6 +1,7 @@
-import instance from "../utils/customizeAxios";
+import { instance, instanceAuth } from "../utils/customizeAxios";
 import axios from "axios";
 import Cookies from "js-cookie";
+
 interface IUser_SignUp {
   email: string;
   username: string;
@@ -8,35 +9,14 @@ interface IUser_SignUp {
   confirmPassword: string;
 }
 
-const fetchAllUser = async () => {
-  try {
-    const response = await instance.get("/user");
-    return response.data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const createNewUser = async (data: IUser_SignUp) => {
-  try {
-    const response = await instance.post("/auth/signup", data);
-    return response.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    throw new Error(error.response.data);
-  }
+  const response = await instance.post("/auth/signup", data);
+  return response.data;
 };
 const confirmAccount = async (token: string | null) => {
-  try {
-    if (token != null) {
-      const response = await instance.get(
-        `/auth/confirm-signup?token=${token}`
-      );
-      return response.data;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    throw new Error(error.response.data);
+  if (token != null) {
+    const response = await instance.get(`/auth/confirm-signup?token=${token}`);
+    return response.data;
   }
 };
 
@@ -64,42 +44,30 @@ const getTokenFromCode = async (code: string) => {
     return response.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    throw new Error(error.response.data);
+    console.log(error);
   }
 };
 
-// const getDataCurrentUser = async () => {
-//   try {
-//     const token = Cookies.get("access_token");
-//     if (token !== null) {
-//       const response = await instance.get("/home/me", {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
-//       return response.data;
-//     }
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   } catch (error: any) {
-//     throw new Error(error.response.data);
-//   }
-// };
-
 const getCurrentUserFromToken = async (token: string | null) => {
   try {
-    const introspectUrl = import.meta.env.VITE_BACKEND_AUTH_URL + "/oauth2/introspect"
+    const introspectUrl =
+      import.meta.env.VITE_BACKEND_AUTH_URL + "/oauth2/introspect";
     const clientId = import.meta.env.VITE_CLIENT_ID;
     const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
-    const response = await axios.post(introspectUrl, {
-      token: token,
-      token_type_hint: "access_token",
-    }, {
-      headers: {
-        Authorization: 'Basic ' + btoa(`${clientId}:${clientSecret}`),
-        'Content-Type': "application/x-www-form-urlencoded",
+    const response = await axios.post(
+      introspectUrl,
+      {
+        token: token,
+        token_type_hint: "access_token",
       },
-      withCredentials: true
-    });
+      {
+        headers: {
+          Authorization: "Basic " + btoa(`${clientId}:${clientSecret}`),
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.log(error);
@@ -113,19 +81,23 @@ const revokeToken = async () => {
     const clientId = import.meta.env.VITE_CLIENT_ID;
     const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
 
-    await instance.post(revokeUrl, {
-      token: refreshToken,
-      token_type_hint: "refresh_token",
-    }, {
-      headers: {
-        Authorization: 'Basic ' + btoa(`${clientId}:${clientSecret}`),
-        'Content-Type': "application/x-www-form-urlencoded",
+    await instance.post(
+      revokeUrl,
+      {
+        token: refreshToken,
+        token_type_hint: "refresh_token",
       },
-    })
+      {
+        headers: {
+          Authorization: "Basic " + btoa(`${clientId}:${clientSecret}`),
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 const endSession = async () => {
   try {
@@ -135,31 +107,50 @@ const endSession = async () => {
     if (!idToken) {
       throw new Error("idToken is null");
     }
-    
+
     const clientId = import.meta.env.VITE_CLIENT_ID;
 
-    await instance.post(logoutUrl, {
-      id_token_hint: idToken,
-      client_id: clientId,
-    }, 
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+    await instance.post(
+      logoutUrl,
+      {
+        id_token_hint: idToken,
+        client_id: clientId,
       },
-      withCredentials: true
-    });
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        withCredentials: true,
+      }
+    );
   } catch (error) {
     console.log(error);
   }
 };
 
+const handleRefreshToken = async () => {
+  const form = new FormData();
+  form.append("grant_type", "refresh_token");
+  form.append("refresh_token", Cookies.get("refresh_token") || "");
+  const clientId = import.meta.env.VITE_CLIENT_ID;
+  const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
+  const response = await instanceAuth.post(`/oauth2/token`, form, {
+    headers: {
+      Authorization: "Basic " + btoa(`${clientId}:${clientSecret}`),
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+
+    withCredentials: true,
+  });
+  return response.data;
+};
+
 export {
-  fetchAllUser,
   createNewUser,
   confirmAccount,
   getTokenFromCode,
-  // getDataCurrentUser,
   getCurrentUserFromToken,
   revokeToken,
-  endSession
+  endSession,
+  handleRefreshToken,
 };

@@ -1,13 +1,21 @@
-import instance from "../utils/customizeAxios";
+import { instance } from "../utils/customizeAxios";
 
+interface DataCreateRoom {
+  name: string;
+  description: string | null;
+}
 const getAllRoom = async () => {
-  try {
-    const response = await instance.get("/rooms");
-    return response.data;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    throw new Error(error);
-  }
+  const response = await instance.get("/rooms");
+  return response.data;
 };
-export { getAllRoom };
+
+const createRoom = async (data: DataCreateRoom) => {
+  const fomData = new FormData();
+  fomData.append("name", data.name);
+  if (data.description) {
+    fomData.append("description", data.description || "");
+  }
+  const response = await instance.post("/rooms", fomData);
+  return response.data;
+};
+export { getAllRoom, createRoom };

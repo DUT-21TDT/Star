@@ -15,8 +15,8 @@ const Callback: React.FC = () => {
   const code = new URLSearchParams(window.location.search).get("code") || "";
   const { access_token, refresh_token, id_token, isLoading, isError } =
     useGetTokenFromCode(code);
-
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null); // const { data: currentUser, isLoading: isGetDataUserLoading, isError: isGetDataUserError } = useGetUserFromToken(access_token);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  // const { data: currentUser, isLoading: isGetDataUserLoading, isError: isGetDataUserError } = useGetUserFromToken(access_token);
 
   const navigate = useNavigate();
 

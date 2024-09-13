@@ -7,6 +7,7 @@ import { ConfigProvider } from "antd";
 import { SignUpTheme } from "../../utils/theme";
 import { Link } from "react-router-dom";
 import GoogleLoginButton from "../../components/GoogleLoginButton";
+import { AxiosError } from "axios";
 interface SubmitButtonProps {
   form: FormInstance;
 }
@@ -63,7 +64,7 @@ const SignUp: React.FC = () => {
     errorContent: string;
   } => {
     // Email validation
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const emailRegex = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
     if (!emailRegex.test(form.email)) {
       return {
         isValid: false,
@@ -121,9 +122,10 @@ const SignUp: React.FC = () => {
             duration: 4,
           });
         },
-        onError: (err) => {
+        onError: (error: Error) => {
+          const axiosError = error as AxiosError;
           message.error({
-            content: `${err.message}`,
+            content: `${axiosError?.response?.data}`,
           });
         },
       });

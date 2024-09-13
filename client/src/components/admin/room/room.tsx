@@ -28,7 +28,7 @@ const columns: TableProps<DataType>["columns"] = [
     sorter: (a, b) => a.participantsCount - b.participantsCount,
   },
   {
-    title: "Created at",
+    title: "Created At",
     dataIndex: "createdAt",
     key: "createdAt",
   },
@@ -64,7 +64,14 @@ const Room: React.FC = () => {
             // footer={() => "Footer"}
             expandable={{
               expandedRowRender: (record) => (
-                <p style={{ margin: 0 }}>{record.description}</p>
+                <p
+                  style={{
+                    margin: 0,
+                    width: "150vh",
+                  }}
+                >
+                  {record.description}
+                </p>
               ),
               rowExpandable: (record) => record.name !== "Not Expandable",
             }}
