@@ -4,10 +4,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="db/changelog/changelog-17.08.2024.xml" />
-    <include file="db/changelog/changelog-20.08.2024.xml" />
-    <include file="db/changelog/changelog-24.08.2024.xml" />
-    <include file="db/changelog/changelog-02.09.2024.xml" />
-    <include file="db/changelog/changelog-05.09.2024.xml" />
-    <include file="db/changelog/changelog-13.09.2024.xml" />
+    <changeSet id="6_increase_description_max_length" author="Quang Nguyen">
+        <sql>
+            ALTER TABLE room
+            alter column description type VARCHAR(200);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
