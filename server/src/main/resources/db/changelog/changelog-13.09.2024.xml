@@ -10,4 +10,10 @@
             alter column description type VARCHAR(200);
         </sql>
     </changeSet>
+
+    <changeSet id="7_cascade_verification_token" author="Quang Nguyen">
+        <dropForeignKeyConstraint baseTableName="verification_token" constraintName="fk_user_verification_token"/>
+        <addForeignKeyConstraint baseTableName="verification_token" baseColumnNames="user_id" constraintName="fk_user_verification_token" referencedTableName="user"
+                                 referencedColumnNames="user_id" onDelete="CASCADE"/>
+    </changeSet>
 </databaseChangeLog>
