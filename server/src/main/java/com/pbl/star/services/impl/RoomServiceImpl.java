@@ -36,7 +36,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         if (roomRepository.existsByNameIgnoreCase(params.getName())) {
-            throw new EntityConflictException("Room with name " + params.getName() + " already exists");
+            throw new EntityConflictException("Room with name '" + params.getName() + "' already exists");
         }
 
         RoomCreationMapper roomCreationMapper = Mappers.getMapper(RoomCreationMapper.class);
@@ -59,15 +59,21 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void updateRoom(String roomId, CreateRoomParams params) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new EntityNotFoundException("Room with id " + roomId + " does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Room with id '" + roomId + "' does not exist"));
 
-        if (params.getName() != null && !params.getName().isEmpty()) {
-            room.setName(params.getName());
+        String newName = params.getName();
+        String newDescription = params.getDescription();
+
+        if (newName == null || newName.isEmpty()) {
+            throw new RequiredFieldMissingException("Room name cannot be empty");
         }
 
-        if (params.getDescription() != null) {
-            room.setDescription(params.getDescription());
+        if (!newName.equalsIgnoreCase(room.getName()) && roomRepository.existsByNameIgnoreCase(newName)) {
+            throw new EntityConflictException("Room with name '" + newName + "' already exists");
         }
+
+        room.setName(newName);
+        room.setDescription(newDescription);
 
         roomRepository.save(room);
     }
