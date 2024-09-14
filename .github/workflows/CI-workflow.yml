@@ -6,10 +6,14 @@ on:
       confirm:
         description: "Confirm deployment (yes or no)"
         required: true
-        default: "no"
+        type: choice
+        options:
+          - yes
+          - no
 
 jobs:
   approval:
+    if: ${{ github.event.inputs.confirm == 'yes' }}
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -28,8 +32,7 @@ jobs:
       VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
 
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.confirm == 'yes' }}
-    
+
     steps:
       - uses: benjlevesque/short-sha@v3.0
         id: short-sha

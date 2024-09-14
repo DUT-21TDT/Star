@@ -95,7 +95,6 @@ jobs:
             const branch = context.ref.replace('refs/heads/', ''); // Extract the branch name
             let ref;
 
-            // Check if the branch is either 'develop' or 'main'
             if (branch === 'develop' || branch === 'main' || branch === 'SSMP-31-Implement-CI-CD-pipeline') {
             ref = branch;
 
