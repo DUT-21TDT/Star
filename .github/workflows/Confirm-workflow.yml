@@ -97,21 +97,24 @@ jobs:
             let confirmInput;
 
             if (branch === 'develop' || branch === 'main' || branch === 'SSMP-31-Implement-CI-CD-pipeline') {
-                ref = branch;
-                confirmInput = 'yes'; // or 'no', depending on your logic
-                
-                // Trigger the deployment approval workflow
+              ref = branch;
+              confirmInput = 'yes'; // or 'no', depending on your logic
+
+              // Trigger the deployment approval workflow
+              try {
                 const result = await github.rest.actions.createWorkflowDispatch({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                workflow_id: 'CI-workflow.yml', // Name of the workflow to trigger
-                ref: ref, // Use the valid branch reference
-                inputs: {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: 'CI-workflow.yml', // Name of the workflow to trigger
+                  ref: ref, // Use the valid branch reference
+                  inputs: {
                     confirm: confirmInput // Provide the required input
-                }
+                  }
                 });
                 console.log('Triggered deployment approval workflow', result);
+              } catch (error) {
+                console.error('Error triggering deployment approval workflow:', error);
+              }
             } else {
-                // Log a message and skip the workflow trigger
-                console.log(`Branch ${branch} is not valid for deployment approval. Skipping workflow dispatch.`);
+              console.log(`Branch ${branch} is not valid for deployment approval. Skipping workflow dispatch.`);
             }
