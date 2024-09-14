@@ -9,4 +9,10 @@
             CREATE INDEX idx_user_room ON user_room(user_id, room_id);
         </sql>
     </changeSet>
+
+    <changeSet id="11_create_index_ur_room" author="Quang Nguyen">
+        <sql>
+            CREATE INDEX idx_ur_room ON user_room(room_id);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
