@@ -1,26 +1,23 @@
 package com.pbl.star.services.impl;
 
-import com.pbl.star.dtos.request.SignUpParams;
-import com.pbl.star.dtos.response.ConfirmSignUpResponse;
+import com.pbl.star.dtos.request.auth.SignUpParams;
+import com.pbl.star.dtos.response.auth.ConfirmSignUpResponse;
 import com.pbl.star.entities.User;
 import com.pbl.star.entities.VerificationToken;
 import com.pbl.star.enums.AccountStatus;
-import com.pbl.star.enums.UserRole;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.InvalidVerificationTokenException;
+import com.pbl.star.mapper.UserSignUpMapper;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.VerificationTokenRepository;
 import com.pbl.star.services.AuthService;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Service
@@ -29,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserSignUpMapper userSignUpMapper;
 
     @Transactional
     public User signUpByEmail(SignUpParams signUpParams) {
@@ -37,30 +34,8 @@ public class AuthServiceImpl implements AuthService {
         // Validate sign up information
         validateSignUpInformation(signUpParams);
 
-        // Handle password hashing
-        String hashedPassword = passwordEncoder.encode(signUpParams.getPassword());
-
-        // Handle date of birth parsing
-        LocalDate parsed_DateOfBirth = null;
-        if (signUpParams.getDateOfBirth() != null && !signUpParams.getDateOfBirth().isBlank()) {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            parsed_DateOfBirth = LocalDate.parse(signUpParams.getDateOfBirth(), dateTimeFormatter);
-        }
-
-
-        User newUser = User.builder()
-                .username(signUpParams.getUsername().toLowerCase())
-                .role(UserRole.USER)
-                .registerAt(Instant.now())
-                .status(AccountStatus.INACTIVE)
-                .email(signUpParams.getEmail())
-                .password(hashedPassword)
-                .firstName(signUpParams.getFirstName())
-                .lastName(signUpParams.getLastName())
-                .dateOfBirth(parsed_DateOfBirth)
-                .gender(signUpParams.getGender())
-                .privateProfile(false)
-                .build();
+        User newUser = userSignUpMapper.toEntity(signUpParams);
+        newUser.setRegisterAt(Instant.now());
 
         return userRepository.save(newUser);
     }

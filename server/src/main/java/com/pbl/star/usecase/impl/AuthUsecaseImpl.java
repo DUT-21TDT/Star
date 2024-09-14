@@ -1,8 +1,8 @@
 package com.pbl.star.usecase.impl;
 
-import com.pbl.star.dtos.request.SignUpParams;
-import com.pbl.star.dtos.response.ConfirmSignUpResponse;
-import com.pbl.star.dtos.response.SignUpResponse;
+import com.pbl.star.dtos.request.auth.SignUpParams;
+import com.pbl.star.dtos.response.auth.ConfirmSignUpResponse;
+import com.pbl.star.dtos.response.auth.SignUpResponse;
 import com.pbl.star.entities.User;
 import com.pbl.star.events.OnSignUpCompleteEvent;
 import com.pbl.star.services.AuthService;

@@ -4,6 +4,9 @@ import {
   createNewUser,
   fetchAllUser,
   confirmAccount,
+  getTokenFromCode,
+  // getDataCurrentUser,
+  getCurrentUserFromToken,
 } from "../service/userAPI";
 
 const useFetchAllUser = () => {
@@ -26,4 +29,70 @@ const useConfirmAccount = (token: string | null) => {
   });
 };
 
-export { useFetchAllUser, usePostNewUser, useConfirmAccount };
+const useGetTokenFromCode = (code: string) => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: QUERY_KEY.getTokenFromCode(),
+    queryFn: () => getTokenFromCode(code),
+  });
+  return {
+    access_token: data?.access_token,
+    refresh_token: data?.refresh_token,
+    id_token: data?.id_token,
+    isLoading,
+    isError,
+  };
+};
+
+const useGetUserFromToken = (token: string | null) => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: QUERY_KEY.getCurrentUserFromToken(),
+    queryFn: () => getCurrentUserFromToken(token),
+  });
+  return {
+    data: {
+      name: data?.sub,
+      role: data?.roles[0],
+    },
+    isLoading,
+    isError,
+  };
+};
+
+// const useGetCurrentUserFromToken = () => {
+//   const { data, isLoading, isError } = useQuery({
+//     queryKey: QUERY_KEY.getDataCurrentUser(),
+//     queryFn: getDataCurrentUser,
+//   });
+//   return {
+//     data: {
+//       role: data?.authorities[0]?.authority,
+//       name: data?.name,
+//     },
+//     isLoading,
+//     isError,
+//   };
+// };
+
+const useGoogleLogin = () => {
+  const urlAuthLogin = `${import.meta.env.VITE_BACKEND_AUTH_URL}/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
+
+  const handleGoogleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (sessionStorage.getItem("isGoogleLogin") === null) {
+      sessionStorage.setItem("isGoogleLogin", "true");
+      window.location.href = urlAuthLogin;
+    }
+  };
+
+  return { handleGoogleLogin };
+};
+
+export {
+  useFetchAllUser,
+  usePostNewUser,
+  useConfirmAccount,
+  useGetTokenFromCode,
+  // useGetCurrentUserFromToken,
+  useGetUserFromToken,
+  useGoogleLogin
+};
