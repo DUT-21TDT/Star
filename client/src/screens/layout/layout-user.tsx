@@ -1,3 +1,5 @@
+import { Outlet } from "react-router-dom";
+import SideBar from "../../components/user/layout-user/sidebar";
 import { useAppSelector } from "../../redux/store/hook";
 import NotPermitted from "../error/not-permitted";
 
@@ -9,7 +11,10 @@ const LayoutUser: React.FC = () => {
   return (
     <>
       {isUserRoute && role === "USER" ? (
-        <div>This is a layout user</div>
+        <div className="px-3 pt-5">
+          <SideBar />
+          <Outlet />
+        </div>
       ) : (
         <NotPermitted />
       )}

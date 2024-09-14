@@ -1,0 +1,29 @@
+.div-hover {
+  width: 65px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20%;
+}
+.div-hover:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+.pin-icon {
+  fill: #b8b8b8;
+  transition: fill 0.3s ease;
+}
+.pin-icon:hover {
+  fill: black;
+  cursor: pointer;
+}
+.menu-icon {
+  stroke: #b8b8b8;
+  transition: stroke 0.3s ease;
+}
+
+.menu-icon:hover {
+  stroke: black;
+  cursor: pointer;
+}
