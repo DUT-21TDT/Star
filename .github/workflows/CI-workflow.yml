@@ -7,11 +7,12 @@ on:
     branches: ["*"]
 
 jobs:
-  build-and-snyk:
+  test-build:
     uses: DUT-21TDT/Star/.github/workflows/Confirm-workflow.yml@SSMP-31-Implement-CI-CD-pipeline
+    secrets: inherit
 
   approval:
-    needs: build-and-snyk
+    needs: test-build
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/SSMP-31-Implement-CI-CD-pipeline'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
@@ -33,75 +34,77 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - name: test
+      run: echo hello
+  #     - uses: actions/checkout@v4
 
-      - uses: benjlevesque/short-sha@v3.0
-        id: short-sha
-        with:
-          length: 6
+  #     - uses: benjlevesque/short-sha@v3.0
+  #       id: short-sha
+  #       with:
+  #         length: 6
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
+  #     - name: Extract branch name
+  #       shell: bash
+  #       run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+  #       id: extract_branch
 
-      - name: Check Docker version
-        run: docker --version
+  #     - name: Check Docker version
+  #       run: docker --version
 
-        # Pre-build Client
-      - name: Pre-build Client
-        run: |
-          cd client
-          touch .env
-          echo "VITE_BASE_URL=${{ env.VITE_BASE_URL }}" >> .env
-          echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env
-          echo "VITE_BACKEND_AUTH_URL=${{ env.VITE_BACKEND_AUTH_URL }}" >> .env
-          echo "VITE_CLIENT_ID=${{ env.VITE_CLIENT_ID }}" >> .env
-          echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
-          echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
-          echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
-          npm install
-          npm run build
-        continue-on-error: false
+  #       # Pre-build Client
+  #     - name: Pre-build Client
+  #       run: |
+  #         cd client
+  #         touch .env
+  #         echo "VITE_BASE_URL=${{ env.VITE_BASE_URL }}" >> .env
+  #         echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env
+  #         echo "VITE_BACKEND_AUTH_URL=${{ env.VITE_BACKEND_AUTH_URL }}" >> .env
+  #         echo "VITE_CLIENT_ID=${{ env.VITE_CLIENT_ID }}" >> .env
+  #         echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
+  #         echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
+  #         echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
+  #         npm install
+  #         npm run build
+  #       continue-on-error: false
 
-      # Pre-build Server
-      - name: Pre-build Server
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "21"
+  #     # Pre-build Server
+  #     - name: Pre-build Server
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         distribution: "temurin"
+  #         java-version: "21"
 
-      - name: Build Server
-        run: |
-          cd server/src/main/resources
-          echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
-          echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
-          echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
-          cd ../../..
-          chmod +x gradlew
-          ./gradlew build
-        continue-on-error: false
+  #     - name: Build Server
+  #       run: |
+  #         cd server/src/main/resources
+  #         echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
+  #         echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
+  #         echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
+  #         cd ../../..
+  #         chmod +x gradlew
+  #         ./gradlew build
+  #       continue-on-error: false
 
-      - name: Build server
-        env:
-          SHA: ${{ steps.short-sha.outputs.sha }}
-          BRANCH: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          cd server
-          docker build -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
-          docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
-          docker push "${{ env.ECR_SERVER_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
-        continue-on-error: false
+  #     - name: Build server
+  #       env:
+  #         SHA: ${{ steps.short-sha.outputs.sha }}
+  #         BRANCH: ${{ steps.extract_branch.outputs.branch }}
+  #       run: |
+  #         cd server
+  #         docker build -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
+  #         docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+  #         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
+  #         docker push "${{ env.ECR_SERVER_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
+  #       continue-on-error: false
 
-      - name: Build client
-        env:
-          SHA: ${{ steps.short-sha.outputs.sha }}
-          BRANCH: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          cd client
-          docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
-          docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
-          docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
-        continue-on-error: false
+  #     - name: Build client
+  #       env:
+  #         SHA: ${{ steps.short-sha.outputs.sha }}
+  #         BRANCH: ${{ steps.extract_branch.outputs.branch }}
+  #       run: |
+  #         cd client
+  #         docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
+  #         docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+  #         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
+  #         docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
+  #       continue-on-error: false
