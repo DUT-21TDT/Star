@@ -1,19 +1,14 @@
 name: CI Phase
 
 on:
-  workflow_dispatch:
-    inputs:
-      confirm:
-        description: "Confirm deployment (yes or no)"
-        required: true
-        type: choice
-        options:
-          - yes
-          - no
+  workflow_run:
+    workflows: ["Build and Snyk Security"]
+    types:
+      - completed
 
 jobs:
   approval:
-    if: ${{ github.event.inputs.confirm == 'yes' }}
+    if: github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'develop' || github.event.workflow_run.head_branch == 'SSMP-31-Implement-CI-CD-pipeline')
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

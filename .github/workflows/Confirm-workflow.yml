@@ -27,94 +27,63 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      #   - uses: actions/checkout@v4
+        - uses: actions/checkout@v4
 
-      #   # Pre-build Client
-      #   - name: Pre-build Client
-      #     run: |
-      #       cd client
-      #       touch .env
-      #       echo "VITE_BASE_URL=${{ env.VITE_BASE_URL }}" >> .env
-      #       echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env
-      #       echo "VITE_BACKEND_AUTH_URL=${{ env.VITE_BACKEND_AUTH_URL }}" >> .env
-      #       echo "VITE_CLIENT_ID=${{ env.VITE_CLIENT_ID }}" >> .env
-      #       echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
-      #       echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
-      #       echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
-      #       npm install
-      #       npm run build
-      #     continue-on-error: false
+        # Pre-build Client
+        - name: Pre-build Client
+          run: |
+            cd client
+            touch .env
+            echo "VITE_BASE_URL=${{ env.VITE_BASE_URL }}" >> .env
+            echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env
+            echo "VITE_BACKEND_AUTH_URL=${{ env.VITE_BACKEND_AUTH_URL }}" >> .env
+            echo "VITE_CLIENT_ID=${{ env.VITE_CLIENT_ID }}" >> .env
+            echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
+            echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
+            echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
+            npm install
+            npm run build
+          continue-on-error: false
 
-      #   # Pre-build Server
-      #   - name: Pre-build Server
-      #     uses: actions/setup-java@v3
-      #     with:
-      #       distribution: "temurin"
-      #       java-version: "21"
+        # Pre-build Server
+        - name: Pre-build Server
+          uses: actions/setup-java@v3
+          with:
+            distribution: "temurin"
+            java-version: "21"
 
-      #   - name: Build Server
-      #     run: |
-      #       cd server/src/main/resources
-      #       echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
-      #       echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
-      #       echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
-      #       cd ../../..
-      #       chmod +x gradlew
-      #       ./gradlew build
-      #     continue-on-error: false
+        - name: Build Server
+          run: |
+            cd server/src/main/resources
+            echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
+            echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
+            echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
+            cd ../../..
+            chmod +x gradlew
+            ./gradlew build
+          continue-on-error: false
 
-      #   # Snyk Setup and Test for Java
-      #   - name: Set up Snyk CLI
-      #     uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
+        # Snyk Setup and Test for Java
+        - name: Set up Snyk CLI
+          uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
 
-      #   - name: Snyk test for Java
-      #     run: |
-      #       cd server
-      #       snyk test --all-projects --sarif-file-output=snyk-java.sarif || true
+        - name: Snyk test for Java
+          run: |
+            cd server
+            snyk test --all-projects --sarif-file-output=snyk-java.sarif || true
 
-      #   # Snyk Setup and Test for React
-      #   - name: Set up Node.js
-      #     uses: actions/setup-node@v4
-      #     with:
-      #       node-version: "20"
+        # Snyk Setup and Test for React
+        - name: Set up Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: "20"
 
-      #   - name: Install Node.js dependencies
-      #     run: |
-      #       cd client
-      #       npm install
+        - name: Install Node.js dependencies
+          run: |
+            cd client
+            npm install
 
-      #   - name: Snyk test for React
-      #     run: |
-      #       cd client
-      #       snyk test --sarif-file-output=snyk-react.sarif || true
-
-      - name: Trigger deployment approval
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const branch = context.ref.replace('refs/heads/', ''); // Extract the branch name
-            let ref;
-            let confirmInput;
-
-            if (branch === 'develop' || branch === 'main' || branch === 'SSMP-31-Implement-CI-CD-pipeline') {
-              ref = branch;
-              confirmInput = 'yes'; // or 'no', depending on your logic
-
-              // Trigger the deployment approval workflow
-              try {
-                const result = await github.rest.actions.createWorkflowDispatch({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  workflow_id: 'CI-workflow.yml', // Name of the workflow to trigger
-                  ref: ref, // Use the valid branch reference
-                  inputs: {
-                    confirm: confirmInput // Provide the required input
-                  }
-                });
-                console.log('Triggered deployment approval workflow', result);
-              } catch (error) {
-                console.error('Error triggering deployment approval workflow:', error);
-              }
-            } else {
-              console.log(`Branch ${branch} is not valid for deployment approval. Skipping workflow dispatch.`);
-            }
+        - name: Snyk test for React
+          run: |
+            cd client
+            snyk test --sarif-file-output=snyk-react.sarif || true
