@@ -1,14 +1,17 @@
 name: CI Phase
 
 on:
-  workflow_run:
-    workflows: ["Build and Snyk Security"]
-    types:
-      - completed
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
 
 jobs:
+  build-and-snyk:
+    uses: DUT-21TDT/Star/.github/workflows/Confirm-workflow.yml@SSMP-31-Implement-CI-CD-pipeline
+
   approval:
-    
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/SSMP-31-Implement-CI-CD-pipeline'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -34,34 +37,37 @@ jobs:
         with:
           length: 6
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
+      - name: test
+        run: echo "Hello, World!"
 
-      - name: Check Docker version
-        run: docker --version
+      # - name: Extract branch name
+      #   shell: bash
+      #   run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+      #   id: extract_branch
 
-      - name: Build server
-        env:
-          SHA: ${{ steps.short-sha.outputs.sha }}
-          BRANCH: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          cd server
-          docker build -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
-          docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
-          docker push "${{ env.ECR_SERVER_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
-        continue-on-error: false
+      # - name: Check Docker version
+      #   run: docker --version
 
-      - name: Build client
-        env:
-          SHA: ${{ steps.short-sha.outputs.sha }}
-          BRANCH: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          cd client
-          docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
-          docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
-          docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
-        continue-on-error: false
+      # - name: Build server
+      #   env:
+      #     SHA: ${{ steps.short-sha.outputs.sha }}
+      #     BRANCH: ${{ steps.extract_branch.outputs.branch }}
+      #   run: |
+      #     cd server
+      #     docker build -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
+      #     docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+      #     aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
+      #     docker push "${{ env.ECR_SERVER_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
+      #   continue-on-error: false
+
+      # - name: Build client
+      #   env:
+      #     SHA: ${{ steps.short-sha.outputs.sha }}
+      #     BRANCH: ${{ steps.extract_branch.outputs.branch }}
+      #   run: |
+      #     cd client
+      #     docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
+      #     docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+      #     aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
+      #     docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
+      #   continue-on-error: false
