@@ -42,7 +42,7 @@ jobs:
 
     steps:
         - name: test
-          run: echo "${{ env.AWS_ACCESS_KEY }}"
+          run: echo ${{ env.AWS_ACCESS_KEY }}
         # - uses: actions/checkout@v4
 
         # # Pre-build Client
