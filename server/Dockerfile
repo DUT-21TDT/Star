@@ -3,11 +3,6 @@ FROM gradle:jdk21-alpine as build
 
 WORKDIR /app
 
-# Add build arguments
-ARG DATASOURCE_URL
-ARG DATASOURCE_USERNAME
-ARG DATASOURCE_PASSWORD
-
 # Copy the project files
 COPY . .
 

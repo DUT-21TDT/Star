@@ -51,8 +51,8 @@ jobs:
           echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
           echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
           echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
-          cat application.properties
           cd ../..
+          pwd
           chmod +x gradlew
           ./gradlew build
         continue-on-error: false
