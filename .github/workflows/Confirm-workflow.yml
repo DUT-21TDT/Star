@@ -2,34 +2,13 @@ name: Build and Snyk Security
 
 on:
     workflow_call:
-        secrets:
-            AWS_ACCESS_KEY_ID: 
-            AWS_SECRET_ACCESS_KEY: 
-            ECR_URL: 
-            DATASOURCE_URL: 
-            DATASOURCE_USERNAME: 
-            DATASOURCE_PASSWORD: 
-            ECR_SERVER_URL: 
-            ECR_CLIENT_URL: 
-            VITE_BASE_URL: 
-            VITE_BACKEND_URL: 
-            VITE_BACKEND_AUTH_URL: 
-            VITE_CLIENT_ID: 
-            VITE_REDIRECT_URI: 
-            VITE_TOKEN_URL: 
-            VITE_CLIENT_SECRET: 
 
 jobs:
   test-build:
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      ECR_URL: ${{ secrets.ECR_URL }}
       DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
       DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
       DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
-      ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL }}
-      ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL }}
       VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
       VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
       VITE_BACKEND_AUTH_URL: ${{ secrets.VITE_BACKEND_AUTH_URL }}
@@ -55,25 +34,24 @@ jobs:
             echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
             echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
             echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
-            cat .env
-        # npm install
-        # npm run build
+            npm install
+            npm run build
           continue-on-error: false
 
-        # # Pre-build Server
-        # - name: Pre-build Server
-        #   uses: actions/setup-java@v3
-        #   with:
-        #     distribution: "temurin"
-        #     java-version: "21"
+        # Pre-build Server
+        - name: Pre-build Server
+          uses: actions/setup-java@v3
+          with:
+            distribution: "temurin"
+            java-version: "21"
 
-        # - name: Build Server
-        #   run: |
-        #     cd server/src/main/resources
-        #     echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
-        #     echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
-        #     echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
-        #     cd ../../..
-        #     chmod +x gradlew
-        #     ./gradlew build
-        #   continue-on-error: false
+        - name: Build Server
+          run: |
+            cd server/src/main/resources
+            echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
+            echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
+            echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
+            cd ../../..
+            chmod +x gradlew
+            ./gradlew build
+          continue-on-error: false
