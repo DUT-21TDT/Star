@@ -10,14 +10,13 @@ const LayoutUser: React.FC = () => {
   const role = useAppSelector((state) => state.user.role);
   return (
     <>
-      {isUserRoute && role === "USER" ? (
-        <div className="px-3 pt-5">
+      {isUserRoute && role === "USER" && (
+        <div className="px-3 pt-5 flex gap-5 bg-[#fafafa]">
           <SideBar />
           <Outlet />
         </div>
-      ) : (
-        <NotPermitted />
       )}
+      {isUserRoute && role === "ADMIN" && <NotPermitted />}
     </>
   );
 };

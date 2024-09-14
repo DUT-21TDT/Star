@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   HeartIcon,
   HomeIcon,
@@ -11,18 +12,47 @@ import {
 import { useState } from "react";
 
 const icons = [
-  { name: "home", component: HomeIcon, width: "33", height: "33" },
-  { name: "search", component: SearchIcon, width: "33", height: "33" },
-  { name: "plus", component: PlusIcon, width: "22", height: "22" },
-  { name: "heart", component: HeartIcon, width: "33", height: "33" },
-  { name: "user", component: UserIcon, width: "33", height: "33" },
+  {
+    name: "home",
+    component: HomeIcon,
+    width: "33",
+    height: "33",
+    navigate: "/",
+  },
+  {
+    name: "search",
+    component: SearchIcon,
+    width: "33",
+    height: "33",
+    navigate: "/search",
+  },
+  {
+    name: "plus",
+    component: PlusIcon,
+    width: "22",
+    height: "22",
+  },
+  {
+    name: "heart",
+    component: HeartIcon,
+    width: "33",
+    height: "33",
+    navigate: "/activity",
+  },
+  {
+    name: "user",
+    component: UserIcon,
+    width: "33",
+    height: "33",
+    navigate: "/profile",
+  },
 ];
 
 const SideBar: React.FC = () => {
   const [activeIcon, setActiveIcon] = useState<string>("home");
-
+  const navigate = useNavigate();
   return (
-    <div className="border border-red-500 w-[70px] h-[calc(100vh-50px)] flex flex-col justify-between items-center">
+    <div className=" w-[70px] h-[calc(100vh-50px)] flex flex-col justify-between items-center ">
       {/* Logo */}
       <div className="flex-grow flex justify-center items-center">
         <Logo width="40" height="40" />
@@ -30,19 +60,32 @@ const SideBar: React.FC = () => {
 
       {/* Icon List */}
       <div className="flex-grow flex flex-col items-center gap-4">
-        {icons.map(({ name, component: IconComponent, width, height }) => (
-          <div
-            key={name}
-            className="div-hover"
-            onClick={() => setActiveIcon(name)}
-          >
-            <IconComponent
-              width={width}
-              height={height}
-              isActive={activeIcon === name}
-            />
-          </div>
-        ))}
+        {icons.map(
+          ({
+            name,
+            component: IconComponent,
+            width,
+            height,
+            navigate: iconNavigate,
+          }) => (
+            <div
+              key={name}
+              className="div-hover"
+              onClick={() => {
+                setActiveIcon(name);
+                if (iconNavigate) {
+                  navigate(iconNavigate);
+                }
+              }}
+            >
+              <IconComponent
+                width={width}
+                height={height}
+                isActive={activeIcon === name}
+              />
+            </div>
+          )
+        )}
       </div>
 
       {/* Bottom Icons */}
