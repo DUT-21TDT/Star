@@ -41,25 +41,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-        - name: test
-          run: echo ${{ env.AWS_ACCESS_KEY }}
-        # - uses: actions/checkout@v4
+        - uses: actions/checkout@v4
 
-        # # Pre-build Client
-        # - name: Pre-build Client
-        #   run: |
-        #     cd client
-        #     touch .env
-        #     echo "VITE_BASE_URL=${{ env.VITE_BASE_URL }}" >> .env
-        #     echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env
-        #     echo "VITE_BACKEND_AUTH_URL=${{ env.VITE_BACKEND_AUTH_URL }}" >> .env
-        #     echo "VITE_CLIENT_ID=${{ env.VITE_CLIENT_ID }}" >> .env
-        #     echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
-        #     echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
-        #     echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
-        #     npm install
-        #     npm run build
-        #   continue-on-error: false
+        # Pre-build Client
+        - name: Pre-build Client
+          run: |
+            cd client
+            touch .env
+            echo "VITE_BASE_URL=${{ env.VITE_BASE_URL }}" >> .env
+            echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env
+            echo "VITE_BACKEND_AUTH_URL=${{ env.VITE_BACKEND_AUTH_URL }}" >> .env
+            echo "VITE_CLIENT_ID=${{ env.VITE_CLIENT_ID }}" >> .env
+            echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
+            echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
+            echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
+            cat .env
+        # npm install
+        # npm run build
+          continue-on-error: false
 
         # # Pre-build Server
         # - name: Pre-build Server
