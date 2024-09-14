@@ -76,6 +76,7 @@ instanceAuth.interceptors.response.use(
       alert("Your session has expired. Please log in again.");
       window.location.href = "/login";
     }
+
     return Promise.reject(error);
   }
 );

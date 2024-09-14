@@ -8,17 +8,45 @@ import LayoutUser from "../screens/layout/layout-user";
 import LayoutAdmin from "../screens/layout/layout-admin";
 import Room from "../components/admin/room/room";
 import { ProtectedRouteAuth } from "../components/auth/protected-route-auth";
+import Profile from "../screens/profile/profile";
+import { ProtectedRoute } from "../components/auth/protected-route";
 
 const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <LayoutUser />,
+      element: (
+        <ProtectedRoute>
+          <LayoutUser />
+        </ProtectedRoute>
+      ),
       errorElement: <NotFound />,
+      children: [
+        {
+          index: true,
+          element: <div>homepage</div>,
+        },
+        {
+          path: "profile",
+          element: <Profile />,
+        },
+        {
+          path: "search",
+          element: <div>search</div>,
+        },
+        {
+          path: "activity",
+          element: <div>activity</div>,
+        },
+      ],
     },
     {
       path: "/admin",
-      element: <LayoutAdmin />,
+      element: (
+        <ProtectedRoute>
+          <LayoutAdmin />
+        </ProtectedRoute>
+      ),
       errorElement: <NotFound />,
       children: [
         {
