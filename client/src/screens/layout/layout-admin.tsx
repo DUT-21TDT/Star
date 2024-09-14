@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { ConfigProvider, Layout, Menu, theme } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import HeaderAdmin from "../../components/layout-admin/header-admin";
+import HeaderAdmin from "../../components/admin/layout-admin/header-admin";
 import {
   CreditCardOutlined,
   HomeOutlined,
@@ -53,7 +53,7 @@ const LayoutAdmin = () => {
   return (
     <>
       <div className="app-container ">
-        {isAdminRoute && (
+        {isAdminRoute && role === "ADMIN" && (
           <>
             <ConfigProvider theme={adminTheme}>
               <Layout>

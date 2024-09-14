@@ -1,12 +1,12 @@
 import { BarsOutlined } from "@ant-design/icons";
 import { Avatar, Button, Input, Layout, Dropdown } from "antd";
 import { SearchOutlined, BellOutlined } from "@ant-design/icons";
-import react from "../../assets/images/QR.svg";
+import react from "../../../assets/images/QR.svg";
 import type { MenuProps } from "antd";
 import Cookies from "js-cookie";
-import { endSession, revokeToken } from "../../service/userAPI";
-import { useAppDispatch } from "../../redux/store/hook";
-import { removeInformationUser } from "../../redux/slice/user-slice";
+import { endSession, revokeToken } from "../../../service/userAPI";
+import { useAppDispatch } from "../../../redux/store/hook";
+import { removeInformationUser } from "../../../redux/slice/user-slice";
 
 interface IProps {
   collapsed: boolean;

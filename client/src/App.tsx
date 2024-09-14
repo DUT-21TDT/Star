@@ -12,7 +12,6 @@ function App() {
   const access_token = Cookies.get("access_token") || null;
   useEffect(() => {
     getCurrentUserFromToken(access_token).then((res) => {
-      console.log("check res", res);
       //store user data in redux
       dispatch(
         storeInformationUser({

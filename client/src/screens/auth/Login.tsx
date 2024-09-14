@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { LoginTheme } from "../../utils/theme";
 import "../../assets/css/login.css";
 import axios from "axios";
-import GoogleLoginButton from "../../components/GoogleLoginButton";
+import GoogleLoginButton from "../../components/user/GoogleLoginButton";
 
 const Login: React.FC = () => {
   const urlAuthLogin = `${

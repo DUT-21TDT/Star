@@ -7,6 +7,7 @@ import Callback from "../screens/auth/Callback";
 import LayoutUser from "../screens/layout/layout-user";
 import LayoutAdmin from "../screens/layout/layout-admin";
 import Room from "../components/admin/room/room";
+import { ProtectedRouteAuth } from "../components/auth/protected-route-auth";
 
 const router = createBrowserRouter(
   [
@@ -40,12 +41,20 @@ const router = createBrowserRouter(
     },
     {
       path: "/signup",
-      element: <SignUp />,
+      element: (
+        <ProtectedRouteAuth>
+          <SignUp />
+        </ProtectedRouteAuth>
+      ),
       errorElement: <NotFound />,
     },
     {
       path: "/login",
-      element: <Login />,
+      element: (
+        <ProtectedRouteAuth>
+          <Login />
+        </ProtectedRouteAuth>
+      ),
       errorElement: <NotFound />,
     },
     {

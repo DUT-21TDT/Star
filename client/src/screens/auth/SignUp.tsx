@@ -6,7 +6,7 @@ import { usePostNewUser } from "../../hooks/user";
 import { ConfigProvider } from "antd";
 import { SignUpTheme } from "../../utils/theme";
 import { Link } from "react-router-dom";
-import GoogleLoginButton from "../../components/GoogleLoginButton";
+import GoogleLoginButton from "../../components/user/GoogleLoginButton";
 import { AxiosError } from "axios";
 interface SubmitButtonProps {
   form: FormInstance;
