@@ -61,27 +61,13 @@ jobs:
           echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
           echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
           echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
-          npm install
-          npm run build
-        continue-on-error: false
 
-      # Pre-build Server
       - name: Pre-build Server
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "21"
-
-      - name: Build Server
         run: |
           cd server/src/main/resources
           echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
           echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
           echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
-          cd ../../..
-          chmod +x gradlew
-          ./gradlew build
-        continue-on-error: false
 
       - name: Build server
         env:
