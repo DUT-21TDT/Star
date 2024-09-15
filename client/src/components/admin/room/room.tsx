@@ -24,7 +24,7 @@ const Room: React.FC = () => {
   const { mutate: deleteRoom } = useDeleteRoom();
   const queryClient = useQueryClient();
   const confirm = (
-    e: React.MouseEvent<HTMLElement, MouseEvent> | undefined,
+    _: React.MouseEvent<HTMLElement, MouseEvent> | undefined,
     record: DataType
   ): void => {
     deleteRoom(record.id.toString(), {
