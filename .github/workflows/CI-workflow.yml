@@ -8,15 +8,15 @@ on:
 
 jobs:
   test-build:
-    uses: DUT-21TDT/Star/.github/workflows/Confirm-workflow.yml@develop
+    uses: DUT-21TDT/Star/.github/workflows/Confirm-workflow.yml@SSMP-31-Implement-CI-CD-pipeline
     secrets: inherit
   
   dev-deploy:
     needs: test-build
     if: github.ref == 'refs/heads/develop'
-    uses: DUT-21TDT/Star/.github/workflows/CI-workflows_dev.yml@develop
+    uses: DUT-21TDT/Star/.github/workflows/CI-workflows_dev.yml@SSMP-31-Implement-CI-CD-pipeline
 
   prod-deploy:
     needs: test-build
     if: github.ref == 'refs/heads/main'
-    uses: DUT-21TDT/Star/.github/workflows/CI-workflows_prod.yml@develop
+    uses: DUT-21TDT/Star/.github/workflows/CI-workflows_prod.yml@SSMP-31-Implement-CI-CD-pipeline
