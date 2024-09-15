@@ -56,8 +56,8 @@ public class SecurityConfig {
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            String username = jwt.getClaimAsString("sub");
-            return userService.getUserAuthorities(username);
+            String userId = jwt.getClaimAsString("sub");
+            return userService.getUserAuthorities(userId);
         });
 
         return jwtAuthenticationConverter;

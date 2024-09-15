@@ -42,8 +42,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<GrantedAuthority> getUserAuthorities(String username) {
-        UserRole role = userRepository.getRoleByUsername(username);
+    public Collection<GrantedAuthority> getUserAuthorities(String userId) {
+        UserRole role = userRepository.getRoleByUserId(userId);
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
