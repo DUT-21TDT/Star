@@ -9,7 +9,7 @@ jobs:
     env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        ECR_URL: ${{ secrets.ECR_URL_DEV }}
+        ECR_URL: ${{ secrets.ECR_URL }}
         DATASOURCE_URL: ${{ secrets.DATASOURCE_URL_DEV }}
         DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
         DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
