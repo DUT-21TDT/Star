@@ -1,4 +1,4 @@
-package com.pbl.star.dtos.request.auth;
+package com.pbl.star.dtos.request.user;
 
 import lombok.*;
 

@@ -1,6 +1,6 @@
 package com.pbl.star.utils;
 
-import com.pbl.star.dtos.request.auth.SignUpParams;
+import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.exceptions.InvalidSignUpParamsException;
 
 import java.util.regex.Pattern;

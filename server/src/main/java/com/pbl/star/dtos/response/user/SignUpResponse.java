@@ -1,4 +1,4 @@
-package com.pbl.star.dtos.response.auth;
+package com.pbl.star.dtos.response.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConfirmSignUpResponse {
+public class SignUpResponse {
     private String id;
     private String username;
-    private String email;
 }
