@@ -44,13 +44,13 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
     }
 
     @Override
-    public PersonalInformation getPersonalInformation(String username) {
+    public PersonalInformation getPersonalInformation(String userId) {
         String jpql = "SELECT u.email, u.username, u.firstName, u.lastName, u.bio, u.avatarUrl, u.dateOfBirth, u.gender, u.registerAt, u.privateProfile " +
                 "FROM User u " +
-                "WHERE u.username = :username and u.status = 'ACTIVE'";
+                "WHERE u.id = :userId and u.status = 'ACTIVE'";
 
         TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
-        query.setParameter("username", username);
+        query.setParameter("userId", userId);
 
         try {
             Object[] result = query.getSingleResult();

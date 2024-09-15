@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CurrentUser {
-    private String username;
+    private String id;
     private UserRole role;
 }

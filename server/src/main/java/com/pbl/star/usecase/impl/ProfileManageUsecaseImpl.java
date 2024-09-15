@@ -17,6 +17,6 @@ public class ProfileManageUsecaseImpl implements ProfileManageUsecase {
     @Override
     public PersonalInformation getPersonalInformation() {
         CurrentUser currentUser = AuthUtil.getCurrentUser();
-        return userService.getPersonalInformation(currentUser.getUsername());
+        return userService.getPersonalInformation(currentUser.getId());
     }
 }

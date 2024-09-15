@@ -9,5 +9,5 @@ import java.util.Collection;
 public interface UserService {
     PublicProfileResponse getPublicProfile(String username);
     Collection<GrantedAuthority> getUserAuthorities(String userId);
-    PersonalInformation getPersonalInformation(String username);
+    PersonalInformation getPersonalInformation(String userId);
 }

@@ -3,6 +3,7 @@ package com.pbl.star.services.impl;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.query.user.PublicProfile;
 import com.pbl.star.dtos.response.user.PublicProfileResponse;
+import com.pbl.star.entities.User;
 import com.pbl.star.enums.UserRole;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.repositories.UserRepository;
@@ -33,7 +34,9 @@ public class UserServiceImpl implements UserService {
         PublicProfileResponse publicProfileResponse = new PublicProfileResponse();
         publicProfileResponse.setPublicProfile(publicProfile);
 
-        publicProfileResponse.setCurrentUser(username.equals(AuthUtil.getCurrentUser().getUsername()));
+        User currentUser = userRepository.findById(AuthUtil.getCurrentUser().getId())
+                .orElseThrow();
+        publicProfileResponse.setCurrentUser(username.equals(currentUser.getUsername()));
 
         // TODO: Replace with actual following status
         publicProfileResponse.setFollowing(false);
@@ -48,8 +51,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PersonalInformation getPersonalInformation(String username) {
-        PersonalInformation personalInformation = userRepository.getPersonalInformation(username);
+    public PersonalInformation getPersonalInformation(String userId) {
+        PersonalInformation personalInformation = userRepository.getPersonalInformation(userId);
         if (personalInformation == null) {
             throw new EntityNotFoundException("User not found");
         }
