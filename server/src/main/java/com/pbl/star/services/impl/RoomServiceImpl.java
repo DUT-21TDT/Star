@@ -64,6 +64,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public void updateRoom(String roomId, CreateRoomParams params) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("Room with id '" + roomId + "' does not exist"));
@@ -86,6 +87,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public void joinRoom(String userId, String roomId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User with id '" + userId + "' does not exist"));
@@ -104,5 +106,14 @@ public class RoomServiceImpl implements RoomService {
                 .build();
 
         userRoomRepository.save(userRoom);
+    }
+
+    @Override
+    @Transactional
+    public void leaveRoom(String userId, String roomId) {
+        UserRoom userRoom = userRoomRepository.findByUserIdAndRoomId(userId, roomId)
+                .orElseThrow(() -> new EntityNotFoundException("User is not a member of the room"));
+
+        userRoomRepository.delete(userRoom);
     }
 }

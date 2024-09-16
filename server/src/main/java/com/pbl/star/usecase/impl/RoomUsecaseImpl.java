@@ -42,4 +42,10 @@ public class RoomUsecaseImpl implements RoomUsecase {
         CurrentUser currentUser = AuthUtil.getCurrentUser();
         roomService.joinRoom(currentUser.getId(), roomId);
     }
+
+    @Override
+    public void leaveRoom(String roomId) {
+        CurrentUser currentUser = AuthUtil.getCurrentUser();
+        roomService.leaveRoom(currentUser.getId(), roomId);
+    }
 }

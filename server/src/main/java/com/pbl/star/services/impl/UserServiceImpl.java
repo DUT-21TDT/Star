@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -71,6 +72,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updatePersonalInformation(UpdateProfileParams updateProfileParams) {
         User user = userRepository.findById(AuthUtil.getCurrentUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));

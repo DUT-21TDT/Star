@@ -11,4 +11,5 @@ public interface RoomService {
     void deleteRoom(String roomId);
     void updateRoom(String roomId, CreateRoomParams params);
     void joinRoom(String userId, String roomId);
+    void leaveRoom(String userId, String roomId);
 }

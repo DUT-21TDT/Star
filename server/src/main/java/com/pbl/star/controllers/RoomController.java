@@ -48,4 +48,11 @@ public class RoomController {
         roomUsecase.joinRoom(roomId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{roomId}/members")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> leaveRoom(@PathVariable String roomId) {
+        roomUsecase.leaveRoom(roomId);
+        return ResponseEntity.ok().build();
+    }
 }
