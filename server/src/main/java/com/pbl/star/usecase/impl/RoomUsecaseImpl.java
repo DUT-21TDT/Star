@@ -4,6 +4,8 @@ import com.pbl.star.dtos.query.room.RoomOverviewDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.services.RoomService;
 import com.pbl.star.usecase.RoomUsecase;
+import com.pbl.star.utils.AuthUtil;
+import com.pbl.star.utils.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -33,5 +35,11 @@ public class RoomUsecaseImpl implements RoomUsecase {
     @Override
     public void updateRoom(String roomId, CreateRoomParams params) {
         roomService.updateRoom(roomId, params);
+    }
+
+    @Override
+    public void joinRoom(String roomId) {
+        CurrentUser currentUser = AuthUtil.getCurrentUser();
+        roomService.joinRoom(currentUser.getId(), roomId);
     }
 }

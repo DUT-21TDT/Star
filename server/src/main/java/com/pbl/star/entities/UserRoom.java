@@ -2,8 +2,7 @@ package com.pbl.star.entities;
 
 import com.pbl.star.utils.IdGenerator;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.Instant;
@@ -12,6 +11,9 @@ import java.time.Instant;
 @Table(name = "user_room")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserRoom {
     @Id
     @GeneratedValue(generator = "ulid")

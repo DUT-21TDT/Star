@@ -41,4 +41,11 @@ public class RoomController {
         roomUsecase.updateRoom(roomId, params);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{roomId}/members")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> joinRoom(@PathVariable String roomId) {
+        roomUsecase.joinRoom(roomId);
+        return ResponseEntity.ok().build();
+    }
 }

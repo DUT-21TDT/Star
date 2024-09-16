@@ -10,4 +10,5 @@ public interface RoomUsecase {
     String createRoom(CreateRoomParams params);
     void deleteRoom(String roomId);
     void updateRoom(String roomId, CreateRoomParams params);
+    void joinRoom(String roomId);
 }
