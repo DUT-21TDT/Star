@@ -2,6 +2,7 @@ package com.pbl.star.utils;
 
 import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.exceptions.InvalidSignUpParamsException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
 
@@ -11,20 +12,20 @@ public class SignUpValidator {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
 
     public static void validateSignupRequiredFields(SignUpParams signUpParams) {
-        if (signUpParams.getUsername() == null || signUpParams.getUsername().isBlank()) {
+        if (StringUtils.isBlank(signUpParams.getUsername())) {
             throw new InvalidSignUpParamsException("Username is required");
         }
 
-        if (signUpParams.getEmail() == null || signUpParams.getEmail().isBlank()) {
-            throw new InvalidSignUpParamsException("Email is required");
+        if (StringUtils.isBlank(signUpParams.getEmail())) {
+            throw new InvalidSignUpParamsException("Username is required");
         }
 
-        if (signUpParams.getPassword() == null || signUpParams.getPassword().isBlank()) {
-            throw new InvalidSignUpParamsException("Password is required");
+        if (StringUtils.isBlank(signUpParams.getPassword())) {
+            throw new InvalidSignUpParamsException("Username is required");
         }
 
-        if (signUpParams.getConfirmPassword() == null || signUpParams.getConfirmPassword().isBlank()) {
-            throw new InvalidSignUpParamsException("Confirm password is required");
+        if (StringUtils.isBlank(signUpParams.getConfirmPassword())) {
+            throw new InvalidSignUpParamsException("Username is required");
         }
     }
 

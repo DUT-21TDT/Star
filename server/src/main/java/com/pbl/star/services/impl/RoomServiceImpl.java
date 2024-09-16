@@ -10,6 +10,7 @@ import com.pbl.star.mapper.RoomCreationMapper;
 import com.pbl.star.repositories.RoomRepository;
 import com.pbl.star.services.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,7 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public String createRoom(CreateRoomParams params) {
 
-        if (params.getName() == null || params.getName().isEmpty()) {
+        if (StringUtils.isBlank(params.getName())) {
             throw new RequiredFieldMissingException("Room name cannot be empty");
         }
 
@@ -64,7 +65,7 @@ public class RoomServiceImpl implements RoomService {
         String newName = params.getName();
         String newDescription = params.getDescription();
 
-        if (newName == null || newName.isEmpty()) {
+        if (StringUtils.isBlank(newName)) {
             throw new RequiredFieldMissingException("Room name cannot be empty");
         }
 

@@ -23,7 +23,7 @@ public class RoomController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> createRoom(@RequestBody @ModelAttribute CreateRoomParams params) {
+    public ResponseEntity<?> createRoom(@ModelAttribute CreateRoomParams params) {
         String roomId = roomUsecase.createRoom(params);
         return ResponseEntity.ok(Map.of("id", roomId));
     }
@@ -37,7 +37,7 @@ public class RoomController {
 
     @PatchMapping("/{roomId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateRoom(@PathVariable String roomId, @RequestBody @ModelAttribute CreateRoomParams params) {
+    public ResponseEntity<?> updateRoom(@PathVariable String roomId, @ModelAttribute CreateRoomParams params) {
         roomUsecase.updateRoom(roomId, params);
         return ResponseEntity.ok().build();
     }
