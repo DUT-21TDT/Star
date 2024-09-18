@@ -21,13 +21,11 @@ public class UserRoom {
     @Column(name = "user_room_id")
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id")
+    private String userId;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id")
-    private Room room;
+    @Column(name = "room_id")
+    private String roomId;
 
     @Column(name = "join_at")
     private Instant joinAt;

@@ -3,7 +3,6 @@ package com.pbl.star.services.impl;
 import com.pbl.star.dtos.query.room.RoomOverviewDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.entities.Room;
-import com.pbl.star.entities.User;
 import com.pbl.star.entities.UserRoom;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
@@ -89,19 +88,21 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public void joinRoom(String userId, String roomId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User with id '" + userId + "' does not exist"));
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User with id '" + userId + "' does not exist");
+        }
 
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new EntityNotFoundException("Room with id '" + roomId + "' does not exist"));
+        if (!roomRepository.existsById(roomId)) {
+            throw new EntityNotFoundException("Room with id '" + roomId + "' does not exist");
+        }
 
-        if (userRoomRepository.existsByUserAndRoom(user, room)) {
+        if (userRoomRepository.existsByUserIdAndRoomId(userId, roomId)) {
             throw new EntityConflictException("User is already a member of the room");
         }
 
         UserRoom userRoom = UserRoom.builder()
-                .user(user)
-                .room(room)
+                .userId(userId)
+                .roomId(roomId)
                 .joinAt(Instant.now())
                 .build();
 
