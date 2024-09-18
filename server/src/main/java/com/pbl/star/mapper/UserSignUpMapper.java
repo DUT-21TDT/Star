@@ -17,6 +17,7 @@ public abstract class UserSignUpMapper {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Mapping(target = "username", expression = "java(signUpParams.getUsername().toLowerCase())")
     @Mapping(target = "password", expression = "java(passwordEncoder.encode(signUpParams.getPassword()))")
     @Mapping(target = "role", constant = "USER")
     @Mapping(target = "status", constant = "INACTIVE")
