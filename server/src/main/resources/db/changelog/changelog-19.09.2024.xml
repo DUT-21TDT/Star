@@ -6,22 +6,22 @@
 
     <changeSet id="8_create_post_table" author="Quang Nguyen">
         <createTable tableName="post">
-            <column name="post_id">
+            <column name="post_id" type="CHAR(26)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="user_id">
+            <column name="user_id" type="CHAR(26)">
                 <constraints nullable="false"
                              foreignKeyName="fk_post_user"
                              referencedTableName="user"
                              referencedColumnNames="user_id"/>
             </column>
-            <column name="room_id">
+            <column name="room_id" type="CHAR(26)">
                 <constraints nullable="false"
                              foreignKeyName="fk_post_room"
                              referencedTableName="room"
                              referencedColumnNames="room_id"/>
             </column>
-            <column name="parent_post_id">
+            <column name="parent_post_id" type="CHAR(26)">
                 <constraints foreignKeyName="fk_post_parent_post"
                              referencedTableName="post"
                              referencedColumnNames="post_id"/>
@@ -38,10 +38,10 @@
 
     <changeSet id="9_create_post_image_table" author="Quang Nguyen">
         <createTable tableName="post_image">
-            <column name="post_image_id">
+            <column name="post_image_id" type="CHAR(26)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="post_id">
+            <column name="post_id" type="CHAR(26)">
                 <constraints nullable="false"
                              foreignKeyName="fk_post_image_post"
                              referencedTableName="post"
