@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="8_create_post_table" author="Quang Nguyen">
+        <createTable tableName="post">
+            <column name="post_id">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id">
+                <constraints nullable="false"
+                             foreignKeyName="fk_post_user"
+                             referencedTableName="user"
+                             referencedColumnNames="user_id"/>
+            </column>
+            <column name="room_id">
+                <constraints nullable="false"
+                             foreignKeyName="fk_post_room"
+                             referencedTableName="room"
+                             referencedColumnNames="room_id"/>
+            </column>
+            <column name="parent_post_id">
+                <constraints foreignKeyName="fk_post_parent_post"
+                             referencedTableName="post"
+                             referencedColumnNames="post_id"/>
+            </column>
+            <column name="content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIMEZONE"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="9_create_post_image_table" author="Quang Nguyen">
+        <createTable tableName="post_image">
+            <column name="post_image_id">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="post_id">
+                <constraints nullable="false"
+                             foreignKeyName="fk_post_image_post"
+                             referencedTableName="post"
+                             referencedColumnNames="post_id"/>
+            </column>
+            <column name="image_url" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
