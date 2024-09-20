@@ -11,6 +11,7 @@ import com.pbl.star.utils.CreatePostValidator;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,13 +55,15 @@ public class PostServiceImpl implements PostService {
         return savedPost.getId();
     }
 
-    private void saveImagesInPost(String postId, List<String> imageFileNames) {
-        for (String fileName : imageFileNames) {
-            PostImage postImage = PostImage.builder()
-                    .postId(postId)
-                    .imageUrl(imagePrefixUrl + fileName)
-                    .build();
-            postImageRepository.save(postImage);
-        }
+    private void saveImagesInPost(String postId, @NonNull List<String> imageFileNames) {
+
+        List<PostImage> postImages = imageFileNames.stream()
+                .map(imageFileName -> PostImage.builder()
+                        .postId(postId)
+                        .imageUrl(imagePrefixUrl + imageFileName)
+                        .build())
+                .toList();
+
+        postImageRepository.saveAll(postImages);
     }
 }
