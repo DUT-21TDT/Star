@@ -18,13 +18,13 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public PublicProfile getPublicProfile(String username) {
+    public PublicProfile getPublicProfile(String userId) {
         String jpql = "SELECT u.username, u.firstName, u.lastName, u.bio, u.avatarUrl, u.privateProfile " +
                 "FROM User u " +
-                "WHERE u.username = :username and u.status = 'ACTIVE'";
+                "WHERE u.id = :userId and u.status = 'ACTIVE'";
 
         TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
-        query.setParameter("username", username);
+        query.setParameter("userId", userId);
 
         try {
             Object[] result = query.getSingleResult();

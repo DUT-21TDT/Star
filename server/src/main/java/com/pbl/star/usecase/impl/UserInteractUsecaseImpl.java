@@ -13,7 +13,7 @@ public class UserInteractUsecaseImpl implements UserInteractUsecase {
     private final UserService userService;
 
     @Override
-    public PublicProfileResponse getPublicProfile(String username) {
-        return userService.getPublicProfile(username);
+    public PublicProfileResponse getPublicProfile(String userId) {
+        return userService.getPublicProfile(userId);
     }
 }

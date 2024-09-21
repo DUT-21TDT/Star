@@ -15,9 +15,9 @@ public class UserController {
     private final UserInteractUsecase userInteractUsecase;
     private final ProfileManageUsecase profileManageUsecase;
 
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getPublicProfile(@PathVariable String username) {
-        return ResponseEntity.ok(userInteractUsecase.getPublicProfile(username));
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getPublicProfile(@PathVariable String userId) {
+        return ResponseEntity.ok(userInteractUsecase.getPublicProfile(userId));
     }
 
     @GetMapping("/personal-information")
