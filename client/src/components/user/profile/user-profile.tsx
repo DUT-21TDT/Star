@@ -1,6 +1,7 @@
 import { Button, Image } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import default_image from "../../../assets/images/default_image.jpg";
+import ModalEditProfile from "./modal-edit-profile";
 interface IProps {
   isCurrentUser: boolean;
   isFollowing: boolean;
@@ -15,9 +16,8 @@ interface IProps {
   };
 }
 const UserProfile: React.FC<IProps> = (props) => {
-  const { isCurrentUser, isFollowing, publicProfile } = props;
-  console.log(isCurrentUser);
-  console.log(isFollowing);
+  const { publicProfile } = props;
+  const [openModal, setOpenModal] = useState(false);
   return (
     <>
       {/* Profile Information */}
@@ -52,11 +52,15 @@ const UserProfile: React.FC<IProps> = (props) => {
           {publicProfile.numberOfFollowers} followers
         </div>
         <div>
-          <Button className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[#fafafa]">
+          <Button
+            className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[#fafafa]"
+            onClick={() => setOpenModal(true)}
+          >
             Edit profile
           </Button>
         </div>
       </div>
+      <ModalEditProfile openModal={openModal} setOpenModal={setOpenModal} />
     </>
   );
 };

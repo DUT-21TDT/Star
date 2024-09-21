@@ -62,7 +62,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
                     (String) result[4],
                     (String) result[5],
                     (LocalDate) result[6],
-                    (result[7] == null ? null : Gender.valueOf((String) result[7])),
+                    (result[7] == null ? null : (Gender) result[7]),
                     (Instant) result[8],
                     (Boolean) result[9]
             );

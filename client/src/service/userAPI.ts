@@ -11,10 +11,10 @@ interface IUser_SignUp {
 
 interface IEditProfile {
   username: string;
-  firstname?: string;
-  lastname?: string;
+  firstName?: string;
+  lastName?: string;
   bio?: string;
-  avatarUrl?: string;
+  avatarFileName?: string;
   dateOfBirth?: string;
   gender?: string;
   privateProfile?: boolean;
@@ -163,18 +163,28 @@ const getInformationUserFromId = async (username: string | null) => {
 const editProfile = async (data: IEditProfile) => {
   const formData = new FormData();
   formData.append("username", data.username);
-  formData.append("firstname", data.firstname || "");
-  formData.append("lastname", data.lastname || "");
+  formData.append("firstName", data.firstName || "");
+  formData.append("lastName", data.lastName || "");
   formData.append("bio", data.bio || "");
-  formData.append("avatarUrl", data.avatarUrl || "");
+  formData.append("avatarFileName", data.avatarFileName || "");
   formData.append("dateOfBirth", data.dateOfBirth || "");
   formData.append("gender", data.gender || "");
   formData.append("privateProfile", data.privateProfile ? "true" : "false");
-
   const response = await instance.patch(
     `/users/personal-information`,
     formData
   );
+  return response.data;
+};
+
+const getPersonalInformation = async () => {
+  const response = await instance.get(`/users/personal-information`);
+  return response.data;
+};
+
+const getPresignedURL = async (fileName: string) => {
+  console.log(fileName);
+  const response = await instance.post(`/images/presigned-url`, fileName);
   return response.data;
 };
 
@@ -188,4 +198,6 @@ export {
   handleRefreshToken,
   getInformationUserFromId,
   editProfile,
+  getPersonalInformation,
+  getPresignedURL,
 };
