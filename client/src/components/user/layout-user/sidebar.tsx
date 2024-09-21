@@ -10,45 +10,46 @@ import {
   UserIcon,
 } from "../../../assets/icon/sidebar-homepage-icon";
 import { useState } from "react";
-
-const icons = [
-  {
-    name: "home",
-    component: HomeIcon,
-    width: "33",
-    height: "33",
-    navigate: "/",
-  },
-  {
-    name: "search",
-    component: SearchIcon,
-    width: "33",
-    height: "33",
-    navigate: "/search",
-  },
-  {
-    name: "plus",
-    component: PlusIcon,
-    width: "22",
-    height: "22",
-  },
-  {
-    name: "heart",
-    component: HeartIcon,
-    width: "33",
-    height: "33",
-    navigate: "/activity",
-  },
-  {
-    name: "user",
-    component: UserIcon,
-    width: "33",
-    height: "33",
-    navigate: "/profile",
-  },
-];
+import { useAppSelector } from "../../../redux/store/hook";
 
 const SideBar: React.FC = () => {
+  const username = useAppSelector((state) => state.user.name);
+  const icons = [
+    {
+      name: "home",
+      component: HomeIcon,
+      width: "33",
+      height: "33",
+      navigate: "/",
+    },
+    {
+      name: "search",
+      component: SearchIcon,
+      width: "33",
+      height: "33",
+      navigate: "/search",
+    },
+    {
+      name: "plus",
+      component: PlusIcon,
+      width: "22",
+      height: "22",
+    },
+    {
+      name: "heart",
+      component: HeartIcon,
+      width: "33",
+      height: "33",
+      navigate: "/activity",
+    },
+    {
+      name: "user",
+      component: UserIcon,
+      width: "33",
+      height: "33",
+      navigate: `/profile/${username}`,
+    },
+  ];
   const [activeIcon, setActiveIcon] = useState<string>("home");
   const navigate = useNavigate();
   return (
