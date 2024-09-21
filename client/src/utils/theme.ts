@@ -48,6 +48,21 @@ const profileTheme = {
       itemHoverColor: "black",
       itemSelectedColor: "black",
     },
+    Input: {
+      hoverBorderColor: "#bdbdbd",
+      activeBorderColor: "#bdbdbd",
+      activeShadow: "0 0 0 2px rgba(255, 255, 255, 0.2)",
+    },
+    DatePicker: {
+      hoverBorderColor: "#bdbdbd",
+      activeBorderColor: "#bdbdbd",
+      activeShadow: "0 0 0 2px rgba(255, 255, 255, 0.2)",
+    },
+    Switch: {
+      colorPrimary: "black",
+      colorPrimaryHover: "black",
+      colorPrimaryBorder: "black",
+    },
   },
 };
 

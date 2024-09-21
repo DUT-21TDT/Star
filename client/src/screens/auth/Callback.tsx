@@ -9,7 +9,7 @@ import { useAppDispatch } from "../../redux/store/hook";
 import { storeInformationUser } from "../../redux/slice/user-slice";
 
 type CurrentUser = {
-  name: string;
+  id: string;
   role: string;
 };
 
@@ -30,15 +30,16 @@ const Callback: React.FC = () => {
       Cookies.set("id_token", id_token);
 
       getCurrentUserFromToken(access_token).then((res) => {
+        console.log(res);
         setCurrentUser({
-          name: res?.sub,
+          id: res?.sub,
           role: res?.roles[0],
         });
 
         //store user data in redux
         dispatch(
           storeInformationUser({
-            name: res?.sub,
+            id: res?.sub,
             role: res?.roles[0],
           })
         );

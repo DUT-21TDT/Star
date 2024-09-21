@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useAppSelector } from "../../../redux/store/hook";
 
 const SideBar: React.FC = () => {
-  const username = useAppSelector((state) => state.user.name);
+  const id = useAppSelector((state) => state.user.id);
   const icons = [
     {
       name: "home",
@@ -47,7 +47,7 @@ const SideBar: React.FC = () => {
       component: UserIcon,
       width: "33",
       height: "33",
-      navigate: `/profile/${username}`,
+      navigate: `/profile/${id}`,
     },
   ];
   const [activeIcon, setActiveIcon] = useState<string>("home");

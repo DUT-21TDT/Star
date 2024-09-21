@@ -9,14 +9,18 @@ import { useGetProfileUser } from "../../hooks/user";
 import { useParams } from "react-router-dom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import ModalEditProfile from "../../components/user/profile/modal-edit-profile";
+import { useState } from "react";
 
 const Profile = () => {
-  const { username } = useParams();
-  const { data, isLoading } = useGetProfileUser(username || "");
+  const { id } = useParams();
+  const { data, isLoading } = useGetProfileUser(id || "");
+
+  const [openModal, setOpenModal] = useState(false);
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center mt-8">
+      <div className="flex items-center justify-center mt-8 w-full">
         <Spin indicator={<LoadingOutlined spin />} size="large" />
       </div>
     );
@@ -39,12 +43,17 @@ const Profile = () => {
             }}
           >
             <UserProfile
-              isCurrentUser={data.isCurrentUser}
-              isFollowing={data.isFollowing}
+              isCurrentUser={data?.isCurrentUser}
+              isFollowing={data?.isFollowing}
               publicProfile={data.publicProfile}
             />
             <TabProfile />
           </div>
+          <ModalEditProfile
+            dataUser={data.publicProfile}
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+          />
         </div>
       </div>
     </ConfigProvider>
