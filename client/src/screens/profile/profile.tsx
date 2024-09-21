@@ -9,14 +9,10 @@ import { useGetProfileUser } from "../../hooks/user";
 import { useParams } from "react-router-dom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import ModalEditProfile from "../../components/user/profile/modal-edit-profile";
-import { useState } from "react";
 
 const Profile = () => {
   const { id } = useParams();
   const { data, isLoading } = useGetProfileUser(id || "");
-
-  const [openModal, setOpenModal] = useState(false);
 
   if (isLoading) {
     return (
@@ -49,11 +45,6 @@ const Profile = () => {
             />
             <TabProfile />
           </div>
-          <ModalEditProfile
-            dataUser={data.publicProfile}
-            openModal={openModal}
-            setOpenModal={setOpenModal}
-          />
         </div>
       </div>
     </ConfigProvider>

@@ -39,7 +39,7 @@ function App() {
       } else {
         dispatch(
           storeInformationUser({
-            name: res?.sub,
+            id: res?.sub,
             role: res?.roles[0],
           })
         );

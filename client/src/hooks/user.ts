@@ -8,6 +8,8 @@ import {
   getCurrentUserFromToken,
   getInformationUserFromId,
   editProfile,
+  getPersonalInformation,
+  getPresignedURL,
 } from "../service/userAPI";
 
 const usePostNewUser = () => {
@@ -73,6 +75,19 @@ const useEditProfile = () => {
     mutationFn: editProfile,
   });
 };
+
+const useGetPersonalInformation = (id: string) => {
+  return useQuery({
+    queryKey: QUERY_KEY.getPersonalInformation(id),
+    queryFn: () => getPersonalInformation(),
+  });
+};
+
+const useGetPresignedUrl = () => {
+  return useMutation({
+    mutationFn: getPresignedURL,
+  });
+};
 export {
   usePostNewUser,
   useConfirmAccount,
@@ -82,4 +97,6 @@ export {
   useGoogleLogin,
   useGetProfileUser,
   useEditProfile,
+  useGetPersonalInformation,
+  useGetPresignedUrl,
 };

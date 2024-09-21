@@ -63,6 +63,9 @@ const profileTheme = {
       colorPrimaryHover: "black",
       colorPrimaryBorder: "black",
     },
+    Form: {
+      itemMarginBottom: 10,
+    },
   },
 };
 

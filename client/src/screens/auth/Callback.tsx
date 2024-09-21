@@ -30,7 +30,6 @@ const Callback: React.FC = () => {
       Cookies.set("id_token", id_token);
 
       getCurrentUserFromToken(access_token).then((res) => {
-        console.log(res);
         setCurrentUser({
           id: res?.sub,
           role: res?.roles[0],
