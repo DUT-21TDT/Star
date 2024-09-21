@@ -33,9 +33,7 @@ const Login: React.FC = () => {
         ></div>
         <div className="w-[450px] h-auto border border-black/15 absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2 p-5 rounded-[20px] bg-white">
           <div className="text-center">
-            <h1 className="text-[17px] font-bold mb-5">
-              Log in with your Google account
-            </h1>
+            <h1 className="text-[17px] font-bold mb-5">Log in</h1>
           </div>
           <div>
             <form

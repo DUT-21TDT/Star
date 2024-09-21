@@ -145,6 +145,11 @@ const handleRefreshToken = async () => {
   return response.data;
 };
 
+const getInformationUserFromUsername = async (username: string | null) => {
+  const response = await instance.get(`/users/${username}`);
+  return response.data;
+};
+
 export {
   createNewUser,
   confirmAccount,
@@ -153,4 +158,5 @@ export {
   revokeToken,
   endSession,
   handleRefreshToken,
+  getInformationUserFromUsername,
 };

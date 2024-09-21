@@ -110,7 +110,6 @@ const Room: React.FC = () => {
                 <p
                   style={{
                     margin: 0,
-                    width: "150vh",
                   }}
                 >
                   {record.description}
