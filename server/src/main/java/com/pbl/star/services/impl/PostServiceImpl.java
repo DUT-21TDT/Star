@@ -8,9 +8,9 @@ import com.pbl.star.mapper.PostCreationMapper;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.PostService;
 import com.pbl.star.utils.CreatePostValidator;
+import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +25,6 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
     private final UserRoomRepository userRoomRepository;
-
-    @Value("${aws.s3.prefix-url}")
-    private String imagePrefixUrl;
 
     @Override
     @Transactional
@@ -56,7 +53,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private void saveImagesInPost(String postId, @NonNull List<String> imageFileNames) {
-
+        String imagePrefixUrl = ImageUtil.getImagePrefixUrl();
         List<PostImage> postImages = imageFileNames.stream()
                 .map(imageFileName -> PostImage.builder()
                         .postId(postId)

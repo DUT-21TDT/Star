@@ -14,6 +14,7 @@ import com.pbl.star.exceptions.RequiredFieldMissingException;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.services.UserService;
 import com.pbl.star.utils.AuthUtil;
+import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
@@ -100,8 +101,10 @@ public class UserServiceImpl implements UserService {
                 StringUtils.isNotBlank(updateProfileParams.getBio()) ? updateProfileParams.getBio() : null
         );
 
+        String imagePrefixUrl = ImageUtil.getImagePrefixUrl();
         user.setAvatarUrl(
-                StringUtils.isNotBlank(updateProfileParams.getAvatarUrl()) ? updateProfileParams.getAvatarUrl() : null
+                StringUtils.isNotBlank(updateProfileParams.getAvatarFileName()) ?
+                        imagePrefixUrl + updateProfileParams.getAvatarFileName() : null
         );
 
         user.setPrivateProfile(updateProfileParams.isPrivateProfile());
