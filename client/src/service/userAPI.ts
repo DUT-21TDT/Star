@@ -9,6 +9,16 @@ interface IUser_SignUp {
   confirmPassword: string;
 }
 
+interface IEditProfile {
+  username: string;
+  firstname?: string;
+  lastname?: string;
+  bio?: string;
+  avatarUrl?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  privateProfile?: boolean;
+}
 const createNewUser = async (data: IUser_SignUp) => {
   const response = await instance.post("/auth/signup", data);
   return response.data;
@@ -145,8 +155,26 @@ const handleRefreshToken = async () => {
   return response.data;
 };
 
-const getInformationUserFromUsername = async (username: string | null) => {
+const getInformationUserFromId = async (username: string | null) => {
   const response = await instance.get(`/users/${username}`);
+  return response.data;
+};
+
+const editProfile = async (data: IEditProfile) => {
+  const formData = new FormData();
+  formData.append("username", data.username);
+  formData.append("firstname", data.firstname || "");
+  formData.append("lastname", data.lastname || "");
+  formData.append("bio", data.bio || "");
+  formData.append("avatarUrl", data.avatarUrl || "");
+  formData.append("dateOfBirth", data.dateOfBirth || "");
+  formData.append("gender", data.gender || "");
+  formData.append("privateProfile", data.privateProfile ? "true" : "false");
+
+  const response = await instance.patch(
+    `/users/personal-information`,
+    formData
+  );
   return response.data;
 };
 
@@ -158,5 +186,6 @@ export {
   revokeToken,
   endSession,
   handleRefreshToken,
-  getInformationUserFromUsername,
+  getInformationUserFromId,
+  editProfile,
 };

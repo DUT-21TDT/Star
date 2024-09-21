@@ -6,7 +6,8 @@ import {
   getTokenFromCode,
   // getDataCurrentUser,
   getCurrentUserFromToken,
-  getInformationUserFromUsername,
+  getInformationUserFromId,
+  editProfile,
 } from "../service/userAPI";
 
 const usePostNewUser = () => {
@@ -61,13 +62,17 @@ const useGoogleLogin = () => {
   return { handleGoogleLogin };
 };
 
-const useGetProfileUser = (username: string) => {
+const useGetProfileUser = (id: string) => {
   return useQuery({
-    queryKey: QUERY_KEY.getProfileUser(username),
-    queryFn: () => getInformationUserFromUsername(username),
+    queryKey: QUERY_KEY.getProfileUser(id),
+    queryFn: () => getInformationUserFromId(id),
   });
 };
-
+const useEditProfile = () => {
+  return useMutation({
+    mutationFn: editProfile,
+  });
+};
 export {
   usePostNewUser,
   useConfirmAccount,
@@ -76,4 +81,5 @@ export {
   useGetUserFromToken,
   useGoogleLogin,
   useGetProfileUser,
+  useEditProfile,
 };
