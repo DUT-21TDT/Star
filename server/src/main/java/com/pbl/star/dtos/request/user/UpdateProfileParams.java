@@ -10,7 +10,7 @@ public class UpdateProfileParams {
     private String firstName;
     private String lastName;
     private String bio;
-    private String avatarUrl;
+    private String avatarFileName;
     private String dateOfBirth;
     private String gender;
     private boolean privateProfile;
