@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 public interface UserService {
-    PublicProfileResponse getPublicProfile(String username);
+    PublicProfileResponse getPublicProfile(String userId);
     Collection<GrantedAuthority> getUserAuthorities(String userId);
     PersonalInformation getPersonalInformation(String userId);
     void updatePersonalInformation(UpdateProfileParams updateProfileParams);

@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public PublicProfileResponse getPublicProfile(String username) {
-        PublicProfile publicProfile = userRepository.getPublicProfile(username);
+    public PublicProfileResponse getPublicProfile(String userId) {
+        PublicProfile publicProfile = userRepository.getPublicProfile(userId);
 
         if (publicProfile == null) {
             throw new EntityNotFoundException("User not found");
@@ -45,9 +45,8 @@ public class UserServiceImpl implements UserService {
         PublicProfileResponse publicProfileResponse = new PublicProfileResponse();
         publicProfileResponse.setPublicProfile(publicProfile);
 
-        User currentUser = userRepository.findById(AuthUtil.getCurrentUser().getId())
-                .orElseThrow();
-        publicProfileResponse.setCurrentUser(username.equals(currentUser.getUsername()));
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        publicProfileResponse.setCurrentUser(userId.equals(currentUserId));
 
         // TODO: Replace with actual following status
         publicProfileResponse.setFollowing(false);
