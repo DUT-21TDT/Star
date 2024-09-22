@@ -10,6 +10,6 @@ export const QUERY_KEY = {
     token,
   ],
   fetchAllRoom: () => ["fetchAllRoom"],
-  getProfileUser: (username: string | null) => ["getProfileUser", username],
-  getPersonalInformation: (id: string) => ["getPersonalInformation", id],
+  getProfileUser: () => ["getProfileUser"],
+  getPersonalInformation: () => ["getPersonalInformation"],
 };

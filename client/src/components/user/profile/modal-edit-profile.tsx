@@ -9,6 +9,7 @@ import {
   Avatar,
   Upload,
   message,
+  Select,
 } from "antd";
 import { LockOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import {
@@ -31,8 +32,9 @@ interface IProps {
 
 const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
   const { TextArea } = Input;
+  const { Option } = Select;
   const id = useAppSelector((state) => state.user.id);
-  const { data } = useGetPersonalInformation(id);
+  const { data, refetch } = useGetPersonalInformation();
   const { mutate: getPresignedURL } = useGetPresignedUrl();
   const { mutate: updateProfile } = useEditProfile();
 
@@ -40,7 +42,8 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
   const [form] = Form.useForm();
   const [privateProfile, setPrivateProfile] = useState(false);
   const [avatarUrlFile, setAvatarUrlFile] = useState<File | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrlBase64, setAvatarUrlBase64] = useState("");
+  const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
 
   // Memoized initial values to avoid re-rendering
@@ -73,7 +76,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
     async ({ file }: any) => {
       setAvatarUrlFile(file.originFileObj);
       const base64String = await convertFileToBase64(file.originFileObj);
-      setAvatarUrl(base64String as string);
+      setAvatarUrlBase64(base64String as string);
     },
     [convertFileToBase64]
   );
@@ -96,7 +99,8 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
   );
 
   // Handle modal "Done" click
-  const handleOk = useCallback(async () => {
+  const handleOk = async () => {
+    setLoading(true);
     const formValues = form.getFieldsValue();
     const dataEdit = {
       username: formValues.username,
@@ -109,6 +113,11 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       gender: formValues.gender,
       privateProfile,
     };
+    if (!dataEdit.username) {
+      message.error("Username is required");
+      setLoading(false);
+      return;
+    }
 
     try {
       if (avatarUrlFile) {
@@ -122,7 +131,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
                 onSuccess: () => {
                   message.success("Profile updated successfully");
                   queryClient.invalidateQueries({
-                    queryKey: QUERY_KEY.getProfileUser(id),
+                    queryKey: QUERY_KEY.getProfileUser(),
                   });
                   setOpenModal(false);
                 },
@@ -133,9 +142,11 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
             } else {
               message.error("Upload avatar failed");
             }
+            setLoading(false); // Set loading to false only after everything finishes
           },
           onError: () => {
             message.error("Error fetching presigned URL for upload");
+            setLoading(false); // Handle error cases
           },
         });
       } else {
@@ -143,7 +154,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
           onSuccess: () => {
             message.success("Profile updated successfully");
             queryClient.invalidateQueries({
-              queryKey: QUERY_KEY.getProfileUser(id),
+              queryKey: QUERY_KEY.getProfileUser(),
             });
             setOpenModal(false);
           },
@@ -151,21 +162,21 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
             message.error("Profile update failed");
           },
         });
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error updating profile:", error);
+      setLoading(false);
     }
-  }, [
-    avatarUrlFile,
-    form,
-    getPresignedURL,
-    handleUploadAvatarToCloud,
-    id,
-    privateProfile,
-    queryClient,
-    setOpenModal,
-    updateProfile,
-  ]);
+  };
+
+  useEffect(() => {
+    if (openModal) {
+      refetch();
+      form.setFieldsValue(initialValues);
+      setPrivateProfile(data.privateProfile);
+    }
+  }, [openModal, refetch]);
 
   useEffect(() => {
     if (data) {
@@ -190,6 +201,8 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
           }}
           onClick={handleOk}
           key="done"
+          loading={loading}
+          iconPosition="start"
         >
           Done
         </Button>,
@@ -202,7 +215,16 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
             <Input prefix={<LockOutlined />} disabled />
           </Form.Item>
           <div style={{ position: "relative" }}>
-            <Avatar size={64} src={avatarUrl} icon={<UserOutlined />} />
+            {data?.avatarUrl && !avatarUrlBase64 && (
+              <Avatar size={64} src={data?.avatarUrl} />
+            )}
+
+            {!data?.avatarUrl && !avatarUrlBase64 && (
+              <Avatar size={64} icon={<UserOutlined />} />
+            )}
+
+            {avatarUrlBase64 && <Avatar size={64} src={avatarUrlBase64} />}
+
             <Upload showUploadList={false} onChange={handleUploadChange}>
               <Button
                 icon={<PlusOutlined />}
@@ -256,7 +278,10 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 
         <div className="flex items-center justify-between gap-4">
           <Form.Item name="gender" label="Gender" style={{ width: "50%" }}>
-            <Input placeholder="Gender" />
+            <Select placeholder="Select gender">
+              <Option value="MALE">Male</Option>
+              <Option value="FEMALE">Female</Option>
+            </Select>
           </Form.Item>
 
           <Form.Item
