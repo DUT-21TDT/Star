@@ -6,6 +6,7 @@ import {
   MenuIcon,
   PinIcon,
   PlusIcon,
+  RoomIcon,
   SearchIcon,
   UserIcon,
 } from "../../../assets/icon/sidebar-homepage-icon";
@@ -41,6 +42,13 @@ const SideBar: React.FC = () => {
       width: "33",
       height: "33",
       navigate: "/activity",
+    },
+    {
+      name: "room",
+      component: RoomIcon,
+      width: "33",
+      height: "33",
+      navigate: "/room",
     },
     {
       name: "user",

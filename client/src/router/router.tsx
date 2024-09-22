@@ -10,6 +10,7 @@ import Room from "../components/admin/room/room";
 import { ProtectedRouteAuth } from "../components/auth/protected-route-auth";
 import Profile from "../screens/profile/profile";
 import { ProtectedRoute } from "../components/auth/protected-route";
+import RoomUser from "../screens/room/room-user";
 
 const router = createBrowserRouter(
   [
@@ -37,6 +38,10 @@ const router = createBrowserRouter(
         {
           path: "activity",
           element: <div>activity</div>,
+        },
+        {
+          path: "room",
+          element: <RoomUser />,
         },
       ],
     },
