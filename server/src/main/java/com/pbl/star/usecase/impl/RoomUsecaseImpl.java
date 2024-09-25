@@ -1,6 +1,7 @@
 package com.pbl.star.usecase.impl;
 
 import com.pbl.star.dtos.query.room.RoomOverviewDTO;
+import com.pbl.star.dtos.query.room.RoomOverviewForUserDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.services.RoomService;
 import com.pbl.star.usecase.RoomUsecase;
@@ -20,6 +21,11 @@ public class RoomUsecaseImpl implements RoomUsecase {
     @Override
     public List<RoomOverviewDTO> getAllRooms() {
         return roomService.getRoomsOverview();
+    }
+
+    @Override
+    public List<RoomOverviewForUserDTO> getAllRoomsForUser() {
+        return roomService.getRoomsOverviewForUser();
     }
 
     @Override

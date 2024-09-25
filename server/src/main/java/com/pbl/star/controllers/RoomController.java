@@ -17,8 +17,15 @@ public class RoomController {
     private final RoomUsecase roomUsecase;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllRooms() {
         return ResponseEntity.ok(roomUsecase.getAllRooms());
+    }
+
+    @GetMapping("/user-rooms")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> getUserRooms() {
+        return ResponseEntity.ok(roomUsecase.getAllRoomsForUser());
     }
 
     @PostMapping

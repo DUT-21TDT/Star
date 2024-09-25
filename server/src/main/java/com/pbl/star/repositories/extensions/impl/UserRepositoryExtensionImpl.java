@@ -28,16 +28,15 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
 
         try {
             Object[] result = query.getSingleResult();
-            return new PublicProfile(
-                    (String) result[0],
-                    (String) result[1],
-                    (String) result[2],
-                    (String) result[3],
-                    (String) result[4],
-                    (boolean) result[5],
-                    // TODO: Replace with actual follower count
-                    999
-            );
+            return PublicProfile.builder()
+                    .username((String) result[0])
+                    .firstName((String) result[1])
+                    .lastName((String) result[2])
+                    .bio((String) result[3])
+                    .avatarUrl((String) result[4])
+                    .privateProfile(result[5] != null && (boolean) result[5])
+                    .numberOfFollowers(999) // TODO: Replace with actual follower count
+                    .build();
         } catch (NoResultException e) {
             return null;
         }
@@ -54,18 +53,18 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
 
         try {
             Object[] result = query.getSingleResult();
-            return new PersonalInformation(
-                    (String) result[0],
-                    (String) result[1],
-                    (String) result[2],
-                    (String) result[3],
-                    (String) result[4],
-                    (String) result[5],
-                    (LocalDate) result[6],
-                    (result[7] == null ? null : (Gender) result[7]),
-                    (Instant) result[8],
-                    (Boolean) result[9]
-            );
+            return PersonalInformation.builder()
+                    .email((String) result[0])
+                    .username((String) result[1])
+                    .firstName((String) result[2])
+                    .lastName((String) result[3])
+                    .bio((String) result[4])
+                    .avatarUrl((String) result[5])
+                    .dateOfBirth((LocalDate) result[6])
+                    .gender(result[7] == null ? null : (Gender) result[7])
+                    .registerAt((Instant) result[8])
+                    .privateProfile(result[9] != null && (boolean) result[9])
+                    .build();
         } catch (NoResultException e) {
             return null;
         }
