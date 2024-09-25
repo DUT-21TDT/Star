@@ -1,6 +1,7 @@
 package com.pbl.star.services.impl;
 
 import com.pbl.star.dtos.query.room.RoomOverviewDTO;
+import com.pbl.star.dtos.query.room.RoomOverviewForUserDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.entities.Room;
 import com.pbl.star.entities.UserRoom;
@@ -12,6 +13,7 @@ import com.pbl.star.repositories.RoomRepository;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.UserRoomRepository;
 import com.pbl.star.services.RoomService;
+import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.factory.Mappers;
@@ -31,6 +33,12 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<RoomOverviewDTO> getRoomsOverview() {
         return roomRepository.getRoomsOverview();
+    }
+
+    @Override
+    public List<RoomOverviewForUserDTO> getRoomsOverviewForUser() {
+        String userId = AuthUtil.getCurrentUser().getId();
+        return roomRepository.getRoomsOverviewForUser(userId);
     }
 
     @Override
