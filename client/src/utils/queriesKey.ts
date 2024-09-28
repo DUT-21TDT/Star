@@ -12,4 +12,5 @@ export const QUERY_KEY = {
   fetchAllRoom: () => ["fetchAllRoom"],
   getProfileUser: () => ["getProfileUser"],
   getPersonalInformation: () => ["getPersonalInformation"],
+  fetchAllRoomForUser: () => ["fetchAllRoomForUser"],
 };

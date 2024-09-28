@@ -61,7 +61,10 @@ const SideBar: React.FC = () => {
   const [activeIcon, setActiveIcon] = useState<string>("home");
   const navigate = useNavigate();
   return (
-    <div className=" w-[70px] h-[calc(100vh-50px)] flex flex-col justify-between items-center ">
+    <div
+      className=" w-[70px] h-[calc(100vh-50px)] flex flex-col justify-between items-center "
+      style={{ position: "fixed" }}
+    >
       {/* Logo */}
       <div className="flex-grow flex justify-center items-center">
         <Logo width="40" height="40" />

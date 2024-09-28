@@ -42,4 +42,16 @@ const joinRoom = async (roomId: string) => {
   const response = await instance.post(`/rooms/${roomId}/members`);
   return response.data;
 };
-export { getAllRoom, createRoom, deleteRoom, editRoom, joinRoom };
+
+const getAllRoomForUser = async () => {
+  const response = await instance.get("/rooms/user-rooms");
+  return response.data;
+};
+export {
+  getAllRoom,
+  createRoom,
+  deleteRoom,
+  editRoom,
+  joinRoom,
+  getAllRoomForUser,
+};

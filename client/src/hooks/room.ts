@@ -5,6 +5,7 @@ import {
   deleteRoom,
   editRoom,
   getAllRoom,
+  getAllRoomForUser,
   joinRoom,
 } from "../service/roomAPI";
 import { format } from "date-fns";
@@ -16,6 +17,7 @@ interface DataType {
   description: string;
   createdAt: Date;
   participantsCount: number;
+  isParticipant?: boolean;
 }
 const useFetchAllRoom = () => {
   const result = useQuery({
@@ -71,10 +73,28 @@ const useJoinRoom = () => {
     mutationFn: joinRoom,
   });
 };
+const useGetAllRoomForUser = () => {
+  const response = useQuery({
+    queryKey: QUERY_KEY.fetchAllRoomForUser(),
+    queryFn: getAllRoomForUser,
+  });
+  const listRoomJoined =
+    response?.data?.filter((item: DataType) => item.isParticipant) || [];
+
+  const listRoomNotJoined =
+    response?.data?.filter((item: DataType) => !item.isParticipant) || [];
+  return {
+    listRoomJoined: listRoomJoined,
+    listRoomNotJoined: listRoomNotJoined,
+    isLoading: response.isLoading,
+    isError: response.isError,
+  };
+};
 export {
   useFetchAllRoom,
   useCreateRoom,
   useDeleteRoom,
   useEditRoom,
   useJoinRoom,
+  useGetAllRoomForUser,
 };
