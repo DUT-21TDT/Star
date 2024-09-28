@@ -44,11 +44,13 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
   const [avatarUrlFile, setAvatarUrlFile] = useState<File | null>(null);
   const [avatarUrlBase64, setAvatarUrlBase64] = useState("");
   const [loading, setLoading] = useState(false);
+  const [avatarFileName, setAvatarFileName] = useState<string>();
   const queryClient = useQueryClient();
 
   // Memoized initial values to avoid re-rendering
   const initialValues = useMemo(() => {
     if (!data) return {};
+    setAvatarFileName(data.avatarUrl ? data.avatarUrl.split("/").pop() : "");
     return {
       username: data.username,
       firstName: data.firstName,
@@ -108,7 +110,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       lastName: formValues.lastName,
       bio: formValues.bio,
       email: formValues.email,
-      avatarFileName: "",
+      avatarFileName: avatarFileName,
       dateOfBirth: formValues.dateofbirth.format("DD/MM/YYYY"),
       gender: formValues.gender,
       privateProfile,
@@ -122,7 +124,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
     try {
       if (avatarUrlFile) {
         const fileExtension = avatarUrlFile.name.split(".").pop();
-        getPresignedURL(`${id}.${fileExtension}`, {
+        getPresignedURL(`avatar/${id}.${fileExtension}`, {
           onSuccess: async (url) => {
             const uploadSuccess = await handleUploadAvatarToCloud(url);
             if (uploadSuccess) {
@@ -142,11 +144,11 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
             } else {
               message.error("Upload avatar failed");
             }
-            setLoading(false); // Set loading to false only after everything finishes
+            setLoading(false);
           },
           onError: () => {
             message.error("Error fetching presigned URL for upload");
-            setLoading(false); // Handle error cases
+            setLoading(false);
           },
         });
       } else {
