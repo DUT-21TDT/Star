@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, Button, message } from "antd";
-import { useJoinRoom } from "../../../hooks/room";
+import { useJoinRoom, useLeaveRoomForUser } from "../../../hooks/room";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
 
@@ -26,6 +26,7 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
   setIsModalOpen,
 }) => {
   const { mutate: joinRoom } = useJoinRoom();
+  const { mutate: leaveRoom } = useLeaveRoomForUser();
   const queryClient = useQueryClient();
   const handleJoinRoom = () => {
     joinRoom(dataRoom?.id.toString() || "", {
@@ -41,7 +42,20 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
       },
     });
   };
-  const handleLeaveRoom = () => {};
+  const handleLeaveRoom = () => {
+    leaveRoom(dataRoom?.id.toString() || "", {
+      onSuccess: () => {
+        message.success("Leave room successfully");
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEY.fetchAllRoomForUser(),
+        });
+        setIsModalOpen(false);
+      },
+      onError: () => {
+        message.error("Leave room failed. Please try again later");
+      },
+    });
+  };
 
   const handleCancel = () => {
     setIsModalOpen(false);

@@ -7,6 +7,7 @@ import {
   getAllRoom,
   getAllRoomForUser,
   joinRoom,
+  leaveRoomForUser,
 } from "../service/roomAPI";
 import { format } from "date-fns";
 
@@ -90,6 +91,12 @@ const useGetAllRoomForUser = () => {
     isError: response.isError,
   };
 };
+
+const useLeaveRoomForUser = () => {
+  return useMutation({
+    mutationFn: leaveRoomForUser,
+  });
+};
 export {
   useFetchAllRoom,
   useCreateRoom,
@@ -97,4 +104,5 @@ export {
   useEditRoom,
   useJoinRoom,
   useGetAllRoomForUser,
+  useLeaveRoomForUser,
 };

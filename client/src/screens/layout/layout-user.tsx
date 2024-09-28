@@ -11,7 +11,10 @@ const LayoutUser: React.FC = () => {
   return (
     <>
       {isUserRoute && role === "USER" && (
-        <div className="px-3 pt-5 flex gap-5 bg-[#fafafa]">
+        <div
+          className="px-3 pt-5 flex gap-5 bg-[#fafafa] "
+          style={{ minHeight: "100vh", maxHeight: "100%" }}
+        >
           <SideBar />
           <Outlet />
         </div>

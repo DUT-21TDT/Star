@@ -47,6 +47,10 @@ const getAllRoomForUser = async () => {
   const response = await instance.get("/rooms/user-rooms");
   return response.data;
 };
+const leaveRoomForUser = async (roomId: string) => {
+  const response = await instance.delete(`/rooms/${roomId}/members`);
+  return response.data;
+};
 export {
   getAllRoom,
   createRoom,
@@ -54,4 +58,5 @@ export {
   editRoom,
   joinRoom,
   getAllRoomForUser,
+  leaveRoomForUser,
 };

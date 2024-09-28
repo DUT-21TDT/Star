@@ -66,7 +66,7 @@ const SideBar: React.FC = () => {
       style={{ position: "fixed" }}
     >
       {/* Logo */}
-      <div className="flex-grow flex justify-center items-center">
+      <div className="flex-grow flex justify-center items-start">
         <Logo width="40" height="40" />
       </div>
 
