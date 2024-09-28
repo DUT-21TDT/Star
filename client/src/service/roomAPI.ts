@@ -37,4 +37,9 @@ const editRoom = async (data: DataEditRoom) => {
   const response = await instance.patch(`/rooms/${data.id}`, formData);
   return response.data;
 };
-export { getAllRoom, createRoom, deleteRoom, editRoom };
+
+const joinRoom = async (roomId: string) => {
+  const response = await instance.post(`/rooms/${roomId}/members`);
+  return response.data;
+};
+export { getAllRoom, createRoom, deleteRoom, editRoom, joinRoom };

@@ -5,6 +5,7 @@ import {
   deleteRoom,
   editRoom,
   getAllRoom,
+  joinRoom,
 } from "../service/roomAPI";
 import { format } from "date-fns";
 
@@ -64,4 +65,16 @@ const useEditRoom = () => {
     mutationFn: editRoom,
   });
 };
-export { useFetchAllRoom, useCreateRoom, useDeleteRoom, useEditRoom };
+
+const useJoinRoom = () => {
+  return useMutation({
+    mutationFn: joinRoom,
+  });
+};
+export {
+  useFetchAllRoom,
+  useCreateRoom,
+  useDeleteRoom,
+  useEditRoom,
+  useJoinRoom,
+};
