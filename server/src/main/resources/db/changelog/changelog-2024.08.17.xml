@@ -4,40 +4,48 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="1_createTable_User" author="Quang Nguyen">
+    <changeSet id="1_create_user_table" author="Quang Nguyen">
         <createTable tableName="user">
             <!-- Account information -->
             <column name="user_id" type="CHAR(26)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+
             <column name="username" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="password" type="TEXT">
-                <constraints nullable="false"/>
-            </column>
+
+            <column name="password" type="TEXT"/>
+
             <column name="role" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
+
             <column name="register_at" type="TIMESTAMP WITH TIMEZONE">
                 <constraints nullable="false"/>
             </column>
+
             <column name="status" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
             <!-- Profile information -->
             <column name="email" type="VARCHAR(200)"/>
-            <column name="first_name" type="NVARCHAR(50)"/>
-            <column name="last_name" type="NVARCHAR(50)"/>
-            <column name="date_of_birth" type="DATE"/>
-            <column name="avatar_url" type="TEXT"/>
-            <column name="bio" type="NVARCHAR(200)"/>
-            <column name="gender" type="VARCHAR(20)"/>
-            <column name="private_profile" type="BOOLEAN"/>
-        </createTable>
 
-        <createIndex tableName="user" indexName="idx_username">
-            <column name="username"/>
-        </createIndex>
+            <column name="first_name" type="NVARCHAR(50)"/>
+
+            <column name="last_name" type="NVARCHAR(50)"/>
+
+            <column name="date_of_birth" type="DATE"/>
+
+            <column name="avatar_url" type="TEXT"/>
+
+            <column name="bio" type="NVARCHAR(200)"/>
+
+            <column name="gender" type="VARCHAR(20)"/>
+
+            <column name="private_profile" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 </databaseChangeLog>

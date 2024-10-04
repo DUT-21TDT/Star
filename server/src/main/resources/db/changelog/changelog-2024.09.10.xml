@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="7_create_user_room_indexes" author="Quang Nguyen">
+        <createIndex tableName="user_room" indexName="idx_user_room_userid_roomid_role">
+            <column name="user_id"/>
+            <column name="room_id"/>
+            <column name="role"/>
+        </createIndex>
+        <createIndex tableName="user_room" indexName="idx_user_room_roomid">
+            <column name="room_id"/>
+            <column name="role"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="8_create_user_indexes" author="Quang Nguyen">
+        <createIndex tableName="user" indexName="idx_user_userid_status_role">
+            <column name="user_id"/>
+            <column name="status"/>
+            <column name="role"/>
+        </createIndex>
+        <createIndex tableName="user" indexName="idx_user_email_status_role">
+            <column name="email"/>
+            <column name="status"/>
+            <column name="role"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="9_create_post_indexes" author="Quang Nguyen">
+        <createIndex tableName="post" indexName="idx_post_userid_status_created_at">
+            <column name="user_id"/>
+            <column name="status"/>
+            <column name="created_at"/>
+        </createIndex>
+        <createIndex tableName="post" indexName="idx_post_roomid_status_created_at">
+            <column name="room_id"/>
+            <column name="status"/>
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

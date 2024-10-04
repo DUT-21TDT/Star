@@ -14,7 +14,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, String>, UserRepositoryExtension {
     Boolean existsByUsername(String username);
 
-    @Query("SELECT COUNT(u.id) > 0 FROM User u WHERE u.email = ?1 AND u.status != 'INACTIVE'")
+    @Query("SELECT COUNT(*) > 0 FROM User u WHERE u.email = ?1 AND u.status != 'INACTIVE'")
     Boolean existsValidAccountByEmail(String email);
 
     List<User> findByEmailAndStatus(String email, AccountStatus accountStatus);

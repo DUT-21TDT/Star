@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="2_createTable_verification_token" author="Quang Nguyen">
+    <changeSet id="2_create_verification_token_table" author="Quang Nguyen">
         <createTable tableName="verification_token">
             <column name="verification_token_id" type="CHAR(26)">
                 <constraints primaryKey="true" nullable="false"/>
@@ -19,7 +19,12 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint baseTableName="verification_token" baseColumnNames="user_id" constraintName="fk_user_verification_token" referencedTableName="user"
-                                 referencedColumnNames="user_id" />
+        <addForeignKeyConstraint baseTableName="verification_token"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_verification_token_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="user_id"
+                                 onDelete="CASCADE"
+        />
     </changeSet>
 </databaseChangeLog>
