@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: penguindevops/client:1.0
+    container_name: frontend
+    working_dir: /app
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    image: penguindevops/server:1.0
+    container_name: backend
+    working_dir: /run
+    ports:
+      - "8080:8080"
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - auth-server
+    environment:
+      - AWS_ACCESS_KEY_ID=AKIA2UC3BMOU27SH23F4
+      - AWS_SECRET_ACCESS_KEY=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
+      - AWS_REGION=ap-southeast-1
+    networks:
+      - app-network
+
+  auth-server: 
+    image: penguindevops/auth-server:1.0
+    container_name: auth-server
+    working_dir: /run
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  postgres:
+    container_name: postgres
+    image: postgres:16.3
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: star
+    networks:
+      - app-network
+    restart: unless-stopped
+
+
+networks:
+  app-network:
+    driver: bridge

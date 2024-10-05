@@ -22,6 +22,7 @@ jobs:
         VITE_REDIRECT_URI: ${{ secrets.VITE_REDIRECT_URI_DEV }}
         VITE_TOKEN_URL: ${{ secrets.VITE_TOKEN_URL_DEV }}
         VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET_DEV }}
+        CORS_ORIGIN: ${{ secrets.CORS_ORIGIN_DEV }}
 
     steps:
       - uses: actions/checkout@v4
@@ -55,9 +56,10 @@ jobs:
       - name: Pre-build Server
         run: |
           cd server/src/main/resources
-          echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
-          echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
-          echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
+          echo "spring.datasource.url=${{ env.DATASOURCE_URL }}" >> application.properties
+          echo "spring.datasource.username=${{ env.DATASOURCE_USERNAME }}" >> application.properties
+          echo "spring.datasource.password=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
+          echo "cors.allowed.origins=${{ env.CORS_ORIGIN }}" >> application.properties
 
       - name: Build server
         env:
