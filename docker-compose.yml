@@ -23,8 +23,8 @@ services:
       - postgres
       - auth-server
     environment:
-      - AWS_ACCESS_KEY_ID=AKIA2UC3BMOU27SH23F4
-      - AWS_SECRET_ACCESS_KEY=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
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=ap-southeast-1
     networks:
       - app-network
