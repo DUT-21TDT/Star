@@ -1,5 +1,6 @@
 package com.pbl.star.entities;
 
+import com.pbl.star.enums.PostStatus;
 import com.pbl.star.utils.IdGenerator;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,13 @@ public class Post {
 
     @Column(name = "content")
     private String content;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private PostStatus status;
+
+    @Column(name = "violence_score")
+    private Integer violenceScore;
 
     @Column(name = "created_at")
     private Instant createdAt;

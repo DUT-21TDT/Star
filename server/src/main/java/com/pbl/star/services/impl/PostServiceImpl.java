@@ -3,6 +3,7 @@ package com.pbl.star.services.impl;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostImage;
+import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.mapper.PostCreationMapper;
 import com.pbl.star.repositories.*;
@@ -42,6 +43,8 @@ public class PostServiceImpl implements PostService {
 
         post.setUserId(userId);
         post.setCreatedAt(Instant.now());
+        post.setUpdatedAt(Instant.now());
+        post.setStatus(PostStatus.PENDING);
 
         Post savedPost = postRepository.save(post);
 
