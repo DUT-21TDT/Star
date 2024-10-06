@@ -1,5 +1,6 @@
 package com.pbl.star.services.impl;
 
+import com.pbl.star.dtos.query.post.PostOverviewDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostImage;
@@ -12,6 +13,7 @@ import com.pbl.star.utils.CreatePostValidator;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Slice;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,5 +67,10 @@ public class PostServiceImpl implements PostService {
                 .toList();
 
         postImageRepository.saveAll(postImages);
+    }
+
+    @Override
+    public Slice<PostOverviewDTO> getPostsByUser(String userId, int limit, Instant after) {
+        return null;
     }
 }
