@@ -62,7 +62,7 @@ const SideBar: React.FC = () => {
   const navigate = useNavigate();
   return (
     <div
-      className=" w-[70px] h-[calc(100vh-50px)] flex flex-col justify-between items-center "
+      className=" w-[70px] h-[calc(100vh-50px)] flex flex-col justify-between items-center pt-5 "
       style={{ position: "fixed" }}
     >
       {/* Logo */}

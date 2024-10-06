@@ -11,6 +11,7 @@ import { ProtectedRouteAuth } from "../components/auth/protected-route-auth";
 import Profile from "../screens/profile/profile";
 import { ProtectedRoute } from "../components/auth/protected-route";
 import RoomUser from "../screens/room/room-user";
+import NewFeed from "../screens/newfeeds/newfeed";
 
 const router = createBrowserRouter(
   [
@@ -25,7 +26,7 @@ const router = createBrowserRouter(
       children: [
         {
           index: true,
-          element: <div>homepage</div>,
+          element: <NewFeed />,
         },
         {
           path: "profile/:id",

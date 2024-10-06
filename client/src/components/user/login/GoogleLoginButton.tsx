@@ -1,6 +1,6 @@
 import React from "react";
-import googleIcon from "../../assets/images/devicon_google.png";
-import { useGoogleLogin } from "../../hooks/user";
+import googleIcon from "../../../assets/images/devicon_google.png";
+import { useGoogleLogin } from "../../../hooks/user";
 
 const GoogleLoginButton: React.FC = () => {
   const { handleGoogleLogin } = useGoogleLogin();

@@ -2,6 +2,7 @@ import { Button, Image } from "antd";
 import React, { useState } from "react";
 import default_image from "../../../assets/images/default_image.jpg";
 import ModalEditProfile from "./modal-edit-profile";
+import "../../../assets/css/user-profile.css";
 interface IProps {
   isCurrentUser: boolean;
   isFollowing: boolean;
@@ -24,7 +25,17 @@ const UserProfile: React.FC<IProps> = (props) => {
       <div className="px-5 pt-3 flex flex-col gap-3">
         <div className="flex justify-between items-center">
           <div>
-            <div className="text-[22px] font-bold">{`${publicProfile.firstName} ${publicProfile.lastName}`}</div>
+            {publicProfile.firstName || publicProfile.lastName ? (
+              <div className="text-[22px] font-bold">
+                {`${publicProfile.firstName || ""} ${
+                  publicProfile.lastName || ""
+                }`}
+              </div>
+            ) : (
+              <div className="text-[22px] font-bold">
+                {publicProfile.username}
+              </div>
+            )}
             <div>{publicProfile.username}</div>
           </div>
           <div
@@ -41,19 +52,18 @@ const UserProfile: React.FC<IProps> = (props) => {
               style={{
                 borderRadius: "50%",
               }}
+              id="avatar-profile"
             />
           </div>
         </div>
 
-        <div className="text-[15px]">
-          {publicProfile.bio || "This profile has no bio"}
-        </div>
+        <div className="text-[15px]">{publicProfile.bio || ""}</div>
         <div className="text-[#a1a1a1]">
           {publicProfile.numberOfFollowers} followers
         </div>
         <div>
           <Button
-            className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[#fafafa]"
+            className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
             onClick={() => setOpenModal(true)}
           >
             Edit profile

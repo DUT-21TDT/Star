@@ -32,14 +32,14 @@ const Callback: React.FC = () => {
       getCurrentUserFromToken(access_token).then((res) => {
         setCurrentUser({
           id: res?.sub,
-          role: res?.roles[0],
+          role: res?.roles ? res?.roles[0] : "USER",
         });
 
         //store user data in redux
         dispatch(
           storeInformationUser({
             id: res?.sub,
-            role: res?.roles[0],
+            role: res?.roles ? res?.roles[0] : "USER",
           })
         );
       });

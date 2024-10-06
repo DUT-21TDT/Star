@@ -1,6 +1,7 @@
 import React from "react";
 import { Tabs } from "antd";
 import type { TabsProps } from "antd";
+import PostOnWall from "./posts/posts-on-wall";
 
 const onChange = (key: string) => {
   console.log(key);
@@ -10,7 +11,7 @@ const items: TabsProps["items"] = [
   {
     key: "1",
     label: <div className="text-[16px]  font-semibold">Posts</div>,
-    children: "Content of Tab Pane 1",
+    children: <PostOnWall />,
   },
   {
     key: "2",
