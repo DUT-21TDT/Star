@@ -58,7 +58,9 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       bio: data.bio,
       email: data.email,
       gender: data.gender,
-      dateofbirth: dayjs(data.dateOfBirth, "YYYY/MM/DD"),
+      dateofbirth: data.dateOfBirth
+        ? dayjs(data.dateOfBirth, "YYYY/MM/DD")
+        : null,
       registerDate: dayjs(data.registerAt, "YYYY/MM/DD"),
     };
   }, [data]);
@@ -110,8 +112,8 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       lastName: formValues.lastName,
       bio: formValues.bio,
       email: formValues.email,
-      avatarFileName: avatarFileName,
-      dateOfBirth: formValues.dateofbirth.format("DD/MM/YYYY"),
+      avatarFileName: `avatar/${avatarFileName}`,
+      dateOfBirth: formValues?.dateofbirth?.format("DD/MM/YYYY") || null,
       gender: formValues.gender,
       privateProfile,
     };
@@ -128,7 +130,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
           onSuccess: async (url) => {
             const uploadSuccess = await handleUploadAvatarToCloud(url);
             if (uploadSuccess) {
-              dataEdit.avatarFileName = `${id}.${fileExtension}`;
+              dataEdit.avatarFileName = `avatar/${id}.${fileExtension}`;
               updateProfile(dataEdit, {
                 onSuccess: () => {
                   message.success("Profile updated successfully");
@@ -178,6 +180,9 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       form.setFieldsValue(initialValues);
       setPrivateProfile(data.privateProfile);
     }
+    return () => {
+      setAvatarUrlBase64("");
+    };
   }, [openModal, refetch]);
 
   useEffect(() => {
@@ -185,6 +190,9 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       form.setFieldsValue(initialValues);
       setPrivateProfile(data.privateProfile);
     }
+    return () => {
+      setAvatarUrlBase64("");
+    };
   }, [data, form, initialValues]);
 
   return (
@@ -217,15 +225,15 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
             <Input prefix={<LockOutlined />} disabled />
           </Form.Item>
           <div style={{ position: "relative" }}>
-            {data?.avatarUrl && !avatarUrlBase64 && (
-              <Avatar size={64} src={data?.avatarUrl} />
-            )}
-
-            {!data?.avatarUrl && !avatarUrlBase64 && (
-              <Avatar size={64} icon={<UserOutlined />} />
-            )}
-
-            {avatarUrlBase64 && <Avatar size={64} src={avatarUrlBase64} />}
+            <Avatar
+              size={64}
+              src={avatarUrlBase64 || data?.avatarUrl || undefined}
+              icon={
+                !avatarUrlBase64 && !data?.avatarUrl ? (
+                  <UserOutlined />
+                ) : undefined
+              }
+            />
 
             <Upload showUploadList={false} onChange={handleUploadChange}>
               <Button

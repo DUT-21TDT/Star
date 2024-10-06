@@ -24,7 +24,7 @@ const Profile = () => {
 
   return (
     <ConfigProvider theme={profileTheme}>
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center bg-white">
         <div
           className=" h-full pt-2 "
           style={{ width: "100%", maxWidth: "650px" }}
@@ -32,16 +32,16 @@ const Profile = () => {
           <HeaderProfile />
           <div
             style={{
-              border: "1px solid #bdbdbd",
+              border: "1px solid #ccc",
               marginTop: "20px",
-              height: "700px",
+              height: "100%",
               borderRadius: "30px",
             }}
           >
             <UserProfile
               isCurrentUser={data?.isCurrentUser}
               isFollowing={data?.isFollowing}
-              publicProfile={data.publicProfile}
+              publicProfile={data?.publicProfile}
             />
             <TabProfile />
           </div>

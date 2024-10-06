@@ -22,7 +22,6 @@ const MainRoomContent: React.FC = () => {
   const [dataRoom, setDataRoom] = useState<RoomType | undefined>(undefined);
   const [searchValue, setSearchValue] = useState<string>("");
 
-  // Filter rooms based on the search input
   const filteredRoomJoined = listRoomJoined.filter((room: RoomType) =>
     room.name.toLowerCase().includes(searchValue.toLowerCase())
   );

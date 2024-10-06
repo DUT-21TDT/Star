@@ -85,6 +85,21 @@ const roomUserTheme = {
   },
 };
 
+const newFeedsTheme = {
+  components: {
+    Input: {
+      hoverBorderColor: "#bdbdbd",
+      activeBorderColor: "#bdbdbd",
+      activeShadow: "0 0 0 2px rgba(255, 255, 255, 0.2)",
+    },
+    Button: {
+      defaultHoverBorderColor: "#bdbdbd",
+      defaultHoverColor: "none",
+      defaultHoverBg: "none",
+    },
+  },
+};
+
 export {
   SignUpTheme,
   LoginTheme,
@@ -92,4 +107,5 @@ export {
   globalTheme,
   profileTheme,
   roomUserTheme,
+  newFeedsTheme,
 };
