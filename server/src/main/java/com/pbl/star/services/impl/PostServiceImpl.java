@@ -13,6 +13,8 @@ import com.pbl.star.utils.CreatePostValidator;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -71,6 +73,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Slice<PostOverviewDTO> getPostsByUser(String userId, int limit, Instant after) {
-        return null;
+        Pageable pageable = PageRequest.of(0, limit);
+        return postRepository.findPostOverviewsByUserAndStatus(userId, pageable, after, PostStatus.APPROVED);
     }
 }

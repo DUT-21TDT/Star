@@ -12,8 +12,8 @@ import java.util.List;
 @Builder
 public class PostOverviewDTO {
     private String id;
-    private String username;
-    private String userAvatarUrl;
+    private String usernameOfCreator;
+    private String avatarUrlOfCreator;
     private Instant createdAt;
     private String content;
     private List<String> postImageUrls;
