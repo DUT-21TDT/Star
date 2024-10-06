@@ -10,4 +10,6 @@
     <include file="db/changelog/changelog-2024.09.05.xml" />
     <include file="db/changelog/changelog-2024.09.06.xml" />
     <include file="db/changelog/changelog-2024.09.10.xml" />
+    <include file="db/changelog/changelog-2024.10.03.xml" />
+    <include file="db/changelog/changelog-2024.10.06.xml" />
 </databaseChangeLog>

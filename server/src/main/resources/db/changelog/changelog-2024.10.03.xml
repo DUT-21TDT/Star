@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="10_create_post_image_indexes" author="Quang Nguyen">
+        <createIndex tableName="post_image" indexName="idx_post_image_postid">
+            <column name="post_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
