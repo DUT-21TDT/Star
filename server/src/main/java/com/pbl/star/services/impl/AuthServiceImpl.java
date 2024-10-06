@@ -1,7 +1,6 @@
 package com.pbl.star.services.impl;
 
 import com.pbl.star.dtos.request.user.SignUpParams;
-import com.pbl.star.dtos.response.user.ConfirmSignUpResponse;
 import com.pbl.star.entities.User;
 import com.pbl.star.entities.VerificationToken;
 import com.pbl.star.enums.AccountStatus;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional
-    public ConfirmSignUpResponse confirmSignup(String token) {
+    public User confirmSignup(String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new EntityNotFoundException("Token not found"));
 
@@ -73,24 +71,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         user.setStatus(AccountStatus.ACTIVE);
-        userRepository.save(user);
-
-        // Remove all verification token with the same user
-        verificationTokenRepository.deleteAll(verificationTokenRepository.findByUser(user));
-
-        // Remove all inactive account with the same email
-        userRepository.deleteAll(userRepository.findByEmailAndStatus(user.getEmail(), AccountStatus.INACTIVE));
-
-        return new ConfirmSignUpResponse(user.getId(), user.getUsername(), user.getEmail());
-    }
-
-    @Override
-    public VerificationToken createVerificationToken(User user) {
-        return verificationTokenRepository.save(VerificationToken.builder()
-                .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusSeconds(VerificationToken.EXPIRATION_SECOND))
-                .build());
+        return userRepository.save(user);
     }
 }
 

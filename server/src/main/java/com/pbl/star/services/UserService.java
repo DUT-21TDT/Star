@@ -12,4 +12,5 @@ public interface UserService {
     Collection<GrantedAuthority> getUserAuthorities(String userId);
     PersonalInformation getPersonalInformation(String userId);
     void updatePersonalInformation(UpdateProfileParams updateProfileParams);
+    void removeInactiveAccountByEmail(String email);
 }

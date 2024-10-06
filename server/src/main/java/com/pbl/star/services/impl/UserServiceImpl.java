@@ -5,6 +5,7 @@ import com.pbl.star.dtos.query.user.PublicProfile;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.dtos.response.user.PublicProfileResponse;
 import com.pbl.star.entities.User;
+import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.Gender;
 import com.pbl.star.enums.UserRole;
 import com.pbl.star.exceptions.EntityConflictException;
@@ -128,5 +129,14 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
+    }
+
+    @Override
+    public void removeInactiveAccountByEmail(String email) {
+        List<User> inactiveUsers = userRepository.findByEmailAndStatus(email, AccountStatus.INACTIVE);
+
+        if (!inactiveUsers.isEmpty()) {
+            userRepository.deleteAll(inactiveUsers);
+        }
     }
 }
