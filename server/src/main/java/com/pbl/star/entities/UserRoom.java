@@ -1,5 +1,6 @@
 package com.pbl.star.entities;
 
+import com.pbl.star.enums.RoomRole;
 import com.pbl.star.utils.IdGenerator;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,10 @@ public class UserRoom {
 
     @Column(name = "room_id")
     private String roomId;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private RoomRole role;
 
     @Column(name = "join_at")
     private Instant joinAt;

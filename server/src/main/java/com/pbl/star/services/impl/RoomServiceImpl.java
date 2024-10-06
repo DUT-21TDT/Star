@@ -5,6 +5,7 @@ import com.pbl.star.dtos.query.room.RoomOverviewForUserDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.entities.Room;
 import com.pbl.star.entities.UserRoom;
+import com.pbl.star.enums.RoomRole;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.RequiredFieldMissingException;
@@ -111,6 +112,7 @@ public class RoomServiceImpl implements RoomService {
         UserRoom userRoom = UserRoom.builder()
                 .userId(userId)
                 .roomId(roomId)
+                .role(RoomRole.MEMBER)
                 .joinAt(Instant.now())
                 .build();
 
