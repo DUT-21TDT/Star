@@ -57,6 +57,7 @@ jobs:
           SHA: ${{ steps.short-sha.outputs.sha }}
           BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
+          envsubst < docker-compose.yml > docker-compose.yml.tmp && mv docker-compose.yml.tmp docker-compose.yml
           cd server
           docker build -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
           docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
