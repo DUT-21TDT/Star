@@ -1,0 +1,33 @@
+name: Build and Snyk Security
+
+on:
+    workflow_call:
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+
+    steps:
+        - uses: actions/checkout@v4
+
+        # Pre-build Client
+        - name: Test Build Client
+          run: |
+            cd client
+            npm install
+            npm run build
+          continue-on-error: false
+
+        # Pre-build Server
+        - name: Pre-build Server
+          uses: actions/setup-java@v3
+          with:
+            distribution: "temurin"
+            java-version: "21"
+
+        - name: Test Build Server
+          run: |
+            cd server
+            chmod +x gradlew
+            ./gradlew build
+          continue-on-error: false
