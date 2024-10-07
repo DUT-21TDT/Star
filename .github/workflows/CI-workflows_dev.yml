@@ -5,28 +5,22 @@ on:
 
 jobs:
   build_dev:
-    environment: develop
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
       ECR_URL: ${{ secrets.ECR_URL }}
-      ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL }}
-      ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL }}
-
-      DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
+      ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL_DEV }}
+      ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL_DEV }}
+      DATASOURCE_URL: ${{ secrets.DATASOURCE_URL_DEV }}
       DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
       DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
-
-      VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
+      VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL_DEV }}
       VITE_BACKEND_AUTH_URL: ${{ secrets.VITE_BACKEND_AUTH_URL_DEV }}
       VITE_REDIRECT_URI: ${{ secrets.VITE_REDIRECT_URI_DEV }}
       VITE_TOKEN_URL: ${{ secrets.VITE_TOKEN_URL_DEV }}
-
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-
-      AUTH_SERVER_URL: ${{ secrets.AUTH_SERVER_URL }}
+      AUTH_SERVER_URL: ${{ secrets.AUTH_SERVER_URL_DEV }}
 
     steps:
       - uses: actions/checkout@v4
@@ -79,4 +73,15 @@ jobs:
           docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
           docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
+        continue-on-error: false
+
+      - name: Update Docker Compose artifact
+        env:
+          SHA: ${{ steps.short-sha.outputs.sha }}
+          BRANCH: ${{ steps.extract_branch.outputs.branch }}
+        run: |
+          pwd
+          ls -la
+          envsubst < docker-compose.yml > docker-compose.yml.tmp && mv docker-compose.yml.tmp docker-compose.yml
+          aws s3 cp docker-compose.yml s3://${AWS_S3_BUCKET}
         continue-on-error: false
