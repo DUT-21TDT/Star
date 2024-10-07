@@ -9,23 +9,18 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
       ECR_URL: ${{ secrets.ECR_URL }}
-      ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL_DEV }}
-      ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL_DEV }}
-
       DATASOURCE_URL: ${{ secrets.DATASOURCE_URL_DEV }}
       DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
       DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
-
+      ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL_DEV }}
+      ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL_DEV }}
       VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL_DEV }}
       VITE_BACKEND_AUTH_URL: ${{ secrets.VITE_BACKEND_AUTH_URL_DEV }}
+      VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID_DEV }}
       VITE_REDIRECT_URI: ${{ secrets.VITE_REDIRECT_URI_DEV }}
       VITE_TOKEN_URL: ${{ secrets.VITE_TOKEN_URL_DEV }}
-
-      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-
-      AUTH_SERVER_URL: ${{ secrets.AUTH_SERVER_URL_DEV }}
+      VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET_DEV }}
 
     steps:
       - uses: actions/checkout@v4
@@ -47,20 +42,26 @@ jobs:
       - name: Pre-build Client
         run: |
           cd client
-          envsubst < .env > .env.tmp && mv .env.tmp .env
-          cat .env
+          touch .env
+          echo "VITE_BASE_URL=" >> .env
+          echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env
+          echo "VITE_BACKEND_AUTH_URL=${{ env.VITE_BACKEND_AUTH_URL }}" >> .env
+          echo "VITE_CLIENT_ID=${{ env.VITE_CLIENT_ID }}" >> .env
+          echo "VITE_REDIRECT_URI=${{ env.VITE_REDIRECT_URI }}" >> .env
+          echo "VITE_TOKEN_URL=${{ env.VITE_TOKEN_URL }}" >> .env
+          echo "VITE_CLIENT_SECRET=${{ env.VITE_CLIENT_SECRET }}" >> .env
 
       - name: Pre-build Server
         run: |
           cd server/src/main/resources
-          envsubst < application.properties > application.properties.tmp && mv application.properties.tmp application.properties
-          cat application.properties
+          echo "DATASOURCE_URL=${{ env.DATASOURCE_URL }}" >> application.properties
+          echo "DATASOURCE_USERNAME=${{ env.DATASOURCE_USERNAME }}" >> application.properties
+          echo "DATASOURCE_PASSWORD=${{ env.DATASOURCE_PASSWORD }}" >> application.properties
 
       - name: Build server
         env:
           SHA: ${{ steps.short-sha.outputs.sha }}
           BRANCH: ${{ steps.extract_branch.outputs.branch }}
-
         run: |
           cd server
           docker build -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .

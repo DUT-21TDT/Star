@@ -10,7 +10,7 @@ jobs:
   test-build:
     uses: DUT-21TDT/Star/.github/workflows/Confirm-workflow.yml@SSMP-31-Implement-CI-CD-pipeline
     secrets: inherit
-  
+
   dev-deploy:
     needs: test-build
     if: github.ref == 'refs/heads/develop'
