@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="5_create_post_table" author="Quang Nguyen">
+        <createTable tableName="post">
+            <column name="post_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="room_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_post_id" type="CHAR(26)"/>
+            <column name="content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="violence_score" type="INTEGER"/>
+            <column name="created_at" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIMEZONE"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="post"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_post_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="user_id"
+        />
+        <addForeignKeyConstraint baseTableName="post"
+                                 baseColumnNames="room_id"
+                                 constraintName="fk_post_room"
+                                 referencedTableName="room"
+                                 referencedColumnNames="room_id"
+        />
+        <addForeignKeyConstraint baseTableName="post"
+                                 baseColumnNames="parent_post_id"
+                                 constraintName="fk_post_parent_post"
+                                 referencedTableName="post"
+                                 referencedColumnNames="post_id"
+        />
+    </changeSet>
+</databaseChangeLog>

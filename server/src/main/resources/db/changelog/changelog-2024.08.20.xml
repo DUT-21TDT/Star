@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2_create_verification_token_table" author="Quang Nguyen">
+        <createTable tableName="verification_token">
+            <column name="verification_token_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token" type="TEXT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="user_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiry_date" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="verification_token"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_verification_token_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="user_id"
+                                 onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>

@@ -2,19 +2,15 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
 import {
   createNewUser,
-  fetchAllUser,
   confirmAccount,
   getTokenFromCode,
   // getDataCurrentUser,
   getCurrentUserFromToken,
+  getInformationUserFromId,
+  editProfile,
+  getPersonalInformation,
+  getPresignedURL,
 } from "../service/userAPI";
-
-const useFetchAllUser = () => {
-  return useQuery({
-    queryKey: QUERY_KEY.getAllUser(),
-    queryFn: fetchAllUser,
-  });
-};
 
 const usePostNewUser = () => {
   return useMutation({
@@ -24,14 +20,14 @@ const usePostNewUser = () => {
 
 const useConfirmAccount = (token: string | null) => {
   return useQuery({
-    queryKey: QUERY_KEY.confirmNewUser(),
+    queryKey: QUERY_KEY.confirmNewUser(token),
     queryFn: () => confirmAccount(token),
   });
 };
 
 const useGetTokenFromCode = (code: string) => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: QUERY_KEY.getTokenFromCode(),
+    queryKey: QUERY_KEY.getTokenFromCode(code),
     queryFn: () => getTokenFromCode(code),
   });
   return {
@@ -44,37 +40,18 @@ const useGetTokenFromCode = (code: string) => {
 };
 
 const useGetUserFromToken = (token: string | null) => {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: QUERY_KEY.getCurrentUserFromToken(),
+  return useQuery({
+    queryKey: QUERY_KEY.getCurrentUserFromToken(token),
     queryFn: () => getCurrentUserFromToken(token),
   });
-  return {
-    data: {
-      name: data?.sub,
-      role: data?.roles[0],
-    },
-    isLoading,
-    isError,
-  };
 };
 
-// const useGetCurrentUserFromToken = () => {
-//   const { data, isLoading, isError } = useQuery({
-//     queryKey: QUERY_KEY.getDataCurrentUser(),
-//     queryFn: getDataCurrentUser,
-//   });
-//   return {
-//     data: {
-//       role: data?.authorities[0]?.authority,
-//       name: data?.name,
-//     },
-//     isLoading,
-//     isError,
-//   };
-// };
-
 const useGoogleLogin = () => {
-  const urlAuthLogin = `${import.meta.env.VITE_BACKEND_AUTH_URL}/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
+  const urlAuthLogin = `${
+    import.meta.env.VITE_BACKEND_AUTH_URL
+  }/oauth2/authorize?response_type=code&client_id=${
+    import.meta.env.VITE_CLIENT_ID
+  }&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
 
   const handleGoogleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -87,12 +64,39 @@ const useGoogleLogin = () => {
   return { handleGoogleLogin };
 };
 
+const useGetProfileUser = (id: string) => {
+  return useQuery({
+    queryKey: QUERY_KEY.getProfileUser(),
+    queryFn: () => getInformationUserFromId(id),
+  });
+};
+const useEditProfile = () => {
+  return useMutation({
+    mutationFn: editProfile,
+  });
+};
+
+const useGetPersonalInformation = () => {
+  return useQuery({
+    queryKey: QUERY_KEY.getPersonalInformation(),
+    queryFn: () => getPersonalInformation(),
+  });
+};
+
+const useGetPresignedUrl = () => {
+  return useMutation({
+    mutationFn: getPresignedURL,
+  });
+};
 export {
-  useFetchAllUser,
   usePostNewUser,
   useConfirmAccount,
   useGetTokenFromCode,
   // useGetCurrentUserFromToken,
   useGetUserFromToken,
-  useGoogleLogin
+  useGoogleLogin,
+  useGetProfileUser,
+  useEditProfile,
+  useGetPersonalInformation,
+  useGetPresignedUrl,
 };

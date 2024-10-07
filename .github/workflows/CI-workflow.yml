@@ -15,8 +15,10 @@ jobs:
     needs: test-build
     if: github.ref == 'refs/heads/develop'
     uses: DUT-21TDT/Star/.github/workflows/CI-workflows_dev.yml@SSMP-31-Implement-CI-CD-pipeline
+    secrets: inherit
 
   prod-deploy:
     needs: test-build
     if: github.ref == 'refs/heads/main'
     uses: DUT-21TDT/Star/.github/workflows/CI-workflows_prod.yml@SSMP-31-Implement-CI-CD-pipeline
+    secrets: inherit

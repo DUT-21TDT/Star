@@ -57,6 +57,7 @@ jobs:
           envsubst < application.properties > application.properties.tmp && mv application.properties.tmp application.properties
           cat application.properties
 
+
       - name: Build server
         env:
           SHA: ${{ steps.short-sha.outputs.sha }}

@@ -4,20 +4,54 @@ import SignUp from "../screens/auth/SignUp";
 import Confirm from "../screens/auth/Confirm";
 import Login from "../screens/auth/Login";
 import Callback from "../screens/auth/Callback";
-import LayoutUser from "./layout-user";
-import LayoutAdmin from "./layout-admin";
+import LayoutUser from "../screens/layout/layout-user";
+import LayoutAdmin from "../screens/layout/layout-admin";
 import Room from "../components/admin/room/room";
+import { ProtectedRouteAuth } from "../components/auth/protected-route-auth";
+import Profile from "../screens/profile/profile";
+import { ProtectedRoute } from "../components/auth/protected-route";
+import RoomUser from "../screens/room/room-user";
 
 const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <LayoutUser />,
+      element: (
+        <ProtectedRoute>
+          <LayoutUser />
+        </ProtectedRoute>
+      ),
       errorElement: <NotFound />,
+      children: [
+        {
+          index: true,
+          element: <div>homepage</div>,
+        },
+        {
+          path: "profile/:id",
+          element: <Profile />,
+        },
+        {
+          path: "search",
+          element: <div>search</div>,
+        },
+        {
+          path: "activity",
+          element: <div>activity</div>,
+        },
+        {
+          path: "room",
+          element: <RoomUser />,
+        },
+      ],
     },
     {
       path: "/admin",
-      element: <LayoutAdmin />,
+      element: (
+        <ProtectedRoute>
+          <LayoutAdmin />
+        </ProtectedRoute>
+      ),
       errorElement: <NotFound />,
       children: [
         {
@@ -40,12 +74,20 @@ const router = createBrowserRouter(
     },
     {
       path: "/signup",
-      element: <SignUp />,
+      element: (
+        <ProtectedRouteAuth>
+          <SignUp />
+        </ProtectedRouteAuth>
+      ),
       errorElement: <NotFound />,
     },
     {
       path: "/login",
-      element: <Login />,
+      element: (
+        <ProtectedRouteAuth>
+          <Login />
+        </ProtectedRouteAuth>
+      ),
       errorElement: <NotFound />,
     },
     {

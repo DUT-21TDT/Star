@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+/**
+ * APIs to test security authorization
+ * Client please don't use these APIs
+ */
 @RestController
 @RequestMapping("/home")
 public class HomeController {
