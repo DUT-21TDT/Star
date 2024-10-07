@@ -38,48 +38,50 @@ jobs:
       - name: Check Docker version
         run: docker --version
 
-        # Pre-build Client
-      - name: Pre-build Client
-        run: |
-          cd client
-          envsubst < .env > .env.tmp && mv .env.tmp .env
-          cat .env
+      #   # Pre-build Client
+      # - name: Pre-build Client
+      #   run: |
+      #     cd client
+      #     envsubst < .env > .env.tmp && mv .env.tmp .env
+      #     cat .env
 
-      - name: Pre-build Server
-        run: |
-          cd server/src/main/resources
-          envsubst < application.properties > application.properties.tmp && mv application.properties.tmp application.properties
-          cat application.properties
+      # - name: Pre-build Server
+      #   run: |
+      #     cd server/src/main/resources
+      #     envsubst < application.properties > application.properties.tmp && mv application.properties.tmp application.properties
+      #     cat application.properties
 
-      - name: Build server
-        env:
-          SHA: ${{ steps.short-sha.outputs.sha }}
-          BRANCH: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          cd server
-          docker build -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
-          docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
-          docker push "${{ env.ECR_SERVER_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
-        continue-on-error: false
+      # - name: Build server
+      #   env:
+      #     SHA: ${{ steps.short-sha.outputs.sha }}
+      #     BRANCH: ${{ steps.extract_branch.outputs.branch }}
+      #   run: |
+      #     cd server
+      #     docker build -t star_server:"${{ env.BRANCH }}-${{ env.SHA }}" .
+      #     docker tag star_server:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_SERVER_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+      #     aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
+      #     docker push "${{ env.ECR_SERVER_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
+      #   continue-on-error: false
 
-      - name: Build client
-        env:
-          SHA: ${{ steps.short-sha.outputs.sha }}
-          BRANCH: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          cd client
-          docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
-          docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
-          docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
-        continue-on-error: false
+      # - name: Build client
+      #   env:
+      #     SHA: ${{ steps.short-sha.outputs.sha }}
+      #     BRANCH: ${{ steps.extract_branch.outputs.branch }}
+      #   run: |
+      #     cd client
+      #     docker build -t star_client:"${{ env.BRANCH }}-${{ env.SHA }}" .
+      #     docker tag star_client:"${{ env.BRANCH }}-${{ env.SHA }}" "${{ env.ECR_CLIENT_URL }}":"${{ env.BRANCH }}-${{ env.SHA }}"
+      #     aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
+      #     docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
+      #   continue-on-error: false
 
       - name: Update Docker Compose artifact
         env:
           SHA: ${{ steps.short-sha.outputs.sha }}
           BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
+          pwd
+          ls -la
           envsubst < docker-compose.yml > docker-compose.yml.tmp && mv docker-compose.yml.tmp docker-compose.yml
           aws s3 cp docker-compose.yml s3://${AWS_S3_BUCKET}
         continue-on-error: false
