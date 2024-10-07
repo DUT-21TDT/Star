@@ -21,6 +21,7 @@ jobs:
       VITE_TOKEN_URL: ${{ secrets.VITE_TOKEN_URL_DEV }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       AUTH_SERVER_URL: ${{ secrets.AUTH_SERVER_URL_DEV }}
+      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
 
     steps:
       - uses: actions/checkout@v4
@@ -75,13 +76,9 @@ jobs:
           docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
         continue-on-error: false
 
-      - name: Update Docker Compose artifact
-        env:
-          SHA: ${{ steps.short-sha.outputs.sha }}
-          BRANCH: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          pwd
-          ls -la
-          envsubst < docker-compose.yml > docker-compose.yml.tmp && mv docker-compose.yml.tmp docker-compose.yml
-          aws s3 cp docker-compose.yml s3://${AWS_S3_BUCKET}
-        continue-on-error: false
+      - uses: shallwefootball/s3-upload-action@master
+        with:
+          aws_key_id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ env.AWS_S3_BUCKET }}
+          source_dir: "docker-compose.yml"
