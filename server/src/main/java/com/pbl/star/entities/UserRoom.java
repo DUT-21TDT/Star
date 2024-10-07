@@ -1,9 +1,9 @@
 package com.pbl.star.entities;
 
+import com.pbl.star.enums.RoomRole;
 import com.pbl.star.utils.IdGenerator;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.Instant;
@@ -12,6 +12,9 @@ import java.time.Instant;
 @Table(name = "user_room")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserRoom {
     @Id
     @GeneratedValue(generator = "ulid")
@@ -19,13 +22,15 @@ public class UserRoom {
     @Column(name = "user_room_id")
     private String id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id")
+    private String userId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "room_id")
-    private Room room;
+    @Column(name = "room_id")
+    private String roomId;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private RoomRole role;
 
     @Column(name = "join_at")
     private Instant joinAt;

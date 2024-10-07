@@ -1,6 +1,6 @@
 package com.pbl.star.controllers;
 
-import com.pbl.star.dtos.request.auth.SignUpParams;
+import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.usecase.AuthUsecase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

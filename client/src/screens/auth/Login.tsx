@@ -5,20 +5,23 @@ import { Link } from "react-router-dom";
 import { LoginTheme } from "../../utils/theme";
 import "../../assets/css/login.css";
 import axios from "axios";
-import GoogleLoginButton from "../../components/GoogleLoginButton";
+import GoogleLoginButton from "../../components/user/GoogleLoginButton";
 
 const Login: React.FC = () => {
+  const urlAuthLogin = `${
+    import.meta.env.VITE_BACKEND_AUTH_URL
+  }/oauth2/authorize?response_type=code&client_id=${
+    import.meta.env.VITE_CLIENT_ID
+  }&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
 
-  const urlAuthLogin = `${import.meta.env.VITE_BACKEND_AUTH_URL
-    }/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_CLIENT_ID
-    }&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
-
-  const urlGoogleLogin = `${import.meta.env.VITE_BACKEND_AUTH_URL}/oauth2/authorization/google`;
+  const urlGoogleLogin = `${
+    import.meta.env.VITE_BACKEND_AUTH_URL
+  }/oauth2/authorization/google`;
 
   if (sessionStorage.getItem("isGoogleLogin")) {
-    sessionStorage.removeItem("isGoogleLogin")
-    window.location.href = urlGoogleLogin
-    return null
+    sessionStorage.removeItem("isGoogleLogin");
+    window.location.href = urlGoogleLogin;
+    return null;
   }
 
   return (
@@ -30,37 +33,41 @@ const Login: React.FC = () => {
         ></div>
         <div className="w-[450px] h-auto border border-black/15 absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2 p-5 rounded-[20px] bg-white">
           <div className="text-center">
-            <h1 className="text-[17px] font-bold mb-5">
-              Log in with your Google account
-            </h1>
+            <h1 className="text-[17px] font-bold mb-5">Log in</h1>
           </div>
           <div>
             <form
               onSubmit={async (e) => {
-                e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định
+                e.preventDefault();
                 const username = (e.target as HTMLFormElement).username.value;
                 const password = (e.target as HTMLFormElement).password.value;
                 if (username === "" || password === "") {
-                  message.error("Tên đăng nhập và mật khẩu là bắt buộc.");
+                  message.error("Username and password are required");
                   return;
                 }
                 try {
-                  const response = await axios.post(`${import.meta.env.VITE_BACKEND_AUTH_URL}/login`, {
-                    username,
-                    password
-                  }, {
-                    headers: {
-                      'Content-Type': 'application/x-www-form-urlencoded'
+                  const response = await axios.post(
+                    `${import.meta.env.VITE_BACKEND_AUTH_URL}/login`,
+                    {
+                      username,
+                      password,
                     },
-                    withCredentials: true
-                  });
+                    {
+                      headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                      },
+                      withCredentials: true,
+                    }
+                  );
 
                   if (response.status === 200) {
                     window.location.href = urlAuthLogin;
                   }
                 } catch (error) {
                   console.error("Lỗi đăng nhập:", error);
-                  message.error("Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập");
+                  message.error(
+                    "Username or password is incorrect. Please try again!"
+                  );
                 }
               }}
             >

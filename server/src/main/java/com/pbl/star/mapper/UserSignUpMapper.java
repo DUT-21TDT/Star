@@ -1,6 +1,6 @@
 package com.pbl.star.mapper;
 
-import com.pbl.star.dtos.request.auth.SignUpParams;
+import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,6 +17,7 @@ public abstract class UserSignUpMapper {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Mapping(target = "username", expression = "java(signUpParams.getUsername().toLowerCase())")
     @Mapping(target = "password", expression = "java(passwordEncoder.encode(signUpParams.getPassword()))")
     @Mapping(target = "role", constant = "USER")
     @Mapping(target = "status", constant = "INACTIVE")

@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationEvent;
 @Setter
 @Builder
 public class OnSignUpCompleteEvent extends ApplicationEvent {
-    private User user;
+    private final User user;
 
     public OnSignUpCompleteEvent(User user) {
         super(user);

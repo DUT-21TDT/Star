@@ -1,7 +1,6 @@
 package com.pbl.star.services.impl;
 
-import com.pbl.star.dtos.request.auth.SignUpParams;
-import com.pbl.star.dtos.response.auth.ConfirmSignUpResponse;
+import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.entities.User;
 import com.pbl.star.entities.VerificationToken;
 import com.pbl.star.enums.AccountStatus;
@@ -12,13 +11,12 @@ import com.pbl.star.mapper.UserSignUpMapper;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.VerificationTokenRepository;
 import com.pbl.star.services.AuthService;
-import com.pbl.star.utils.AuthUtil;
+import com.pbl.star.utils.SignUpValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,10 +40,10 @@ public class AuthServiceImpl implements AuthService {
 
     private void validateSignUpInformation(SignUpParams signUpParams) {
         // Check required fields
-        AuthUtil.validateSignupRequiredFields(signUpParams);
+        SignUpValidator.validateSignupRequiredFields(signUpParams);
 
         // Check sign up rules
-        AuthUtil.validateSignUpRules(signUpParams);
+        SignUpValidator.validateSignUpRules(signUpParams);
 
         // Check if username already exist
         if (userRepository.existsByUsername(signUpParams.getUsername())) {
@@ -58,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional
-    public ConfirmSignUpResponse confirmSignup(String token) {
+    public User confirmSignup(String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new EntityNotFoundException("Token not found"));
 
@@ -73,21 +71,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         user.setStatus(AccountStatus.ACTIVE);
-        userRepository.save(user);
-
-        // Remove all inactive account with the same email
-        userRepository.deleteAll(userRepository.findByEmailAndStatus(user.getEmail(), AccountStatus.INACTIVE));
-
-        return new ConfirmSignUpResponse(user.getId(), user.getUsername(), user.getEmail());
-    }
-
-    @Override
-    public VerificationToken createVerificationToken(User user) {
-        return verificationTokenRepository.save(VerificationToken.builder()
-                .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusSeconds(VerificationToken.EXPIRATION_SECOND))
-                .build());
+        return userRepository.save(user);
     }
 }
 
