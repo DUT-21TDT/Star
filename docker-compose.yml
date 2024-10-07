@@ -1,0 +1,76 @@
+services:
+  frontend:
+    image: $ECR_CLIENT_URL:$BRANCH-$SHA
+    container_name: frontend
+    working_dir: /app
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  backend:
+    image: $ECR_SERVER_URL:$BRANCH-$SHA
+    container_name: backend
+    working_dir: /run
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    environment:
+      - AWS_ACCESS_KEY_ID=AKIA2UC3BMOU27SH23F4
+      - AWS_SECRET_ACCESS_KEY=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
+      - AWS_REGION=ap-southeast-1
+    networks:
+      - app-network
+
+  auth-server:
+    image: penguindevops/auth-server:1.0
+    container_name: auth-server
+    working_dir: /run
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8081 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app-network
+
+  postgres:
+    container_name: postgres
+    image: postgres:16.3
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: star
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
