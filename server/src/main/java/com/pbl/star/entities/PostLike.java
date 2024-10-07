@@ -17,13 +17,13 @@ public class PostLike {
     @GeneratedValue(generator = "ulid")
     @GenericGenerator(name = "ulid", type = IdGenerator.class)
     @Column(name = "post_like_id")
-    private Long id;
+    private String id;
 
     @Column(name = "post_id")
-    private Long postId;
+    private String postId;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Column(name = "like_at")
     private Instant likeAt;

@@ -17,13 +17,13 @@ public class PostRepost {
     @GeneratedValue(generator = "ulid")
     @GenericGenerator(name = "ulid", type = IdGenerator.class)
     @Column(name = "post_repost_id")
-    private Long id;
+    private String id;
 
     @Column(name = "post_id")
-    private Long postId;
+    private String postId;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Column(name = "repost_at")
     private Instant repostAt;

@@ -39,7 +39,6 @@ public class UserController {
     public ResponseEntity<?> getPostsByUser(@PathVariable String userId,
                                             @RequestParam(defaultValue = "20") int limit,
                                             @RequestParam(required = false) Instant after) {
-        return null;
-//        return ResponseEntity.ok(userInteractUsecase.getPosts(userId));
+        return ResponseEntity.ok(postManageUsecase.getPostsByUser(userId, limit, after));
     }
 }
