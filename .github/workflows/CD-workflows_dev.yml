@@ -11,8 +11,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
     steps:
-      - uses: actions/checkout@v4
-
       - uses: benjlevesque/short-sha@v3.0
         id: short-sha
         with:
@@ -34,6 +32,7 @@ jobs:
           pwd
           mkdir -p ${{ env.BRANCH }}
           aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key docker-compose.yml ${{ env.BRANCH }}/docker-compose.yml
+          cd ${{ env.BRANCH }}
           docker-compose up -d
           
 
