@@ -26,6 +26,7 @@ jobs:
       BACKEND_PORT: ${{ secrets.BACKEND_PORT_DEV }}
       AUTH_PORT: ${{ secrets.AUTH_PORT_DEV }}
       DATABASE_PORT: ${{ secrets.DATABASE_PORT_DEV }}
+      VOLUME_PATH: ${{ secrets.VOLUME_PATH_DEV }}
 
 
     steps:
