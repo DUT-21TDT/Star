@@ -95,6 +95,8 @@ jobs:
           echo "BACKEND_PORT=${{ env.BACKEND_PORT }}" >> .env
           echo "AUTH_PORT=${{ env.AUTH_PORT }}" >> .env
           echo "DATABASE_PORT=${{ env.DATABASE_PORT }}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }}" >> .env
         continue-on-error: false
 
       - uses: hkusu/s3-upload-action@v2
