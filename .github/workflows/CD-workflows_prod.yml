@@ -35,5 +35,5 @@ jobs:
           mkdir -p ${{ env.BRANCH }}
           aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key docker-compose.yml ${{ env.BRANCH }}/docker-compose.yml
           cd ${{ env.BRANCH }}
-          docker-compose up -d
+          docker-compose up -d --build
           
