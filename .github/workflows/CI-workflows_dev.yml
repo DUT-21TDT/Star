@@ -77,7 +77,7 @@ jobs:
           docker push "${{ env.ECR_CLIENT_URL }}:${{ env.BRANCH }}-${{ env.SHA }}"
         continue-on-error: false
 
-    - uses: hkusu/s3-upload-action@v2
+      - uses: hkusu/s3-upload-action@v2
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
