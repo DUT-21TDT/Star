@@ -2,7 +2,6 @@ import { ConfigProvider } from "antd";
 import { newFeedsTheme } from "../../utils/theme";
 import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
 import CreatePost from "../../components/user/profile/posts/create-post";
-import Post from "../../components/user/profile/posts/Post";
 import { useGetProfileUser } from "../../hooks/user";
 import { useAppSelector } from "../../redux/store/hook";
 
@@ -28,11 +27,6 @@ const NewFeed = () => {
           >
             {/* NewFeed Content */}
             <CreatePost
-              isCurrentUser={data?.isCurrentUser}
-              isFollowing={data?.isFollowing}
-              publicProfile={data?.publicProfile}
-            />
-            <Post
               isCurrentUser={data?.isCurrentUser}
               isFollowing={data?.isFollowing}
               publicProfile={data?.publicProfile}

@@ -122,15 +122,15 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       setLoading(false);
       return;
     }
-
     try {
       if (avatarUrlFile) {
         const fileExtension = avatarUrlFile.name.split(".").pop();
-        getPresignedURL(`avatar/${id}.${fileExtension}`, {
+        const getDateTime = new Date().getTime();
+        getPresignedURL(`avatar/${id}${getDateTime}.${fileExtension}`, {
           onSuccess: async (url) => {
             const uploadSuccess = await handleUploadAvatarToCloud(url);
             if (uploadSuccess) {
-              dataEdit.avatarFileName = `avatar/${id}.${fileExtension}`;
+              dataEdit.avatarFileName = `avatar/${id}${getDateTime}.${fileExtension}`;
               updateProfile(dataEdit, {
                 onSuccess: () => {
                   message.success("Profile updated successfully");

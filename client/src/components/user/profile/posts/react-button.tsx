@@ -1,24 +1,37 @@
-const ReactButton = () => {
+import React from "react";
+
+interface IProps {
+  numberOfLikes: number;
+  numberOfComments: number;
+  numberOfReposts: number;
+  liked: boolean;
+}
+const ReactButton: React.FC<IProps> = ({
+  numberOfLikes,
+  numberOfComments,
+  numberOfReposts,
+  liked,
+}) => {
   return (
-    <div className="flex items-center gap-3">
-      <div className="min-w-9 w-fit h-[40px] cursor-pointer rounded-[50%] flex items-center justify-center hover:bg-[#fafafa] p-2">
+    <div className="flex items-center gap-2">
+      <div className="min-w-9 w-fit h-[40px] cursor-pointer rounded-[50%] flex items-center justify-center hover:bg-[#fafafa] p-2 gap-1">
         <svg
           width="24"
           height="24"
           viewBox="0 0 24 24"
-          fill="none"
+          fill={liked ? "#EA333E" : "none"}
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
             d="M18.4999 4.96676C15.7806 2.79127 12.9999 4.96675 11.9999 5.96675C10.9999 4.96675 8.2193 2.79127 5.49996 4.96676C2.78062 7.14224 2.18961 11.6564 5.99996 15.4667C9.81031 19.2771 11.9999 19.9667 11.9999 19.9667C11.9999 19.9667 14.1896 19.2771 17.9999 15.4667C21.8103 11.6564 21.2193 7.14224 18.4999 4.96676Z"
-            stroke="black"
+            stroke={liked ? "#EA333E" : "black"}
             strokeWidth="1"
           />
         </svg>
-        1
+        <span>{numberOfLikes !== 0 ? numberOfLikes : ""}</span>
       </div>
 
-      <div className=" min-w-9 w-fit h-[40px] cursor-pointer rounded-[50%] flex items-center justify-center hover:bg-[#fafafa]">
+      <div className=" min-w-9 w-fit h-[40px] cursor-pointer rounded-[50%] flex items-center justify-center hover:bg-[#fafafa] gap-1  ">
         <svg
           width="24"
           height="24"
@@ -32,9 +45,9 @@ const ReactButton = () => {
             strokeWidth="1"
           />
         </svg>
-        10
+        <span>{numberOfComments !== 0 ? numberOfComments : ""}</span>
       </div>
-      <div className=" min-w-9 w-fit h-[40px] cursor-pointer rounded-[50%] flex items-center justify-center hover:bg-[#fafafa]">
+      <div className=" min-w-9 w-fit h-[40px] cursor-pointer rounded-[50%] flex items-center justify-center hover:bg-[#fafafa] gap-1">
         <svg
           width="24"
           height="24"
@@ -50,6 +63,7 @@ const ReactButton = () => {
             strokeLinejoin="round"
           />
         </svg>
+        {numberOfReposts !== 0 ? numberOfReposts : ""}
       </div>
     </div>
   );
