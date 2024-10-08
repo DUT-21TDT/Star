@@ -98,7 +98,7 @@ jobs:
           echo "DATABASE_PORT=${{ env.DATABASE_PORT }}" >> .env
           echo "AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }}" >> .env
           echo "AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }}" >> .env
-          echo "VOULME_PATH=${{ env.VOLUME_PATH }}" >> .env
+          echo "VOLUME_PATH=${{ env.VOLUME_PATH }}" >> .env
         continue-on-error: false
 
       - uses: hkusu/s3-upload-action@v2
