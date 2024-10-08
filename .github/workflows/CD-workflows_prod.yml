@@ -5,7 +5,7 @@ on:
 
 jobs:
   build_prod:
-    runs-on: ubuntu-latest
+    runs-on: pbl6-runner
     env: 
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -26,7 +26,13 @@ jobs:
       - name: Check Docker version
         run: docker --version
 
-      - name: Docker login
+      - name: Deploy
+        env:
+          SHA: ${{ steps.short-sha.outputs.sha }}
+          BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
-          echo "login"
+          pwd
+          mkdir -p ${{ env.BRANCH }}
+          aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key docker-compose.yml ${{ env.BRANCH }}/docker-compose.yml
+          docker-compose up -d
           
