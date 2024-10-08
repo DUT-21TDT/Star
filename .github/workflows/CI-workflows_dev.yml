@@ -21,7 +21,9 @@ jobs:
       VITE_TOKEN_URL: ${{ secrets.VITE_TOKEN_URL_DEV }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       AUTH_SERVER_URL: ${{ secrets.AUTH_SERVER_URL_DEV }}
+
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
+
 
     steps:
       - uses: actions/checkout@v4
