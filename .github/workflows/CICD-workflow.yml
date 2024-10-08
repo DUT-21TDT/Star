@@ -10,15 +10,27 @@ jobs:
   test-build:
     uses: DUT-21TDT/Star/.github/workflows/Confirm-workflow.yml@SSMP-31-Implement-CI-CD-pipeline
     secrets: inherit
-  
-  dev-deploy:
+
+  dev-build:
     needs: test-build
     if: github.ref == 'refs/heads/develop'
     uses: DUT-21TDT/Star/.github/workflows/CI-workflows_dev.yml@SSMP-31-Implement-CI-CD-pipeline
     secrets: inherit
 
-  prod-deploy:
+  dev-deploy:
+    needs: dev-build
+    if: github.ref == 'refs/heads/develop'
+    uses: DUT-21TDT/Star/.github/workflows/CD-workflows_dev.yml@SSMP-31-Implement-CI-CD-pipeline
+    secrets: inherit
+
+  prod-build:
     needs: test-build
     if: github.ref == 'refs/heads/main'
     uses: DUT-21TDT/Star/.github/workflows/CI-workflows_prod.yml@SSMP-31-Implement-CI-CD-pipeline
+    secrets: inherit
+
+  prod-deploy:
+    needs: prod-build
+    if: github.ref == 'refs/heads/main'
+    uses: DUT-21TDT/Star/.github/workflows/CD-workflows_prod.yml@SSMP-31-Implement-CI-CD-pipeline
     secrets: inherit
