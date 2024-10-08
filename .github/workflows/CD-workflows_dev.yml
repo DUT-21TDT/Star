@@ -6,7 +6,7 @@ on:
 jobs:
   build_dev:
     runs-on: pbl6-runner
-    env: 
+    env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
@@ -34,6 +34,5 @@ jobs:
           aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key docker-compose.yml ${{ env.BRANCH }}/docker-compose.yml
           aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key .env ${{ env.BRANCH }}/.env
           cd ${{ env.BRANCH }}
+          docker-compose down
           docker-compose up -d --build
-          
-
