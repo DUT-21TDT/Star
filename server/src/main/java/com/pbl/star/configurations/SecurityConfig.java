@@ -2,6 +2,7 @@ package com.pbl.star.configurations;
 
 import com.pbl.star.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -44,9 +45,12 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Value("${auth.server.url}")
+    private String authServerUrl;
+
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri("http://localhost:8081/oauth2/jwks").build();
+        return NimbusJwtDecoder.withJwkSetUri(authServerUrl + "/oauth2/jwks").build();
     }
 
     @Autowired
