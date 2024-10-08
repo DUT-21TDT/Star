@@ -1,0 +1,34 @@
+name: CI Phase Dev
+
+on:
+  workflow_call:
+
+jobs:
+  build_dev:
+    runs-on: ubuntu-latest
+    env: 
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: benjlevesque/short-sha@v3.0
+        id: short-sha
+        with:
+          length: 6
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
+      - name: Check Docker version
+        run: docker --version
+
+      - name: Docker login
+        run: |
+          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+          sudo dpkg -i session-manager-plugin.deb
+          
+
