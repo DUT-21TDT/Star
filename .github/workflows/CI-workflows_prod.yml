@@ -1,10 +1,10 @@
-name: CI Phase Dev
+name: CI Phase Prod
 
 on:
   workflow_call:
 
 jobs:
-  build_dev:
+  build_prod:
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
