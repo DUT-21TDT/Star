@@ -4,10 +4,12 @@ services:
     container_name: frontend
     working_dir: /app
     ports:
-      - "5173:80"
+      - $FRONTEND_PORT:80
     depends_on:
       backend:
         condition: service_healthy
+    env_file:
+      - .env
     networks:
       - app-network
 
@@ -16,12 +18,14 @@ services:
     container_name: backend
     working_dir: /run
     ports:
-      - "8080:8080"
+      - $BACKEND_PORT:8080
     depends_on:
       postgres:
         condition: service_healthy
       auth-server:
         condition: service_healthy
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
       interval: 1m30s
@@ -40,12 +44,14 @@ services:
     container_name: auth-server
     working_dir: /run
     ports:
-      - "8081:8081"
+      - $AUTH_PORT:8081
     depends_on:
       postgres:
         condition: service_healthy
+    env_file:
+      - .env
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 8081 || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost $AUTH_PORT || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -57,20 +63,28 @@ services:
     container_name: postgres
     image: postgres:16.3
     ports:
-      - "5432:5432"
+      - $DATABASE_PORT:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: star
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - postgres_data:$VOlUME_PATH
     networks:
       - app-network
-    restart: unless-stopped
+    restart: never
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
