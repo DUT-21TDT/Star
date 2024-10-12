@@ -16,4 +16,16 @@ const getPostOnProfileWall = async (
   const response = await instance.get(url);
   return response.data;
 };
-export { getPostOnProfileWall };
+
+const getAllPostOnNewsFeed = async (config: configTypeProfileWall) => {
+  let url;
+  if (config.after !== null) {
+    url = `/posts/newsfeed?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/posts/newsfeed?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  console.log(response);
+  return response.data;
+};
+export { getPostOnProfileWall, getAllPostOnNewsFeed };

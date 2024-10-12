@@ -66,7 +66,7 @@ const useGoogleLogin = () => {
 
 const useGetProfileUser = (id: string) => {
   return useQuery({
-    queryKey: QUERY_KEY.getProfileUser(),
+    queryKey: QUERY_KEY.getProfileUser(id),
     queryFn: () => getInformationUserFromId(id),
   });
 };

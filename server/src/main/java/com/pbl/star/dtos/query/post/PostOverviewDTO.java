@@ -14,6 +14,7 @@ public class PostOverviewDTO {
     private String id;
     private String usernameOfCreator;
     private String avatarUrlOfCreator;
+    private String idOfCreator;
     private Instant createdAt;
     private String content;
     private List<String> postImageUrls;

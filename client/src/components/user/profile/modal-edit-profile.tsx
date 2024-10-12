@@ -135,7 +135,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
                 onSuccess: () => {
                   message.success("Profile updated successfully");
                   queryClient.invalidateQueries({
-                    queryKey: QUERY_KEY.getProfileUser(),
+                    queryKey: QUERY_KEY.getProfileUser(id),
                   });
                   setOpenModal(false);
                 },
@@ -158,7 +158,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
           onSuccess: () => {
             message.success("Profile updated successfully");
             queryClient.invalidateQueries({
-              queryKey: QUERY_KEY.getProfileUser(),
+              queryKey: QUERY_KEY.getProfileUser(id),
             });
             setOpenModal(false);
           },

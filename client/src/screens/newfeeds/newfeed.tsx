@@ -4,6 +4,7 @@ import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
 import CreatePost from "../../components/user/profile/posts/create-post";
 import { useGetProfileUser } from "../../hooks/user";
 import { useAppSelector } from "../../redux/store/hook";
+import PostsOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed";
 
 const NewFeed = () => {
   const id = useAppSelector((state) => state.user.id);
@@ -31,6 +32,7 @@ const NewFeed = () => {
               isFollowing={data?.isFollowing}
               publicProfile={data?.publicProfile}
             />
+            <PostsOnNewsFeed />
           </div>
         </div>
       </div>

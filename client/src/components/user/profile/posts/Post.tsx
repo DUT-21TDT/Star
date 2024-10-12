@@ -1,12 +1,12 @@
 import { Avatar, Button, Carousel, Image, Popover } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { EllipsisOutlined } from "@ant-design/icons";
 import ReactButton from "./react-button";
 import "../../../../assets/css/posts.css";
 import default_image from "../../../../assets/images/default_image.jpg";
 import { timeAgo } from "../../../../utils/convertTime";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../../../redux/store/hook";
+import ContainerInformationUser from "./container-information-user";
 
 interface IProps {
   id: string;
@@ -38,74 +38,38 @@ const Post: React.FC<IProps> = (props) => {
     numberOfReposts,
     liked,
     idOfCreator,
-    firstName,
-    lastName,
-    bio,
-    numberOfFollowers,
   } = props;
 
   const navigate = useNavigate();
+  const [isPopoverVisibleAvatar, setIsPopoverVisibleAvatar] = useState(false);
+  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
+    useState(false);
+  const [popoverContent, setPopoverContent] = useState<React.ReactNode>(
+    <div></div>
+  );
 
   const handleNavigateProfileUser = (id: string) => () => {
     if (id) {
       navigate(`/profile/${id}`);
     }
   };
-  const userId = useAppSelector((state) => state.user.id);
 
-  const containerInformationUser = () => {
-    return (
-      <div
-        className="w-[300px] h-[full]"
-        style={{
-          padding: "15px 10px",
-        }}
-        onClick={handleNavigateProfileUser(idOfCreator || "")}
-      >
-        <div className="flex justify-between items-center cursor-pointer">
-          <div>
-            {firstName || lastName ? (
-              <div className="text-[18px] font-semibold">
-                {`${firstName || ""} ${lastName || ""}`}
-              </div>
-            ) : (
-              <div className="text-[18px] font-semibold">
-                {usernameOfCreator}
-              </div>
-            )}
-            <div className="text-[15px]">{usernameOfCreator}</div>
-          </div>
-          <div
-            className="w-[60px] h-[60px]"
-            style={{
-              borderRadius: "50%",
-              position: "relative",
-            }}
-          >
-            <Image
-              src={`${avatarUrlOfCreator || default_image}`}
-              width={60}
-              height={60}
-              style={{
-                borderRadius: "50%",
-              }}
-              id="avatar-profile"
-            />
-          </div>
-        </div>
-        <div className="text-[15px] font-normal mt-3 text-left">
-          {bio || ""}
-        </div>
-        <div className="text-[#a1a1a1] font-normal text-[15px]">
-          {numberOfFollowers || 0} followers
-        </div>
-        {userId !== idOfCreator && (
-          <button className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[black] text-[white] mt-2">
-            Follow
-          </button>
-        )}
-      </div>
-    );
+  const handlePopoverAvatarVisibilityChange = (visible: boolean) => {
+    setIsPopoverVisibleAvatar(visible);
+    if (visible) {
+      setPopoverContent(
+        <ContainerInformationUser idOfCreator={idOfCreator || ""} />
+      );
+    }
+  };
+
+  const handlePopoverUsernameVisibilityChange = (visible: boolean) => {
+    setIsPopoverVisibleUsername(visible);
+    if (visible) {
+      setPopoverContent(
+        <ContainerInformationUser idOfCreator={idOfCreator || ""} />
+      );
+    }
   };
 
   return (
@@ -118,11 +82,13 @@ const Post: React.FC<IProps> = (props) => {
       }}
     >
       <Popover
-        content={containerInformationUser}
+        content={popoverContent}
         placement="bottomLeft"
         trigger="hover"
         overlayClassName="custom-popover"
         arrow={false}
+        open={isPopoverVisibleAvatar}
+        onOpenChange={handlePopoverAvatarVisibilityChange}
       >
         <Avatar
           style={{
@@ -137,11 +103,13 @@ const Post: React.FC<IProps> = (props) => {
       <div style={{ width: "calc(100% - 65px)" }}>
         <div className="flex justify-between w-full">
           <Popover
-            content={containerInformationUser}
+            content={popoverContent}
             placement="bottomLeft"
             trigger="hover"
             overlayClassName="custom-popover"
             arrow={false}
+            open={isPopoverVisibleUsername}
+            onOpenChange={handlePopoverUsernameVisibilityChange}
           >
             <div
               style={{

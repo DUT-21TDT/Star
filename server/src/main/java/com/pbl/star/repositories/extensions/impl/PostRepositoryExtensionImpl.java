@@ -65,7 +65,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     private static String getPostOverviewQuery(ConditionType type, Instant after, PostStatus status) {
-        String jpql = "SELECT p.id, u.username, u.avatarUrl, p.createdAt, p.content, " +
+        String jpql = "SELECT p.id, u.id,  u.username, u.avatarUrl, p.createdAt, p.content, " +
                 "(SELECT COUNT(*) FROM PostLike pl WHERE pl.postId = p.id) AS number_of_likes, " +
                 "(SELECT COUNT(*) FROM Post p1 WHERE p1.parentPostId = p.id) AS number_of_comments, " +
                 "(SELECT COUNT(*) FROM PostRepost pr WHERE pr.postId = p.id) AS number_of_reposts, " +
@@ -105,16 +105,17 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         List<PostOverviewDTO> postList = resultList.stream()
                 .map(row -> PostOverviewDTO.builder()
                         .id((String) row[0])
-                        .usernameOfCreator((String) row[1])
-                        .avatarUrlOfCreator((String) row[2])
-                        .createdAt((Instant) row[3])
-                        .content((String) row[4])
-                        .numberOfLikes(((Long) row[5]).intValue())
-                        .numberOfComments(((Long) row[6]).intValue())
-                        .numberOfReposts(((Long) row[7]).intValue())
-                        .isLiked((boolean) row[8])
-                        .postImageUrls(row[9] == null ? null :
-                                List.of(((String) row[9]).split(","))
+                        .idOfCreator((String) row[1])
+                        .usernameOfCreator((String) row[2])
+                        .avatarUrlOfCreator((String) row[3])
+                        .createdAt((Instant) row[4])
+                        .content((String) row[5])
+                        .numberOfLikes(((Long) row[6]).intValue())
+                        .numberOfComments(((Long) row[7]).intValue())
+                        .numberOfReposts(((Long) row[8]).intValue())
+                        .isLiked((boolean) row[9])
+                        .postImageUrls(row[10] == null ? null :
+                                List.of(((String) row[10]).split(","))
                         )
                         .build()
                 )

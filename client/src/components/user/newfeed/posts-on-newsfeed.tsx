@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useGetProfileUser } from "../../../../hooks/user";
-import { useParams } from "react-router-dom";
-import CreatePost from "./create-post";
-import Post from "./Post";
-import { useFetchAllPostsOnWall } from "../../../../hooks/post";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEY } from "../../../../utils/queriesKey";
+import { QUERY_KEY } from "../../../utils/queriesKey";
+import { useFetchAllPostsOnNewsFeed } from "../../../hooks/post";
+import Post from "../profile/posts/Post";
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -22,18 +19,13 @@ interface PostType {
   idOfCreator: string;
 }
 
-const PostOnWall: React.FC = () => {
-  const { id } = useParams();
-  const { data } = useGetProfileUser(id || "");
+const PostsOnNewsFeed: React.FC = () => {
   const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
-  const { dataPost, isLoading, hasNextPost } = useFetchAllPostsOnWall(
-    id || "",
-    {
-      limit: 10,
-      after: afterTime,
-    }
-  );
+  const { dataPost, isLoading, hasNextPost } = useFetchAllPostsOnNewsFeed({
+    limit: 10,
+    after: afterTime,
+  });
   const [allPosts, setAllPosts] = useState<PostType[]>([]);
 
   const handleScroll = () => {
@@ -43,14 +35,10 @@ const PostOnWall: React.FC = () => {
 
     if (isBottom && hasNextPost) {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEY.fetchAllPostsOnWall(id || ""),
+        queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
       });
     }
   };
-  useEffect(() => {
-    setAllPosts([]);
-    setAfterTime(null);
-  }, [id]);
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
       setAllPosts((prevPosts: PostType[]) => [
@@ -70,11 +58,6 @@ const PostOnWall: React.FC = () => {
   }, [hasNextPost]);
   return (
     <>
-      <CreatePost
-        isCurrentUser={data?.isCurrentUser}
-        isFollowing={data?.isFollowing}
-        publicProfile={data?.publicProfile}
-      />
       {isLoading && (
         <div className="flex items-center justify-center mt-8">
           <Spin indicator={<LoadingOutlined spin />} size="large" />
@@ -96,14 +79,12 @@ const PostOnWall: React.FC = () => {
             liked,
             idOfCreator,
           } = post;
-          const getTime = new Date(createdAt).getTime();
           return (
             <Post
-              key={`${id}-${getTime}`}
+              key={id}
               id={id}
               usernameOfCreator={usernameOfCreator}
               avatarUrlOfCreator={avatarUrlOfCreator}
-              idOfCreator={idOfCreator}
               createdAt={createdAt}
               content={content}
               postImageUrls={postImageUrls}
@@ -111,10 +92,11 @@ const PostOnWall: React.FC = () => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
+              idOfCreator={idOfCreator}
             />
           );
         })}
     </>
   );
 };
-export default PostOnWall;
+export default PostsOnNewsFeed;
