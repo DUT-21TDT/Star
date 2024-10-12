@@ -24,7 +24,13 @@ public class PostManageUsecaseImpl implements PostManageUsecase {
     }
 
     @Override
-    public Slice<PostOverviewDTO> getPostsByUser(String userId, int limit, Instant after) {
-        return postService.getPostsByUser(userId, limit, after);
+    public Slice<PostOverviewDTO> getPostsOnUserWall(String userId, int limit, Instant after) {
+        return postService.getPostsOnUserWall(userId, limit, after);
+    }
+
+    @Override
+    public Slice<PostOverviewDTO> getPostsOnNewsfeed(int limit, Instant after) {
+        String userId = AuthUtil.getCurrentUser().getId();
+        return postService.getPostsOnNewsfeed(userId, limit, after);
     }
 }

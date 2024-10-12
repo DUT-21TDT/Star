@@ -30,6 +30,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
     private final UserRoomRepository userRoomRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -72,8 +73,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Slice<PostOverviewDTO> getPostsByUser(String userId, int limit, Instant after) {
+    public Slice<PostOverviewDTO> getPostsOnUserWall(String userId, int limit, Instant after) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User does not exist");
+        }
+
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findPostOverviewsByUserAndStatus(userId, pageable, after, PostStatus.APPROVED);
+        return postRepository.findPostOverviewsByStatusAndUser(pageable, after, PostStatus.APPROVED, userId);
+    }
+
+    @Override
+    public Slice<PostOverviewDTO> getPostsOnNewsfeed(String userId, int limit, Instant after) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User does not exist");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit);
+        String[] joinedRoomIds = userRoomRepository.findRoomIdsByUserId(userId).toArray(String[]::new);
+        return postRepository.findPostOverviewsByStatusInRooms(pageable, after, PostStatus.APPROVED, joinedRoomIds);
     }
 }

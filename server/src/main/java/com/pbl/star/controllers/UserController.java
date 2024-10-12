@@ -6,6 +6,7 @@ import com.pbl.star.usecase.ProfileManageUsecase;
 import com.pbl.star.usecase.UserInteractUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -25,11 +26,13 @@ public class UserController {
     }
 
     @GetMapping("/personal-information")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> getPersonalInformation() {
         return ResponseEntity.ok(profileManageUsecase.getPersonalInformation());
     }
 
     @PatchMapping("/personal-information")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> updatePersonalInformation(@ModelAttribute UpdateProfileParams updateProfileParams) {
         profileManageUsecase.updatePersonalInformation(updateProfileParams);
         return ResponseEntity.ok().build();
@@ -39,6 +42,6 @@ public class UserController {
     public ResponseEntity<?> getPostsByUser(@PathVariable String userId,
                                             @RequestParam(defaultValue = "20") int limit,
                                             @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(postManageUsecase.getPostsByUser(userId, limit, after));
+        return ResponseEntity.ok(postManageUsecase.getPostsOnUserWall(userId, limit, after));
     }
 }

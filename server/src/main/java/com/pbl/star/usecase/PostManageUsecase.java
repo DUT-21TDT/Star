@@ -8,5 +8,6 @@ import java.time.Instant;
 
 public interface PostManageUsecase {
     String createPost(CreatePostParams createPostParams);
-    Slice<PostOverviewDTO> getPostsByUser(String userId, int limit, Instant after);
+    Slice<PostOverviewDTO> getPostsOnUserWall(String userId, int limit, Instant after);
+    Slice<PostOverviewDTO> getPostsOnNewsfeed(int limit, Instant after);
 }
