@@ -26,7 +26,7 @@ jobs:
       BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
       AUTH_PORT: ${{ secrets.AUTH_PORT }}
       DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-      VOLUME_PATH: ${{ secrets.VOLUME_PATH }}
+      VOLUME_PATH: ${{ secrets.VOLUME_PATH_DEV }}
 
 
     steps:
@@ -49,7 +49,7 @@ jobs:
       - name: Pre-build Client
         run: |
           cd client
-          envsubst < .env > .env.tmp && mv .env.tmp .env
+          envsubst < .env.example > .env
           cat .env
 
       - name: Pre-build Server
