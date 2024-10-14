@@ -1,5 +1,6 @@
 package com.pbl.star.services.impl;
 
+import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.query.user.PublicProfile;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
@@ -35,6 +36,13 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
+    @Override
+    public GeneralInformation getGeneralInformation(String userId) {
+        return userRepository.getGeneralInformationById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User not found")
+        );
+    }
 
     @Override
     public PublicProfileResponse getPublicProfile(String userId) {

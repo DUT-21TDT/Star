@@ -171,14 +171,14 @@ const editProfile = async (data: IEditProfile) => {
   formData.append("gender", data.gender || "");
   formData.append("privateProfile", data.privateProfile ? "true" : "false");
   const response = await instance.patch(
-    `/users/personal-information`,
+    `/users/me/personal-information`,
     formData
   );
   return response.data;
 };
 
 const getPersonalInformation = async () => {
-  const response = await instance.get(`/users/personal-information`);
+  const response = await instance.get(`/users/me/personal-information`);
   return response.data;
 };
 

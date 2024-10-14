@@ -24,12 +24,17 @@ public class UserController {
         return ResponseEntity.ok(userInteractUsecase.getPublicProfile(userId));
     }
 
-    @GetMapping("/personal-information")
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyProfile() {
+        return ResponseEntity.ok(profileManageUsecase.getGeneralInformation());
+    }
+
+    @GetMapping("/me/personal-information")
     public ResponseEntity<?> getPersonalInformation() {
         return ResponseEntity.ok(profileManageUsecase.getPersonalInformation());
     }
 
-    @PatchMapping("/personal-information")
+    @PatchMapping("/me/personal-information")
     public ResponseEntity<?> updatePersonalInformation(@ModelAttribute UpdateProfileParams updateProfileParams) {
         profileManageUsecase.updatePersonalInformation(updateProfileParams);
         return ResponseEntity.ok().build();
