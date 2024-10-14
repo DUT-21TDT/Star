@@ -1,5 +1,6 @@
 package com.pbl.star.usecase.impl;
 
+import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.services.UserService;
@@ -14,6 +15,12 @@ import org.springframework.stereotype.Component;
 public class ProfileManageUsecaseImpl implements ProfileManageUsecase {
 
     private final UserService userService;
+
+    @Override
+    public GeneralInformation getGeneralInformation() {
+        String userId = AuthUtil.getCurrentUser().getId();
+        return userService.getGeneralInformation(userId);
+    }
 
     @Override
     public PersonalInformation getPersonalInformation() {
