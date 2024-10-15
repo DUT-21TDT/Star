@@ -5,7 +5,7 @@ import { globalTheme } from "./utils/theme";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "./redux/store/hook";
-import { getCurrentUserFromToken, handleRefreshToken } from "./service/userAPI";
+import { getCurrentUser, handleRefreshToken } from "./service/userAPI";
 import { storeInformationUser } from "./redux/slice/user-slice";
 function App() {
   const dispatch = useAppDispatch();
@@ -13,45 +13,48 @@ function App() {
 
   const [retry, setRetry] = useState(false);
 
-  const fetchCurrentUser = async (token: string) => {
+  const fetchCurrentUser = async () => {
     try {
-      const res = await getCurrentUserFromToken(token);
+      const res = await getCurrentUser();
 
-      if (res.active === false && !retry) {
-        try {
-          const response = await handleRefreshToken();
-          if (response && response.access_token) {
-            Cookies.set("access_token", response.access_token);
-            Cookies.set("refresh_token", response.refresh_token);
-            Cookies.set("id_token", response.id_token);
-
-            setRetry(true);
-          }
-        } catch (err) {
-          console.error("Token refresh failed:", err);
-
-          Cookies.remove("access_token");
-          Cookies.remove("refresh_token");
-          Cookies.remove("id_token");
-
-          window.location.href = "/login";
-        }
-      } else {
-        dispatch(
-          storeInformationUser({
-            id: res?.sub,
-            role: res?.roles ? res?.roles[0] : "USER",
-          })
-        );
-      }
+      dispatch(
+        storeInformationUser({
+          id: res?.id,
+          username: res?.username,
+          role: res?.role || "USER",
+          status: res?.status || "INACTIVE",
+          avatarUrl: res?.avatarUrl || ""
+        })
+      );
     } catch (err) {
-      console.error("Error fetching user data:", err);
+      try {
+        if (retry) {
+          throw new Error;
+        }
+
+        const response = await handleRefreshToken();
+        if (response && response.access_token) {
+          Cookies.set("access_token", response.access_token);
+          Cookies.set("refresh_token", response.refresh_token);
+          Cookies.set("id_token", response.id_token);
+
+          setRetry(true);
+        }
+      } catch (err) {
+        console.error("Token refresh failed:", err);
+
+        Cookies.remove("access_token");
+        Cookies.remove("refresh_token");
+        Cookies.remove("id_token");
+
+        window.location.href = "/login";
+      }
     }
   };
 
   useEffect(() => {
     if (access_token) {
-      fetchCurrentUser(access_token);
+      fetchCurrentUser();
     }
   }, [access_token, retry, dispatch]);
 
