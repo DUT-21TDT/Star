@@ -27,7 +27,7 @@ jobs:
       AUTH_PORT: ${{ secrets.AUTH_PORT_DEV }}
       DATABASE_PORT: ${{ secrets.DATABASE_PORT_DEV }}
       VOLUME_PATH: ${{ secrets.VOLUME_PATH_DEV }}
-      CORS_ORIGINS: ${{ secrets.CORS_ORIGIN_DEV }}
+      CORS_ORIGINS: ${{ secrets.CORS_ORIGINS_DEV }}
 
     steps:
       - uses: actions/checkout@v4
