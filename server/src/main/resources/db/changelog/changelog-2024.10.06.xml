@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="11_create_post_like_table" author="Quang Nguyen">
+        <createTable tableName="post_like">
+            <column name="post_like_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="post_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="like_at" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="post_like"
+                                 baseColumnNames="post_id"
+                                 constraintName="fk_post_like_post"
+                                 referencedTableName="post"
+                                 referencedColumnNames="post_id"
+        />
+        <addForeignKeyConstraint baseTableName="post_like"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_post_like_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="user_id"
+        />
+    </changeSet>
+
+    <changeSet id="12_create_post_like_indexes" author="Quang Nguyen">
+        <createIndex tableName="post_like" indexName="idx_post_like_postid_likeat">
+            <column name="post_id"/>
+            <column name="like_at"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="13_create_post_repost_table" author="Quang Nguyen">
+        <createTable tableName="post_repost">
+            <column name="post_repost_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="post_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="repost_at" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="post_repost"
+                                 baseColumnNames="post_id"
+                                 constraintName="fk_post_repost_post"
+                                 referencedTableName="post"
+                                 referencedColumnNames="post_id"
+        />
+        <addForeignKeyConstraint baseTableName="post_repost"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_post_repost_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="user_id"
+        />
+    </changeSet>
+
+    <changeSet id="14_create_post_repost_indexes" author="Quang Nguyen">
+        <createIndex tableName="post_repost" indexName="idx_post_repost_postid_repostat">
+            <column name="post_id"/>
+            <column name="repost_at"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="6_create_post_image_table" author="Quang Nguyen">
+        <createTable tableName="post_image">
+            <column name="post_image_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="post_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image_url" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="post_image"
+                                 baseColumnNames="post_id"
+                                 constraintName="fk_post_image_post"
+                                 referencedTableName="post"
+                                 referencedColumnNames="post_id"
+                                 onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="3_create_room_table" author="Quang Nguyen">
+        <createTable tableName="room">
+            <column name="room_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4_create_user_room_table" author="Quang Nguyen">
+        <createTable tableName="user_room">
+            <column name="user_room_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="room_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="join_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="user_room"
+                baseColumnNames="user_id"
+                constraintName="fk_user_room_user"
+                referencedTableName="user"
+                referencedColumnNames="user_id"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableName="user_room"
+                baseColumnNames="room_id"
+                constraintName="fk_room_user_room"
+                referencedTableName="room"
+                referencedColumnNames="room_id"
+                onDelete="CASCADE"
+        />
+        <addUniqueConstraint tableName="user_room" columnNames="user_id, room_id, role"/>
+    </changeSet>
+</databaseChangeLog>

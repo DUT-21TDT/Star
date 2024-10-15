@@ -1,0 +1,8 @@
+.ant-tabs-tab {
+  min-width: 180px;
+  text-align: center;
+}
+.ant-tabs-tab-btn {
+  width: 100%;
+  display: inline-block;
+}
