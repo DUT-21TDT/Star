@@ -58,6 +58,15 @@ const getTokenFromCode = async (code: string) => {
   }
 };
 
+const getCurrentUser = async () => {
+  const response = await instance.get(`/users/me`)
+  return response.data;
+}
+
+/**
+ * @deprecated This function is outdated and will be remove in future. 
+ * Please use getCurrentUser() instead.
+ */
 const getCurrentUserFromToken = async (token: string | null) => {
   try {
     const introspectUrl =
@@ -171,14 +180,14 @@ const editProfile = async (data: IEditProfile) => {
   formData.append("gender", data.gender || "");
   formData.append("privateProfile", data.privateProfile ? "true" : "false");
   const response = await instance.patch(
-    `/users/personal-information`,
+    `/users/me/personal-information`,
     formData
   );
   return response.data;
 };
 
 const getPersonalInformation = async () => {
-  const response = await instance.get(`/users/personal-information`);
+  const response = await instance.get(`/users/me/personal-information`);
   return response.data;
 };
 
@@ -195,6 +204,7 @@ export {
   createNewUser,
   confirmAccount,
   getTokenFromCode,
+  getCurrentUser,
   getCurrentUserFromToken,
   revokeToken,
   endSession,

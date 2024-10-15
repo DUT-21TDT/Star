@@ -1,5 +1,6 @@
 package com.pbl.star.repositories;
 
+import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.entities.User;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.UserRole;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String>, UserRepositoryExtension {
@@ -21,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, String>, UserReposit
 
     @Query("SELECT u.role FROM User u WHERE u.id = ?1")
     UserRole getRoleByUserId(String userId);
+
+    Optional<GeneralInformation> getGeneralInformationById(String userId);
 }
