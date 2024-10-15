@@ -40,7 +40,7 @@ services:
       - app-network
 
   auth-server:
-    image: penguindevops/auth:1.0
+    image: penguindevops/auth:$BRANCH
     container_name: auth-server_$BRANCH
     working_dir: /run
     ports:
