@@ -58,6 +58,15 @@ const getTokenFromCode = async (code: string) => {
   }
 };
 
+const getCurrentUser = async () => {
+  const response = await instance.get(`/users/me`)
+  return response.data;
+}
+
+/**
+ * @deprecated This function is outdated and will be remove in future. 
+ * Please use getCurrentUser() instead.
+ */
 const getCurrentUserFromToken = async (token: string | null) => {
   try {
     const introspectUrl =
@@ -195,6 +204,7 @@ export {
   createNewUser,
   confirmAccount,
   getTokenFromCode,
+  getCurrentUser,
   getCurrentUserFromToken,
   revokeToken,
   endSession,

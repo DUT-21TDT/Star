@@ -4,13 +4,16 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUserFromToken } from "../../service/userAPI";
+import { getCurrentUser } from "../../service/userAPI";
 import { useAppDispatch } from "../../redux/store/hook";
 import { storeInformationUser } from "../../redux/slice/user-slice";
 
 type CurrentUser = {
   id: string;
+  username: string;
   role: string;
+  status: string;
+  avatarUrl: string;
 };
 
 const Callback: React.FC = () => {
@@ -29,17 +32,23 @@ const Callback: React.FC = () => {
       Cookies.set("refresh_token", refresh_token);
       Cookies.set("id_token", id_token);
 
-      getCurrentUserFromToken(access_token).then((res) => {
+      getCurrentUser().then((res) => {
         setCurrentUser({
-          id: res?.sub,
-          role: res?.roles ? res?.roles[0] : "USER",
+          id: res?.id,
+          username: res?.username,
+          role: res?.role || "USER",
+          status: res?.status || "INACTIVE",
+          avatarUrl: res?.avatarUrl || ""
         });
 
         //store user data in redux
         dispatch(
           storeInformationUser({
-            id: res?.sub,
-            role: res?.roles ? res?.roles[0] : "USER",
+            id: res?.id,
+            username: res?.username,
+            role: res?.role || "USER",
+            status: res?.status || "INACTIVE",
+            avatarUrl: res?.avatarUrl || ""
           })
         );
       });
