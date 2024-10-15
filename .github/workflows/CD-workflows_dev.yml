@@ -31,7 +31,7 @@ jobs:
         run: |
           pwd
           mkdir -p ${{ env.BRANCH }}
-          aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key docker-compose.yml ${{ env.BRANCH }}/docker-compose.yml
-          aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key .env ${{ env.BRANCH }}/.env
+          aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key ${{ env.BRANCH }}/docker-compose.yml ${{ env.BRANCH }}/docker-compose.yml
+          aws s3api get-object --bucket ${{ env.AWS_S3_BUCKET }} --key ${{ env.BRANCH }}/.env ${{ env.BRANCH }}/.env
           cd ${{ env.BRANCH }}
           docker compose up -d --build
