@@ -12,7 +12,7 @@ jobs:
       ECR_URL: ${{ secrets.ECR_URL }}
       ECR_SERVER_URL: ${{ secrets.ECR_SERVER_URL_DEV }}
       ECR_CLIENT_URL: ${{ secrets.ECR_CLIENT_URL_DEV }}
-      DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
+      DATASOURCE_URL: ${{ secrets.DATASOURCE_URL_DEV }}
       DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
       DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
       VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
@@ -27,7 +27,6 @@ jobs:
       AUTH_PORT: ${{ secrets.AUTH_PORT }}
       DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
       VOLUME_PATH: ${{ secrets.VOLUME_PATH_DEV }}
-
 
     steps:
       - uses: actions/checkout@v4
@@ -123,4 +122,4 @@ jobs:
           aws-bucket: ${{ env.AWS_S3_BUCKET }}
           file-path: "docker-compose.yml"
           destination-dir: "${{ env.BRANCH }}/"
-          bucket-root: "/${{ env.BRANCH }}"
+          bucket-root: "/"
