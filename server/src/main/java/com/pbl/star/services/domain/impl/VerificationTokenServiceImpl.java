@@ -1,11 +1,12 @@
-package com.pbl.star.services.impl;
+package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.entities.User;
 import com.pbl.star.entities.VerificationToken;
 import com.pbl.star.repositories.VerificationTokenRepository;
-import com.pbl.star.services.VerificationTokenService;
+import com.pbl.star.services.domain.VerificationTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -17,6 +18,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     private final VerificationTokenRepository verificationTokenRepository;
 
     @Override
+    @Transactional
     public VerificationToken createVerificationToken(User user) {
         return verificationTokenRepository.save(VerificationToken.builder()
                 .user(user)
@@ -26,6 +28,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     @Override
+    @Transactional
     public void removeVerificationToken(User user) {
         verificationTokenRepository.deleteAllByUser(user);
     }

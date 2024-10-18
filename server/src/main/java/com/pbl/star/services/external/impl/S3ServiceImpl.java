@@ -1,6 +1,6 @@
-package com.pbl.star.services.impl;
+package com.pbl.star.services.external.impl;
 
-import com.pbl.star.services.S3Service;
+import com.pbl.star.services.external.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

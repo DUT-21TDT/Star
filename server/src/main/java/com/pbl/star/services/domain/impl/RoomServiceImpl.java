@@ -1,4 +1,4 @@
-package com.pbl.star.services.impl;
+package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.query.room.RoomOverviewDTO;
 import com.pbl.star.dtos.query.room.RoomOverviewForUserDTO;
@@ -13,7 +13,7 @@ import com.pbl.star.mapper.RoomCreationMapper;
 import com.pbl.star.repositories.RoomRepository;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.UserRoomRepository;
-import com.pbl.star.services.RoomService;
+import com.pbl.star.services.domain.RoomService;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

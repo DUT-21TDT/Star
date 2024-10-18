@@ -1,6 +1,6 @@
 package com.pbl.star.usecase.impl;
 
-import com.pbl.star.services.S3Service;
+import com.pbl.star.services.external.S3Service;
 import com.pbl.star.usecase.ImageUploadUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

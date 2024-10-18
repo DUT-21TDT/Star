@@ -3,7 +3,7 @@ package com.pbl.star.usecase.impl;
 import com.pbl.star.dtos.query.room.RoomOverviewDTO;
 import com.pbl.star.dtos.query.room.RoomOverviewForUserDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
-import com.pbl.star.services.RoomService;
+import com.pbl.star.services.domain.RoomService;
 import com.pbl.star.usecase.RoomManageUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

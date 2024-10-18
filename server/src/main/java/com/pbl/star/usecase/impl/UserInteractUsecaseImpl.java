@@ -1,7 +1,7 @@
 package com.pbl.star.usecase.impl;
 
 import com.pbl.star.dtos.response.user.PublicProfileResponse;
-import com.pbl.star.services.UserService;
+import com.pbl.star.services.domain.UserService;
 import com.pbl.star.usecase.UserInteractUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
