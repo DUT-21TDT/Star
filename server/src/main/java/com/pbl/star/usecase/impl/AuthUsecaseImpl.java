@@ -4,10 +4,15 @@ import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.dtos.response.user.ConfirmSignUpResponse;
 import com.pbl.star.dtos.response.user.SignUpResponse;
 import com.pbl.star.entities.User;
+import com.pbl.star.entities.VerificationToken;
 import com.pbl.star.events.OnConfirmSignUpEvent;
 import com.pbl.star.events.OnSignUpCompleteEvent;
-import com.pbl.star.services.AuthService;
+import com.pbl.star.services.domain.AuthService;
+import com.pbl.star.services.domain.VerificationTokenService;
+import com.pbl.star.services.external.EmailService;
 import com.pbl.star.usecase.AuthUsecase;
+import com.pbl.star.utils.AuthUtil;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -16,6 +21,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AuthUsecaseImpl implements AuthUsecase {
     private final AuthService authService;
+    private final VerificationTokenService verificationTokenService;
+    private final EmailService emailService;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -39,5 +46,22 @@ public class AuthUsecaseImpl implements AuthUsecase {
                 .username(confirmedUser.getUsername())
                 .email(confirmedUser.getEmail())
                 .build();
+    }
+
+    @Override
+    public void resendConfirmation(String email) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        User user = authService.handleResendConfirmation(currentUserId, email);
+
+        // Remove old verification token
+        verificationTokenService.removeVerificationToken(user);
+        // Create new verification token
+        VerificationToken token = verificationTokenService.createVerificationToken(user);
+
+        try {
+            emailService.sendConfirmationEmailAsync(user.getEmail(), token);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

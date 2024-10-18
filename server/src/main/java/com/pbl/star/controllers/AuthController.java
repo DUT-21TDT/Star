@@ -15,11 +15,6 @@ public class AuthController {
         this.authUsecase = authUsecase;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello, World!";
-    }
-
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignUpParams signUpParams) {
         return ResponseEntity.ok(authUsecase.signUpByEmail(signUpParams));
@@ -28,5 +23,11 @@ public class AuthController {
     @GetMapping("/confirm-signup")
     public ResponseEntity<?> confirmSignup(@RequestParam String token) {
         return ResponseEntity.ok(authUsecase.confirmSignup(token));
+    }
+
+    @PostMapping("/resend-confirmation")
+    public ResponseEntity<?> resendConfirmation(@RequestBody(required = false) String email) {
+        authUsecase.resendConfirmation(email);
+        return ResponseEntity.ok().build();
     }
 }
