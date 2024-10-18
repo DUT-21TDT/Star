@@ -1,15 +1,10 @@
 package com.pbl.star.utils;
 
-import com.pbl.star.enums.UserRole;
+import com.pbl.star.dtos.query.user.GeneralInformation;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class AuthUtil {
-    public static CurrentUser getCurrentUser() {
-        return CurrentUser.builder()
-                .id(SecurityContextHolder.getContext().getAuthentication().getName())
-                .role(UserRole.valueOf(
-                        SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().findFirst().get().getAuthority())
-                )
-                .build();
+    public static GeneralInformation getCurrentUser() {
+        return (GeneralInformation) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

@@ -1,10 +1,13 @@
 package com.pbl.star.configurations;
 
-import com.pbl.star.services.UserService;
+import com.pbl.star.security.CustomJwtAuthenticationConverter;
+import com.pbl.star.services.domain.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,9 +15,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
@@ -32,7 +35,7 @@ public class SecurityConfig {
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/h2-console", "/h2-console/**").permitAll();
-                    authorize.requestMatchers("auth/**").permitAll();
+                    authorize.requestMatchers("auth/signup", "auth/confirm-signup").permitAll();
                     authorize.anyRequest().authenticated();
                 })
                 .oauth2ResourceServer(
@@ -57,13 +60,7 @@ public class SecurityConfig {
     private UserService userService;
 
     @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            String userId = jwt.getClaimAsString("sub");
-            return userService.getUserAuthorities(userId);
-        });
-
-        return jwtAuthenticationConverter;
+    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
+        return new CustomJwtAuthenticationConverter(userService);
     }
 }
