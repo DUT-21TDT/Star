@@ -1,9 +1,8 @@
 package com.pbl.star.usecase.impl;
 
-import com.pbl.star.services.RoomService;
+import com.pbl.star.services.domain.RoomService;
 import com.pbl.star.usecase.RoomInteractUsecase;
 import com.pbl.star.utils.AuthUtil;
-import com.pbl.star.utils.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +13,13 @@ public class RoomInteractUsecaseImpl implements RoomInteractUsecase {
     private final RoomService roomService;
     @Override
     public void joinRoom(String roomId) {
-        CurrentUser currentUser = AuthUtil.getCurrentUser();
-        roomService.joinRoom(currentUser.getId(), roomId);
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        roomService.joinRoom(currentUserId, roomId);
     }
 
     @Override
     public void leaveRoom(String roomId) {
-        CurrentUser currentUser = AuthUtil.getCurrentUser();
-        roomService.leaveRoom(currentUser.getId(), roomId);
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        roomService.leaveRoom(currentUserId, roomId);
     }
 }

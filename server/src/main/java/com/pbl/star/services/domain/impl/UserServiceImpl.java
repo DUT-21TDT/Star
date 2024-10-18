@@ -1,4 +1,4 @@
-package com.pbl.star.services.impl;
+package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.query.user.PersonalInformation;
@@ -6,29 +6,23 @@ import com.pbl.star.dtos.query.user.PublicProfile;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.dtos.response.user.PublicProfileResponse;
 import com.pbl.star.entities.User;
-import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.Gender;
-import com.pbl.star.enums.UserRole;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.IllegalRequestArgumentException;
 import com.pbl.star.exceptions.RequiredFieldMissingException;
 import com.pbl.star.repositories.UserRepository;
-import com.pbl.star.services.UserService;
+import com.pbl.star.services.domain.UserService;
 import com.pbl.star.utils.AuthUtil;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,10 +32,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public GeneralInformation getGeneralInformation(String userId) {
-        return userRepository.getGeneralInformationById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User not found")
-        );
+    public Optional<GeneralInformation> getGeneralInformation(String userId) {
+        return userRepository.getGeneralInformationById(userId);
     }
 
     @Override
@@ -62,12 +54,6 @@ public class UserServiceImpl implements UserService {
         publicProfileResponse.setFollowing(false);
 
         return publicProfileResponse;
-    }
-
-    @Override
-    public Collection<GrantedAuthority> getUserAuthorities(String userId) {
-        UserRole role = userRepository.getRoleByUserId(userId);
-        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
@@ -137,14 +123,5 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
-    }
-
-    @Override
-    public void removeInactiveAccountByEmail(String email) {
-        List<User> inactiveUsers = userRepository.findByEmailAndStatus(email, AccountStatus.INACTIVE);
-
-        if (!inactiveUsers.isEmpty()) {
-            userRepository.deleteAll(inactiveUsers);
-        }
     }
 }

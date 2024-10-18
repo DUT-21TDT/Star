@@ -3,10 +3,9 @@ package com.pbl.star.usecase.impl;
 import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
-import com.pbl.star.services.UserService;
+import com.pbl.star.services.domain.UserService;
 import com.pbl.star.usecase.ProfileManageUsecase;
 import com.pbl.star.utils.AuthUtil;
-import com.pbl.star.utils.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,14 +17,13 @@ public class ProfileManageUsecaseImpl implements ProfileManageUsecase {
 
     @Override
     public GeneralInformation getGeneralInformation() {
-        String userId = AuthUtil.getCurrentUser().getId();
-        return userService.getGeneralInformation(userId);
+        return AuthUtil.getCurrentUser();
     }
 
     @Override
     public PersonalInformation getPersonalInformation() {
-        CurrentUser currentUser = AuthUtil.getCurrentUser();
-        return userService.getPersonalInformation(currentUser.getId());
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return userService.getPersonalInformation(currentUserId);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.pbl.star.services;
+package com.pbl.star.services.domain;
 
 import com.pbl.star.dtos.query.post.PostOverviewDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;

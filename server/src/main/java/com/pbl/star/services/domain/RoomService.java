@@ -1,4 +1,4 @@
-package com.pbl.star.services;
+package com.pbl.star.services.domain;
 
 import com.pbl.star.dtos.query.room.RoomOverviewDTO;
 import com.pbl.star.dtos.query.room.RoomOverviewForUserDTO;

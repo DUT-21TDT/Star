@@ -1,4 +1,4 @@
-package com.pbl.star.services;
+package com.pbl.star.services.domain;
 
 import com.pbl.star.entities.User;
 import com.pbl.star.entities.VerificationToken;

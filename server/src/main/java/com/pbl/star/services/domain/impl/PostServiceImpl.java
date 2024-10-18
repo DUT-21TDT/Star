@@ -1,4 +1,4 @@
-package com.pbl.star.services.impl;
+package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.query.post.PostOverviewDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
@@ -8,7 +8,7 @@ import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.mapper.PostCreationMapper;
 import com.pbl.star.repositories.*;
-import com.pbl.star.services.PostService;
+import com.pbl.star.services.domain.PostService;
 import com.pbl.star.utils.CreatePostValidator;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
