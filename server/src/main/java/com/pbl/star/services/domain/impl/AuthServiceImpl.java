@@ -1,4 +1,4 @@
-package com.pbl.star.services.impl;
+package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.entities.User;
@@ -10,9 +10,10 @@ import com.pbl.star.exceptions.InvalidVerificationTokenException;
 import com.pbl.star.mapper.UserSignUpMapper;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.VerificationTokenRepository;
-import com.pbl.star.services.AuthService;
+import com.pbl.star.services.domain.AuthService;
 import com.pbl.star.utils.SignUpValidator;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserSignUpMapper userSignUpMapper;
 
+    @Override
     @Transactional
     public User signUpByEmail(SignUpParams signUpParams) {
 
@@ -55,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    @Override
     @Transactional
     public User confirmSignup(String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
@@ -71,6 +74,28 @@ public class AuthServiceImpl implements AuthService {
         }
 
         user.setStatus(AccountStatus.ACTIVE);
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User handleResendConfirmation(String userId, String email) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (user.getStatus() == AccountStatus.ACTIVE) {
+            throw new EntityConflictException("Account already activated");
+        }
+
+        if (StringUtils.isBlank(email) || email.equals(user.getEmail())) {
+            return user;
+        }
+
+        if (userRepository.existsValidAccountByEmail(email)) {
+            throw new EntityConflictException("Email already used by another account");
+        }
+
+        user.setEmail(email);
         return userRepository.save(user);
     }
 }

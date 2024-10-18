@@ -7,4 +7,5 @@ import com.pbl.star.dtos.response.user.SignUpResponse;
 public interface AuthUsecase {
     SignUpResponse signUpByEmail(SignUpParams signUpParams);
     ConfirmSignUpResponse confirmSignup(String token);
+    void resendConfirmation(String email);
 }
