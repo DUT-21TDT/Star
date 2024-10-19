@@ -23,7 +23,6 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
 import { storeInformationUser } from "../../../redux/slice/user-slice";
-import { getCurrentUser } from "../../../service/userAPI";
 
 dayjs.extend(customParseFormat);
 
@@ -136,19 +135,12 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
             if (uploadSuccess) {
               dataEdit.avatarFileName = `avatar/${id}${getDateTime}.${fileExtension}`;
               updateProfile(dataEdit, {
-                onSuccess: () => {
+                onSuccess: (result) => {
                   message.success("Profile updated successfully");
                   queryClient.invalidateQueries({
                     queryKey: QUERY_KEY.getProfileUser(id),
                   });
-                  getCurrentUser().then((res) => {
-                    dispatch(
-                      storeInformationUser({
-                        username: res?.username,
-                        avatarUrl: res?.avatarUrl || "",
-                      })
-                    );
-                  });
+                  dispatch(storeInformationUser(result));
                   setOpenModal(false);
                 },
                 onError: () => {
@@ -167,16 +159,12 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
         });
       } else {
         updateProfile(dataEdit, {
-          onSuccess: () => {
+          onSuccess: (result) => {
             message.success("Profile updated successfully");
             queryClient.invalidateQueries({
               queryKey: QUERY_KEY.getProfileUser(id),
             });
-            dispatch(
-              storeInformationUser({
-                username: dataEdit.username,
-              })
-            );
+            dispatch(storeInformationUser(result));
             setOpenModal(false);
           },
           onError: () => {
