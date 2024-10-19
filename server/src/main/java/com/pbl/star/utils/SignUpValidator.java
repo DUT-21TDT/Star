@@ -3,6 +3,7 @@ package com.pbl.star.utils;
 import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.exceptions.InvalidSignUpParamsException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 
 import java.util.regex.Pattern;
 
@@ -17,20 +18,21 @@ public class SignUpValidator {
         }
 
         if (StringUtils.isBlank(signUpParams.getEmail())) {
-            throw new InvalidSignUpParamsException("Username is required");
+            throw new InvalidSignUpParamsException("Email is required");
         }
 
         if (StringUtils.isBlank(signUpParams.getPassword())) {
-            throw new InvalidSignUpParamsException("Username is required");
+            throw new InvalidSignUpParamsException("Password is required");
         }
 
         if (StringUtils.isBlank(signUpParams.getConfirmPassword())) {
-            throw new InvalidSignUpParamsException("Username is required");
+            throw new InvalidSignUpParamsException("Confirm password is required");
         }
     }
 
     public static void validateSignUpRules(SignUpParams signUpParams) {
         validateUsername(signUpParams.getUsername());
+        validateEmail(signUpParams.getEmail());
         validatePassword(signUpParams.getPassword());
         validateConfirmPassword(signUpParams.getPassword(), signUpParams.getConfirmPassword());
     }
@@ -38,6 +40,12 @@ public class SignUpValidator {
     private static void validateUsername(String username) {
         if (!USERNAME_PATTERN.matcher(username).matches()) {
             throw new InvalidSignUpParamsException("Username must be between 6 and 30 characters long and can only contain letters, numbers, and special characters . _");
+        }
+    }
+
+    private static void validateEmail(String email) {
+        if (!EmailValidator.getInstance().isValid(email)) {
+            throw new InvalidSignUpParamsException("Invalid email address");
         }
     }
 

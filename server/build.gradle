@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'software.amazon.awssdk:s3:2.27.22'
+    implementation 'commons-validator:commons-validator:1.9.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql:42.7.3'
