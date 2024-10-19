@@ -68,8 +68,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updatePersonalInformation(UpdateProfileParams updateProfileParams) {
-        User user = userRepository.findById(AuthUtil.getCurrentUser().getId())
+    public User updatePersonalInformation(String userId, UpdateProfileParams updateProfileParams) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (StringUtils.isBlank(updateProfileParams.getUsername())) {
@@ -122,6 +122,6 @@ public class UserServiceImpl implements UserService {
             throw new IllegalRequestArgumentException("Date of birth is invalid");
         }
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }

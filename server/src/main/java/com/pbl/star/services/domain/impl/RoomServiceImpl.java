@@ -44,7 +44,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public String createRoom(CreateRoomParams params) {
+    public Room createRoom(CreateRoomParams params) {
 
         if (StringUtils.isBlank(params.getName())) {
             throw new RequiredFieldMissingException("Room name cannot be empty");
@@ -58,7 +58,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomCreationMapper.toEntity(params);
         room.setCreatedAt(Instant.now());
 
-        return roomRepository.save(room).getId();
+        return roomRepository.save(room);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public void updateRoom(String roomId, CreateRoomParams params) {
+    public Room updateRoom(String roomId, CreateRoomParams params) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("Room with id '" + roomId + "' does not exist"));
 
@@ -91,7 +91,7 @@ public class RoomServiceImpl implements RoomService {
         room.setName(newName);
         room.setDescription(newDescription);
 
-        roomRepository.save(room);
+        return roomRepository.save(room);
     }
 
     @Override

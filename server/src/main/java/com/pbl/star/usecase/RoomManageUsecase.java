@@ -11,5 +11,5 @@ public interface RoomManageUsecase {
     List<RoomOverviewForUserDTO> getAllRoomsForUser();
     String createRoom(CreateRoomParams params);
     void deleteRoom(String roomId);
-    void updateRoom(String roomId, CreateRoomParams params);
+    String updateRoom(String roomId, CreateRoomParams params);
 }

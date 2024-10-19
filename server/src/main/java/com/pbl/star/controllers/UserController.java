@@ -39,8 +39,7 @@ public class UserController {
     @PatchMapping("/me/personal-information")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> updatePersonalInformation(@ModelAttribute UpdateProfileParams updateProfileParams) {
-        profileManageUsecase.updatePersonalInformation(updateProfileParams);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(profileManageUsecase.updatePersonalInformation(updateProfileParams));
     }
 
     @GetMapping("{userId}/posts")

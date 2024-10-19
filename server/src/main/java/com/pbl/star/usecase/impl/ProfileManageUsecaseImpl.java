@@ -3,6 +3,7 @@ package com.pbl.star.usecase.impl;
 import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
+import com.pbl.star.entities.User;
 import com.pbl.star.services.domain.UserService;
 import com.pbl.star.usecase.ProfileManageUsecase;
 import com.pbl.star.utils.AuthUtil;
@@ -27,7 +28,9 @@ public class ProfileManageUsecaseImpl implements ProfileManageUsecase {
     }
 
     @Override
-    public void updatePersonalInformation(UpdateProfileParams updateProfileParams) {
-        userService.updatePersonalInformation(updateProfileParams);
+    public GeneralInformation updatePersonalInformation(UpdateProfileParams updateProfileParams) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        User updatedUser = userService.updatePersonalInformation(currentUserId, updateProfileParams);
+        return new GeneralInformation(updatedUser);
     }
 }
