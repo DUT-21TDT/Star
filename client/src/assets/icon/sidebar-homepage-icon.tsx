@@ -1,5 +1,11 @@
 import React from "react";
 import "../css/sidebar.css";
+import type { MenuProps } from "antd";
+import { Dropdown } from "antd";
+import { useAppDispatch } from "../../redux/store/hook";
+import { endSession, revokeToken } from "../../service/userAPI";
+import { removeInformationUser } from "../../redux/slice/user-slice";
+import Cookies from "js-cookie";
 interface IProps {
   width: string;
   height: string;
@@ -252,23 +258,48 @@ const PinIcon: React.FC<IProps> = ({ width, height }) => {
 };
 
 const MenuIcon: React.FC<IProps> = ({ width, height }) => {
+  const dispatch = useAppDispatch();
+  const handleLogout = async () => {
+    await revokeToken();
+    await endSession();
+    Cookies.remove("JSESSIONID");
+    Cookies.remove("id_token");
+    Cookies.remove("refresh_token");
+    Cookies.remove("access_token");
+    dispatch(removeInformationUser());
+    window.location.href = "/login";
+  };
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: (
+        <div className="w-[100px] h-[35px] text-[18px] font-semibold flex items-center justify-center">
+          Log out
+        </div>
+      ),
+      onClick: handleLogout,
+    },
+  ];
+
   return (
-    <svg
-      className="menu-icon"
-      width={`${width}px`}
-      height={`${height}px`}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M4 6H20M4 12H14M4 18H9"
-        // stroke="#B8B8B8"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <Dropdown menu={{ items }} placement="topRight" arrow={false}>
+      <svg
+        className="menu-icon"
+        width={`${width}px`}
+        height={`${height}px`}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4 6H20M4 12H14M4 18H9"
+          // stroke="#B8B8B8"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </Dropdown>
   );
 };
 

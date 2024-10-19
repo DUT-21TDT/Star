@@ -2,13 +2,9 @@ import { ConfigProvider } from "antd";
 import { newFeedsTheme } from "../../utils/theme";
 import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
 import CreatePost from "../../components/user/profile/posts/create-post";
-import { useGetProfileUser } from "../../hooks/user";
-import { useAppSelector } from "../../redux/store/hook";
 import PostsOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed";
 
 const NewFeed = () => {
-  const id = useAppSelector((state) => state.user.id);
-  const { data } = useGetProfileUser(id || "");
   return (
     <ConfigProvider theme={newFeedsTheme}>
       <div className="w-full flex justify-center bg-white">
@@ -27,11 +23,7 @@ const NewFeed = () => {
             }}
           >
             {/* NewFeed Content */}
-            <CreatePost
-              isCurrentUser={data?.isCurrentUser}
-              isFollowing={data?.isFollowing}
-              publicProfile={data?.publicProfile}
-            />
+            <CreatePost />
             <PostsOnNewsFeed />
           </div>
         </div>
