@@ -200,6 +200,17 @@ const getPresignedURL = async (fileName: string) => {
   return response.data;
 };
 
+const resendVerifyEmail = async (email: string) => {
+  if (email === "") {
+    const response = await instance.post(`auth/resend-confirmation`);
+    return response;
+  }
+  const response = await instance.post(`auth/resend-confirmation`, {
+    email,
+  });
+  return response;
+};
+
 export {
   createNewUser,
   confirmAccount,
@@ -213,4 +224,5 @@ export {
   editProfile,
   getPersonalInformation,
   getPresignedURL,
+  resendVerifyEmail,
 };
