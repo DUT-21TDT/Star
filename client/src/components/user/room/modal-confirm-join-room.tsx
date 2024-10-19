@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Button, message } from "antd";
 import { useJoinRoom, useLeaveRoomForUser } from "../../../hooks/room";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,7 +28,11 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
   const { mutate: joinRoom } = useJoinRoom();
   const { mutate: leaveRoom } = useLeaveRoomForUser();
   const queryClient = useQueryClient();
+
+  const [loading, setLoading] = useState(false);
+
   const handleJoinRoom = () => {
+    setLoading(true);
     joinRoom(dataRoom?.id.toString() || "", {
       onSuccess: () => {
         message.success("Join room successfully");
@@ -40,9 +44,14 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
       onError: () => {
         message.error("Join room failed. Please try again later");
       },
+      onSettled: () => {
+        setLoading(false);
+      },
     });
   };
+
   const handleLeaveRoom = () => {
+    setLoading(true);
     leaveRoom(dataRoom?.id.toString() || "", {
       onSuccess: () => {
         message.success("Leave room successfully");
@@ -53,6 +62,9 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
       },
       onError: () => {
         message.error("Leave room failed. Please try again later");
+      },
+      onSettled: () => {
+        setLoading(false);
       },
     });
   };
@@ -89,6 +101,7 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
                 <Button
                   type="primary"
                   onClick={handleLeaveRoom}
+                  loading={loading}
                   style={{ marginLeft: 12, backgroundColor: "black" }}
                 >
                   Leave Room
@@ -109,6 +122,7 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
                 <Button
                   type="primary"
                   onClick={handleJoinRoom}
+                  loading={loading}
                   style={{ marginLeft: 12, backgroundColor: "black" }}
                 >
                   Join Room

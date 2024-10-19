@@ -51,6 +51,11 @@ const UserProfile: React.FC<IProps> = (props) => {
               height={80}
               style={{
                 borderRadius: "50%",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                objectFit: "cover",
+                objectPosition: "center",
               }}
               id="avatar-profile"
             />

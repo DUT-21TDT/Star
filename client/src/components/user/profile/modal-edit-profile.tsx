@@ -17,11 +17,13 @@ import {
   useGetPersonalInformation,
   useGetPresignedUrl,
 } from "../../../hooks/user";
-import { useAppSelector } from "../../../redux/store/hook";
+import { useAppDispatch, useAppSelector } from "../../../redux/store/hook";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
+import { storeInformationUser } from "../../../redux/slice/user-slice";
+import { getCurrentUser } from "../../../service/userAPI";
 
 dayjs.extend(customParseFormat);
 
@@ -33,7 +35,7 @@ interface IProps {
 const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
   const { TextArea } = Input;
   const { Option } = Select;
-  const id = useAppSelector((state) => state.user.id);
+  const id = useAppSelector((state) => state.user.id) || "";
   const { data, refetch } = useGetPersonalInformation();
   const { mutate: getPresignedURL } = useGetPresignedUrl();
   const { mutate: updateProfile } = useEditProfile();
@@ -46,6 +48,8 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
   const [loading, setLoading] = useState(false);
   const [avatarFileName, setAvatarFileName] = useState<string>();
   const queryClient = useQueryClient();
+
+  const dispatch = useAppDispatch();
 
   // Memoized initial values to avoid re-rendering
   const initialValues = useMemo(() => {
@@ -137,6 +141,14 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
                   queryClient.invalidateQueries({
                     queryKey: QUERY_KEY.getProfileUser(id),
                   });
+                  getCurrentUser().then((res) => {
+                    dispatch(
+                      storeInformationUser({
+                        username: res?.username,
+                        avatarUrl: res?.avatarUrl || "",
+                      })
+                    );
+                  });
                   setOpenModal(false);
                 },
                 onError: () => {
@@ -160,6 +172,11 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
             queryClient.invalidateQueries({
               queryKey: QUERY_KEY.getProfileUser(id),
             });
+            dispatch(
+              storeInformationUser({
+                username: dataEdit.username,
+              })
+            );
             setOpenModal(false);
           },
           onError: () => {

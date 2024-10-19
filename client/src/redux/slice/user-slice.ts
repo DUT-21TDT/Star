@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface IUser {
-  id: string;
-  username: string;
-  role: string;
-  status: string;
-  avatarUrl: string;
+  id?: string;
+  username?: string;
+  role?: string;
+  status?: string;
+  avatarUrl?: string;
 }
 
 // Create an initial state
@@ -14,18 +14,17 @@ const initialState: IUser = {
   username: "",
   role: "",
   status: "",
-  avatarUrl: ""
+  avatarUrl: "",
 };
 export const userSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
     storeInformationUser: (state, action: PayloadAction<IUser>) => {
-      state.id = action.payload.id;
-      state.username = action.payload.username;
-      state.role = action.payload.role;
-      state.status = action.payload.status;
-      state.avatarUrl = action.payload.avatarUrl;
+      return {
+        ...state,
+        ...action.payload,
+      };
     },
     removeInformationUser: (state) => {
       state.id = "";

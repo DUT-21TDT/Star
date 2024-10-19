@@ -1,20 +1,10 @@
 import { Avatar, Button, Input } from "antd";
 import React from "react";
 import default_image from "../../../../assets/images/default_image.jpg";
-interface IProps {
-  isCurrentUser: boolean;
-  isFollowing: boolean;
-  publicProfile: {
-    avatarUrl: string | null;
-    bio: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    numberOfFollowers: number;
-    privateProfile: boolean;
-    username: string;
-  };
-}
-const CreatePost: React.FC<IProps> = ({ publicProfile }) => {
+import { useAppSelector } from "../../../../redux/store/hook";
+
+const CreatePost: React.FC = () => {
+  const publicProfile = useAppSelector((state) => state.user);
   return (
     <div
       style={{

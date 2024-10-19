@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useGetProfileUser } from "../../../../hooks/user";
 import { useParams } from "react-router-dom";
 import CreatePost from "./create-post";
 import Post from "./Post";
@@ -24,7 +23,6 @@ interface PostType {
 
 const PostOnWall: React.FC = () => {
   const { id } = useParams();
-  const { data } = useGetProfileUser(id || "");
   const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
   const { dataPost, isLoading, hasNextPost } = useFetchAllPostsOnWall(
@@ -70,11 +68,7 @@ const PostOnWall: React.FC = () => {
   }, [hasNextPost]);
   return (
     <>
-      <CreatePost
-        isCurrentUser={data?.isCurrentUser}
-        isFollowing={data?.isFollowing}
-        publicProfile={data?.publicProfile}
-      />
+      <CreatePost />
       {isLoading && (
         <div className="flex items-center justify-center mt-8">
           <Spin indicator={<LoadingOutlined spin />} size="large" />
