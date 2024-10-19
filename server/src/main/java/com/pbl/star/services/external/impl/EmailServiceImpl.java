@@ -10,6 +10,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendConfirmationEmail(String email, VerificationToken token) throws MessagingException {
+    public void sendConfirmationEmail(String email, VerificationToken token) throws MessagingException, MailSendException {
         String subject = "Registration Confirmation";
         String confirmationUrl
                 = clientUrl + "/confirm-signup?token=" + token.getToken();

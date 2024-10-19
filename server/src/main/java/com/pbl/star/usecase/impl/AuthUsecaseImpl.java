@@ -1,12 +1,15 @@
 package com.pbl.star.usecase.impl;
 
+import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.dtos.response.user.ConfirmSignUpResponse;
 import com.pbl.star.dtos.response.user.SignUpResponse;
 import com.pbl.star.entities.User;
 import com.pbl.star.entities.VerificationToken;
+import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.events.OnConfirmSignUpEvent;
 import com.pbl.star.events.OnSignUpCompleteEvent;
+import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.services.domain.AuthService;
 import com.pbl.star.services.domain.VerificationTokenService;
 import com.pbl.star.services.external.EmailService;
@@ -15,6 +18,7 @@ import com.pbl.star.utils.AuthUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -50,8 +54,13 @@ public class AuthUsecaseImpl implements AuthUsecase {
 
     @Override
     public void resendConfirmation(String email) {
-        String currentUserId = AuthUtil.getCurrentUser().getId();
-        User user = authService.handleResendConfirmation(currentUserId, email);
+        GeneralInformation currentUser = AuthUtil.getCurrentUser();
+
+        if (currentUser.getStatus() == AccountStatus.ACTIVE) {
+            throw new EntityConflictException("User is already active");
+        }
+
+        User user = authService.handleResendConfirmation(currentUser.getId(), email);
 
         // Remove old verification token
         verificationTokenService.removeVerificationToken(user);
@@ -60,7 +69,7 @@ public class AuthUsecaseImpl implements AuthUsecase {
 
         try {
             emailService.sendConfirmationEmailAsync(user.getEmail(), token);
-        } catch (MessagingException e) {
+        } catch (MailException | MessagingException e) {
             throw new RuntimeException(e);
         }
     }

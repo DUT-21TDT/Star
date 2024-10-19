@@ -1,5 +1,6 @@
 package com.pbl.star.controllers;
 
+import com.pbl.star.dtos.request.user.ResendEmailParams;
 import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.usecase.AuthUsecase;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,8 @@ public class AuthController {
     }
 
     @PostMapping("/resend-confirmation")
-    public ResponseEntity<?> resendConfirmation(@RequestBody(required = false) String email) {
-        authUsecase.resendConfirmation(email);
+    public ResponseEntity<?> resendConfirmation(@RequestBody(required = false) ResendEmailParams resendEmailParams) {
+        authUsecase.resendConfirmation(resendEmailParams.getEmail());
         return ResponseEntity.ok().build();
     }
 }
