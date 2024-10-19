@@ -47,8 +47,8 @@ public class RoomController {
     @PatchMapping("/{roomId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> updateRoom(@PathVariable String roomId, @ModelAttribute CreateRoomParams params) {
-        roomManageUsecase.updateRoom(roomId, params);
-        return ResponseEntity.ok().build();
+        String updatedRoomId = roomManageUsecase.updateRoom(roomId, params);
+        return ResponseEntity.ok(Map.of("id", updatedRoomId));
     }
 
     @PostMapping("/{roomId}/members")

@@ -7,5 +7,5 @@ import com.pbl.star.dtos.request.user.UpdateProfileParams;
 public interface ProfileManageUsecase {
     GeneralInformation getGeneralInformation();
     PersonalInformation getPersonalInformation();
-    void updatePersonalInformation(UpdateProfileParams updateProfileParams);
+    GeneralInformation updatePersonalInformation(UpdateProfileParams updateProfileParams);
 }
