@@ -1,4 +1,4 @@
-import { Avatar, Button, Carousel, Image, Popover } from "antd";
+import { Avatar, Button, Popover } from "antd";
 import React, { useState } from "react";
 import { EllipsisOutlined } from "@ant-design/icons";
 import ReactButton from "./react-button";
@@ -7,6 +7,7 @@ import default_image from "../../../../assets/images/default_image.jpg";
 import { timeAgo } from "../../../../utils/convertTime";
 import { useNavigate } from "react-router-dom";
 import ContainerInformationUser from "./container-information-user";
+import useEmblaCarousel from "embla-carousel-react";
 
 interface IProps {
   id: string;
@@ -47,6 +48,19 @@ const Post: React.FC<IProps> = (props) => {
   const [popoverContent, setPopoverContent] = useState<React.ReactNode>(
     <div></div>
   );
+
+  // Dragging image feature
+  const [emblaRef] = useEmblaCarousel({ loop: false });
+
+  const [isDraggingImg, setIsDraggingImg] = useState(false);
+
+  const handleMouseDown = () => {
+    setIsDraggingImg(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsDraggingImg(false);
+  };
 
   const handleNavigateProfileUser = (id: string) => () => {
     if (id) {
@@ -147,29 +161,38 @@ const Post: React.FC<IProps> = (props) => {
           </p>
         </div>
         {postImageUrls && postImageUrls.length > 0 && (
-          <div
-            style={{
-              height: "320px",
-              width: "100%",
-              margin: "10px 0px",
-              display: "flex",
-              gap: "10px",
-            }}
-          >
-            <Carousel arrows>
+          <div className="embla" ref={emblaRef} style={{ overflow: "hidden", maxHeight: "400px" }}>
+            <div className="embla__container"
+              style={{ display: "flex", cursor: isDraggingImg ? "grabbing" : "grab" }}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+            >
               {postImageUrls.map((url) => (
-                <Image
-                  key={url}
-                  src={url}
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: "center",
-                  }}
-                  width={"100%"}
-                  height={320}
-                />
+                <div className="embla__slide" key={url} style={{
+                  flex: "0 0 auto",
+                  marginRight: "15px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "white"
+                }}>
+                  <img
+                    key={url}
+                    src={url}
+                    alt="Post Image"
+                    style={{
+                      maxHeight: "400px",
+                      maxWidth: "560px",
+                      width: "auto",
+                      objectFit: "cover",
+                      objectPosition: "center",
+                      borderRadius: "15px", /* Rounded corners */
+                      // transition: "transform 0.3s ease", /* Smooth scaling effect */
+                    }}
+                  />
+                </div>
               ))}
-            </Carousel>
+            </div>
           </div>
         )}
 

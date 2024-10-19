@@ -4,8 +4,6 @@ import {
   createNewUser,
   confirmAccount,
   getTokenFromCode,
-  // getDataCurrentUser,
-  getCurrentUserFromToken,
   getInformationUserFromId,
   editProfile,
   getPersonalInformation,
@@ -39,19 +37,10 @@ const useGetTokenFromCode = (code: string) => {
   };
 };
 
-const useGetUserFromToken = (token: string | null) => {
-  return useQuery({
-    queryKey: QUERY_KEY.getCurrentUserFromToken(token),
-    queryFn: () => getCurrentUserFromToken(token),
-  });
-};
-
 const useGoogleLogin = () => {
-  const urlAuthLogin = `${
-    import.meta.env.VITE_BACKEND_AUTH_URL
-  }/oauth2/authorize?response_type=code&client_id=${
-    import.meta.env.VITE_CLIENT_ID
-  }&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
+  const urlAuthLogin = `${import.meta.env.VITE_BACKEND_AUTH_URL
+    }/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_CLIENT_ID
+    }&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
 
   const handleGoogleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -70,6 +59,7 @@ const useGetProfileUser = (id: string) => {
     queryFn: () => getInformationUserFromId(id),
   });
 };
+
 const useEditProfile = () => {
   return useMutation({
     mutationFn: editProfile,
@@ -92,8 +82,6 @@ export {
   usePostNewUser,
   useConfirmAccount,
   useGetTokenFromCode,
-  // useGetCurrentUserFromToken,
-  useGetUserFromToken,
   useGoogleLogin,
   useGetProfileUser,
   useEditProfile,
