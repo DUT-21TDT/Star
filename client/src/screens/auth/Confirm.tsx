@@ -3,12 +3,22 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { Button, Result, Spin } from "antd";
 import { useConfirmAccount } from "../../hooks/user";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../redux/store/hook";
+import { storeInformationUser } from "../../redux/slice/user-slice";
 
 const Confirm: React.FC = () => {
   const params = new URLSearchParams(window.location.search);
   const token = params.get("token");
   const { data, isError, isLoading } = useConfirmAccount(token);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  if (data) {
+    dispatch(
+      storeInformationUser({
+        status: "ACTIVE",
+      })
+    );
+  }
   return (
     <>
       {data && (

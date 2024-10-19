@@ -5,7 +5,7 @@ import { Button, Divider, Form, Input, QRCode, message } from "antd";
 import { usePostNewUser } from "../../hooks/user";
 import { ConfigProvider } from "antd";
 import { SignUpTheme } from "../../utils/theme";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleLoginButton from "../../components/user/login/GoogleLoginButton";
 import { AxiosError } from "axios";
 interface SubmitButtonProps {
@@ -57,6 +57,7 @@ const SubmitButton: React.FC<React.PropsWithChildren<SubmitButtonProps>> = ({
 const SignUp: React.FC = () => {
   const [form] = Form.useForm();
   const { mutate: postNewUser } = usePostNewUser();
+  const navigate = useNavigate();
   const validateForm = (
     form: IForm
   ): {
@@ -121,6 +122,7 @@ const SignUp: React.FC = () => {
               "Your account has been created. Please check your email to confirm your registration.",
             duration: 4,
           });
+          navigate("/login");
         },
         onError: (error: Error) => {
           const axiosError = error as AxiosError;
