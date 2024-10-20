@@ -95,7 +95,7 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
                 Do you want to leave {dataRoom?.name}?
               </p>
               <div>
-                <Button onClick={handleCancel} style={{ marginLeft: 8 }}>
+                <Button onClick={handleCancel} style={{ marginLeft: 8 }} disabled={loading}>
                   Cancel
                 </Button>
                 <Button
@@ -116,7 +116,7 @@ const ModalConfirmJoinRoom: React.FC<IProps> = ({
                 Do you want to join {dataRoom?.name}?
               </p>
               <div>
-                <Button onClick={handleCancel} style={{ marginLeft: 8 }}>
+                <Button onClick={handleCancel} style={{ marginLeft: 8 }} disabled={loading}>
                   Cancel
                 </Button>
                 <Button
