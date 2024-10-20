@@ -15,4 +15,5 @@ export const QUERY_KEY = {
   fetchAllRoomForUser: () => ["fetchAllRoomForUser"],
   fetchAllPostsOnWall: (userId: string) => ["fetchAllPostsOnWall", userId],
   fetchAllPostsOnNewsFeed: () => ["fetchAllPostsOnNewsFeed"],
+  likePost: (postId: string) => ["likePost", postId],
 };

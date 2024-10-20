@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
 import { getAllPostOnNewsFeed, getPostOnProfileWall } from "../service/postAPI";
+import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
   limit: number;
   after: string | null;
@@ -36,4 +37,22 @@ const useFetchAllPostsOnNewsFeed = (config: configTypeProfileWall) => {
     afterTime: result.data?.content[result.data?.content.length - 1]?.createdAt,
   };
 };
-export { useFetchAllPostsOnWall, useFetchAllPostsOnNewsFeed };
+
+const useLikePost = () => {
+  return useMutation({
+    mutationFn: likePost
+  });
+}
+
+const useUnlikePost = () => {
+  return useMutation({
+    mutationFn: unlikePost
+  });
+}
+
+export {
+  useFetchAllPostsOnWall,
+  useFetchAllPostsOnNewsFeed,
+  useLikePost,
+  useUnlikePost
+};

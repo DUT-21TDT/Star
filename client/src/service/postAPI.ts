@@ -28,4 +28,15 @@ const getAllPostOnNewsFeed = async (config: configTypeProfileWall) => {
   console.log(response);
   return response.data;
 };
-export { getPostOnProfileWall, getAllPostOnNewsFeed };
+
+const likePost = async (postId: string) => {
+  const response = await instance.post(`/posts/${postId}/likes`);
+  return response.data;
+}
+
+const unlikePost = async (postId: string) => {
+  const response = await instance.delete(`/posts/${postId}/likes`);
+  return response.data;
+}
+
+export { getPostOnProfileWall, getAllPostOnNewsFeed, likePost, unlikePost };

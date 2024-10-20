@@ -29,6 +29,7 @@ interface IProps {
 
 const Post: React.FC<IProps> = (props) => {
   const {
+    id,
     avatarUrlOfCreator,
     createdAt,
     content,
@@ -197,6 +198,7 @@ const Post: React.FC<IProps> = (props) => {
         )}
 
         <ReactButton
+          postId={id}
           numberOfLikes={numberOfLikes}
           numberOfComments={numberOfComments}
           numberOfReposts={numberOfReposts}
