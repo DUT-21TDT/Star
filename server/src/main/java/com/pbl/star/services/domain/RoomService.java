@@ -12,7 +12,7 @@ public interface RoomService {
     List<RoomOverviewForUserDTO> getRoomsOverviewForUser();
     Room createRoom(CreateRoomParams params);
     void deleteRoom(String roomId);
-    Room updateRoom(String roomId, CreateRoomParams params);
+    void updateRoom(String roomId, CreateRoomParams params);
     void joinRoom(String userId, String roomId);
     void leaveRoom(String userId, String roomId);
 }

@@ -73,7 +73,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public Room updateRoom(String roomId, CreateRoomParams params) {
+    public void updateRoom(String roomId, CreateRoomParams params) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("Room with id '" + roomId + "' does not exist"));
 
@@ -91,15 +91,12 @@ public class RoomServiceImpl implements RoomService {
         room.setName(newName);
         room.setDescription(newDescription);
 
-        return roomRepository.save(room);
+        roomRepository.save(room);
     }
 
     @Override
     @Transactional
     public void joinRoom(String userId, String roomId) {
-        if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("User with id '" + userId + "' does not exist");
-        }
 
         if (!roomRepository.existsById(roomId)) {
             throw new EntityNotFoundException("Room with id '" + roomId + "' does not exist");

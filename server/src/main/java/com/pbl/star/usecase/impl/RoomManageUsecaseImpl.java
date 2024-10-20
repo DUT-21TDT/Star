@@ -37,7 +37,7 @@ public class RoomManageUsecaseImpl implements RoomManageUsecase {
     }
 
     @Override
-    public String updateRoom(String roomId, CreateRoomParams params) {
-        return roomService.updateRoom(roomId, params).getId();
+    public void updateRoom(String roomId, CreateRoomParams params) {
+        roomService.updateRoom(roomId, params);
     }
 }
