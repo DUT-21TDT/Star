@@ -192,7 +192,7 @@ const getPersonalInformation = async () => {
 };
 
 const getPresignedURL = async (fileName: string) => {
-  const response = await instance.post(`/images/presigned-url`, fileName, {
+  const response = await instance.post(`/images/avatar-presigned-url`, fileName, {
     headers: {
       "Content-Type": "text/plain",
     },
