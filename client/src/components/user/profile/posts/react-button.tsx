@@ -26,45 +26,42 @@ const ReactButton: React.FC<IProps> = ({
   const { mutate: unlikePost } = useUnlikePost();
 
   const handleLikeToggle = () => {
+
+    setLikesCount((prev) => (prev += isLiked ? -1 : 1));
+    setIsLiked((prev) => !prev);
+
     if (isLiked) {
       unlikePost(
         postId, // assuming postId is needed to unlike the post
         {
-          onSuccess: () => {
-            setIsLiked(false);
-            setLikesCount((prev) => prev - 1); // Decrease like count
-          },
           onError: (error: any) => {
-            if (error.response?.status === 404) {
-              setIsLiked(false);
-              setLikesCount((prev) => prev - 1); // Decrease like count
+            if (error.response?.status !== 404) {
+              setIsLiked(true);
+              setLikesCount((prev) => prev + 1); // Decrease like count
             }
-          }
+          },
         }
       );
     } else {
       likePost(
         postId, // assuming postId is needed to like the post
         {
-          onSuccess: () => {
-            setIsLiked(true);
-            setLikesCount((prev) => prev + 1); // Increase like count
-          },
           onError: (error: any) => {
-            if (error.response?.status === 409) {
-              setIsLiked(true);
-              setLikesCount((prev) => prev + 1); // Increase like count
-            } else if (error.response?.status === 404) {
-              message.error("The post you are trying to like does not exist");
+            if (error.response?.status !== 409) {
+              setIsLiked(false);
+              setLikesCount((prev) => prev - 1); // Increase like count
+              if (error.response?.status === 404) {
+                message.error("The post you are trying to like does not exist");
+              }
             }
-          }
+          },
         }
       );
     }
   };
 
   return (
-    <div className="flex items-center gap-2" style={{ userSelect: "none" }}>
+    <div className="flex mt-2 items-center gap-2" style={{ userSelect: "none" }}>
       <div
         className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${selectedButton == "like" ? "scale-[.80]" : ""}`} // Apply scale on press
         onMouseDown={() => setSelectedButton("like")}
@@ -86,7 +83,7 @@ const ReactButton: React.FC<IProps> = ({
             strokeWidth="1"
           />
         </svg>
-        <span>{likesCount !== 0 ? likesCount : ""}</span>
+        <span style={{ color: `${isLiked ? "#ff0034" : "black"}` }} >{likesCount !== 0 ? likesCount : ""}</span>
       </div>
 
       <div
