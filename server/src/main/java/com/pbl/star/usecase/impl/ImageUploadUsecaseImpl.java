@@ -1,6 +1,6 @@
 package com.pbl.star.usecase.impl;
 
-import com.pbl.star.dtos.response.image.GetPresignedUrlsResponse;
+import com.pbl.star.dtos.response.image.PostPresignedUrlsResponse;
 import com.pbl.star.exceptions.IllegalRequestArgumentException;
 import com.pbl.star.services.external.S3Service;
 import com.pbl.star.usecase.ImageUploadUsecase;
@@ -16,10 +16,15 @@ public class ImageUploadUsecaseImpl implements ImageUploadUsecase {
     private final S3Service s3Service;
 
     @Override
-    public GetPresignedUrlsResponse generatePresignedUrls(List<String> fileNames) {
+    public String avatarPresignedUrl(String fileName) {
+        return s3Service.generatePresignedUrl(fileName);
+    }
+
+    @Override
+    public PostPresignedUrlsResponse postPresignedUrls(List<String> fileNames) {
 
         if (fileNames == null || fileNames.isEmpty()) {
-            return GetPresignedUrlsResponse.builder()
+            return PostPresignedUrlsResponse.builder()
                     .successUrls(Set.of())
                     .missingFiles(Set.of())
                     .build();

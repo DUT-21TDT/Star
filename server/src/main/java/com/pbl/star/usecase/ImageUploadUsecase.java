@@ -1,9 +1,10 @@
 package com.pbl.star.usecase;
 
-import com.pbl.star.dtos.response.image.GetPresignedUrlsResponse;
+import com.pbl.star.dtos.response.image.PostPresignedUrlsResponse;
 
 import java.util.List;
 
 public interface ImageUploadUsecase {
-    GetPresignedUrlsResponse generatePresignedUrls(List<String> fileNames);
+    String avatarPresignedUrl(String fileName);
+    PostPresignedUrlsResponse postPresignedUrls(List<String> fileNames);
 }

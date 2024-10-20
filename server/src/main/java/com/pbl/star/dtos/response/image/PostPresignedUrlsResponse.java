@@ -9,7 +9,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-public class GetPresignedUrlsResponse {
+public class PostPresignedUrlsResponse {
     private Set<String> successUrls;
     private Set<String> missingFiles;
 }

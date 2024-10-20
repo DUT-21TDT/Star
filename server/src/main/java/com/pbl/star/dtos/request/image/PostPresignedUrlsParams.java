@@ -7,6 +7,6 @@ import java.util.List;
 
 @Getter
 @Setter
-public class GetPresignedUrlsParams {
+public class PostPresignedUrlsParams {
     private List<String> fileNames;
 }
