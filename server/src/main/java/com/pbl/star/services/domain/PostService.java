@@ -10,4 +10,6 @@ public interface PostService {
     String createPost(String userId, CreatePostParams createPostParams);
     Slice<PostOverviewDTO> getPostsOnUserWall(String userId, int limit, Instant after);
     Slice<PostOverviewDTO> getPostsOnNewsfeed(String userId, int limit, Instant after);
+    void likePost(String userId, String postId);
+    void unlikePost(String userId, String postId);
 }

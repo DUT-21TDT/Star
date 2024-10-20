@@ -4,7 +4,9 @@ import com.pbl.star.dtos.query.post.PostOverviewDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostImage;
+import com.pbl.star.entities.PostLike;
 import com.pbl.star.enums.PostStatus;
+import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.mapper.PostCreationMapper;
 import com.pbl.star.repositories.*;
@@ -29,6 +31,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final PostLikeRepository postLikeRepository;
     private final UserRoomRepository userRoomRepository;
     private final UserRepository userRepository;
 
@@ -41,9 +44,8 @@ public class PostServiceImpl implements PostService {
         Post post = postCreationMapper.toEntity(createPostParams);
 
         if (!userRoomRepository.existsByUserIdAndRoomId(userId, post.getRoomId())) {
-            throw new EntityNotFoundException("User does not exist, or " +
-                    "Room does not exist, or " +
-                    "User is not a member of the room");
+            throw new EntityNotFoundException("Room does not exist, or " +
+                    "user is not a member of the room");
         }
 
         post.setUserId(userId);
@@ -91,5 +93,32 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(0, limit);
         String[] joinedRoomIds = userRoomRepository.findRoomIdsByUserId(userId).toArray(String[]::new);
         return postRepository.findPostOverviewsByStatusInRooms(pageable, after, PostStatus.APPROVED, joinedRoomIds);
+    }
+
+    @Override
+    public void likePost(String userId, String postId) {
+        if (!postRepository.existsById(postId)) {
+            throw new EntityNotFoundException("Post does not exist");
+        }
+
+        if (postLikeRepository.existsByPostIdAndUserId(postId, userId)) {
+            throw new EntityConflictException("User already liked the post");
+        }
+
+        PostLike postLike = PostLike.builder()
+                .postId(postId)
+                .userId(userId)
+                .likeAt(Instant.now())
+                .build();
+
+        postLikeRepository.save(postLike);
+    }
+
+    @Override
+    public void unlikePost(String userId, String postId) {
+        PostLike postLike = postLikeRepository.findPostLikeByUserIdAndPostId(userId, postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post is not exist, or user did not like the post"));
+
+        postLikeRepository.delete(postLike);
     }
 }
