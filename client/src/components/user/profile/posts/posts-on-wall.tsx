@@ -21,7 +21,11 @@ interface PostType {
   idOfCreator: string;
 }
 
-const PostOnWall: React.FC = () => {
+interface IProps {
+  isCurrentUser: boolean;
+}
+
+const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
   const { id } = useParams();
   const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
@@ -68,7 +72,7 @@ const PostOnWall: React.FC = () => {
   }, [hasNextPost]);
   return (
     <>
-      <CreatePost />
+      {isCurrentUser && <CreatePost />}
       {isLoading && (
         <div className="flex items-center justify-center mt-8">
           <Spin indicator={<LoadingOutlined spin />} size="large" />

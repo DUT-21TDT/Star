@@ -43,7 +43,9 @@ const Profile = () => {
               isFollowing={data?.isFollowing}
               publicProfile={data?.publicProfile}
             />
-            <TabProfile />
+            <TabProfile 
+              isCurrentUser={data?.isCurrentUser}
+            />
           </div>
         </div>
       </div>
