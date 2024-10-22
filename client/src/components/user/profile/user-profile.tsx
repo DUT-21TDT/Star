@@ -67,15 +67,37 @@ const UserProfile: React.FC<IProps> = (props) => {
           {publicProfile.numberOfFollowers} followers
         </div>
         <div>
-          <Button
-            className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
-            onClick={() => setOpenModal(true)}
-          >
-            Edit profile
-          </Button>
+          {props.isCurrentUser && (
+            <Button
+              className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
+              onClick={() => setOpenModal(true)}
+            >
+              Edit profile
+            </Button>
+          )}
+          {!props.isCurrentUser && (
+            <>
+              {props.isFollowing ? (
+                <Button className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]">
+                  Following
+                </Button>
+              ) : (
+                <div className="flex space-x-2">
+                  <Button className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-black text-white follow-btn">
+                    Follow
+                  </Button>
+                  <Button className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]">
+                    Mention
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
-      <ModalEditProfile openModal={openModal} setOpenModal={setOpenModal} />
+      {props.isCurrentUser && (
+        <ModalEditProfile openModal={openModal} setOpenModal={setOpenModal} />
+      )}
     </>
   );
 };
