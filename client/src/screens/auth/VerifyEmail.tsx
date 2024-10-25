@@ -13,6 +13,7 @@ import Cookies from "js-cookie";
 const VerifyEmail: React.FC = () => {
   const [inputEmail, setInputEmail] = useState<string>("");
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
+  const [notReceivedEmail, setNotReceivedEmail] = useState<boolean>(false);
   const emailRegex = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
 
   const dispatch = useAppDispatch();
@@ -49,37 +50,55 @@ const VerifyEmail: React.FC = () => {
             : "Email verification required"
         }
         subTitle={
-          isEmailSent
-            ? "Please check your email to verify your account."
-            : "To continue, please verify your email address."
+          <>
+            We have sent a verification email to your email address. <br />
+            Please check your email and click the link to verify your account.
+          </>
         }
         extra={[
-          !isEmailSent && (
+          !notReceivedEmail && (
             <>
-              <Input
-                style={{
-                  maxWidth: "350px",
-                  marginBottom: "10px",
-                  height: "40px",
-                }}
-                placeholder="Enter your email address"
-                type="email"
-                value={inputEmail}
-                onChange={(e) => setInputEmail(e.target.value)}
-              />
-              <div>
-                <Button type="primary" onClick={handleResendVerifyEmail}>
-                  Send
-                </Button>
-                <Button
-                  type="default"
-                  onClick={handleLogout}
-                  style={{
-                    marginLeft: "10px",
-                  }}
-                >
-                  Back to login
-                </Button>
+              <a><p
+                className="my-2 text-pretty font-semibold underline w-auto inline-block"
+                onClick={() => setNotReceivedEmail(true)}>
+                I didn't receive the email
+              </p></a>
+            </>
+          ),
+          !isEmailSent && notReceivedEmail && (
+            <>
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+                <div className="p-4 max-w-[400px]">
+                  <label className="block text-sm font-thin text-gray-700 my-1">
+                    Leave the email blank to use the email you registered with
+                  </label>
+                  <Input
+                    style={{
+                      maxWidth: "360px",
+                      marginBottom: "10px",
+                      height: "40px",
+                    }}
+                    placeholder="Enter your email address"
+                    type="email"
+                    value={inputEmail}
+                    onChange={(e) => setInputEmail(e.target.value)}
+                  />
+                  <div>
+                    <Button type="primary" onClick={handleResendVerifyEmail} className="font-medium">
+                      Resend
+                    </Button>
+                    <Button
+                      type="default"
+                      onClick={handleLogout}
+                      className="font-medium mt-2"
+                      style={{
+                        marginLeft: "10px",
+                      }}
+                    >
+                      Back to login
+                    </Button>
+                  </div>
+                </div>
               </div>
             </>
           ),

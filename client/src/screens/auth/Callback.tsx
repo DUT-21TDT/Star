@@ -4,7 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser } from "../../service/userAPI";
+import { endSession, getCurrentUser } from "../../service/userAPI";
 import { useAppDispatch } from "../../redux/store/hook";
 import { storeInformationUser } from "../../redux/slice/user-slice";
 
@@ -31,6 +31,8 @@ const Callback: React.FC = () => {
       Cookies.set("access_token", access_token);
       Cookies.set("refresh_token", refresh_token);
       Cookies.set("id_token", id_token);
+
+      endSession();
 
       getCurrentUser().then((res) => {
         setCurrentUser({
