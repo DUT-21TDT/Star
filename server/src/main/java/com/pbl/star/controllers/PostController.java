@@ -25,13 +25,6 @@ public class PostController {
         return ResponseEntity.ok(Map.of("id", postId));
     }
 
-    @GetMapping("/newsfeed")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> getPostsOnNewsfeed(@RequestParam(defaultValue = "20") int limit,
-                                                @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(postManageUsecase.getPostsOnNewsfeed(limit, after));
-    }
-
     @PostMapping("/{postId}/likes")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> likePost(@PathVariable String postId) {

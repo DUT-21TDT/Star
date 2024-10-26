@@ -41,11 +41,4 @@ public class UserController {
     public ResponseEntity<?> updatePersonalInformation(@ModelAttribute UpdateProfileParams updateProfileParams) {
         return ResponseEntity.ok(profileManageUsecase.updatePersonalInformation(updateProfileParams));
     }
-
-    @GetMapping("{userId}/posts")
-    public ResponseEntity<?> getPostsByUser(@PathVariable String userId,
-                                            @RequestParam(defaultValue = "20") int limit,
-                                            @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(postManageUsecase.getPostsOnUserWall(userId, limit, after));
-    }
 }

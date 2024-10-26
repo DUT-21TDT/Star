@@ -2,6 +2,7 @@ package com.pbl.star.exceptions.handlers;
 
 import com.pbl.star.exceptions.InvalidVerificationTokenException;
 import com.pbl.star.exceptions.InvalidSignUpParamsException;
+import com.pbl.star.exceptions.ModeratorAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,5 +18,10 @@ public class AuthExceptionHandler {
     @ExceptionHandler({ InvalidVerificationTokenException.class })
     public ResponseEntity<?> handleExpiredVerificationTokenException(final Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler({ModeratorAccessException.class })
+    public ResponseEntity<?> handleModeratorAccessException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }

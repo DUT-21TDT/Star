@@ -20,9 +20,9 @@ const getPostOnProfileWall = async (
 const getAllPostOnNewsFeed = async (config: configTypeProfileWall) => {
   let url;
   if (config.after !== null) {
-    url = `/posts/newsfeed?limit=${config.limit}&after=${config.after}`;
+    url = `/newsfeed/posts?limit=${config.limit}&after=${config.after}`;
   } else {
-    url = `/posts/newsfeed?limit=${config.limit}`;
+    url = `/newsfeed/posts?limit=${config.limit}`;
   }
   const response = await instance.get(url);
   console.log(response);
