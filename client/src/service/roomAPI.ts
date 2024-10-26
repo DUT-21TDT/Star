@@ -9,7 +9,7 @@ interface DataEditRoom extends DataCreateRoom {
   id: string | undefined;
 }
 const getAllRoom = async () => {
-  const response = await instance.get("/rooms");
+  const response = await instance.get("/admin/rooms");
   return response.data;
 };
 
@@ -19,12 +19,12 @@ const createRoom = async (data: DataCreateRoom) => {
   if (data.description) {
     fomData.append("description", data.description || "");
   }
-  const response = await instance.post("/rooms", fomData);
+  const response = await instance.post("/admin/rooms", fomData);
   return response.data;
 };
 
 const deleteRoom = async (id: string) => {
-  const response = await instance.delete(`/rooms/${id}`);
+  const response = await instance.delete(`/admin/rooms/${id}`);
   return response.data;
 };
 
@@ -34,7 +34,7 @@ const editRoom = async (data: DataEditRoom) => {
   if (data.description) {
     formData.append("description", data.description || "");
   }
-  const response = await instance.patch(`/rooms/${data.id}`, formData);
+  const response = await instance.patch(`/admin/rooms/${data.id}`, formData);
   return response.data;
 };
 
@@ -44,7 +44,7 @@ const joinRoom = async (roomId: string) => {
 };
 
 const getAllRoomForUser = async () => {
-  const response = await instance.get("/rooms/user-rooms");
+  const response = await instance.get("/rooms");
   return response.data;
 };
 const leaveRoomForUser = async (roomId: string) => {

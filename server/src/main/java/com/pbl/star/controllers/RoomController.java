@@ -19,36 +19,9 @@ public class RoomController {
     private final RoomInteractUsecase roomInteractUsecase;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> getAllRooms() {
-        return ResponseEntity.ok(roomManageUsecase.getAllRooms());
-    }
-
-    @GetMapping("/user-rooms")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> getUserRooms() {
         return ResponseEntity.ok(roomManageUsecase.getAllRoomsForUser());
-    }
-
-    @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> createRoom(@ModelAttribute CreateRoomParams params) {
-        String roomId = roomManageUsecase.createRoom(params);
-        return ResponseEntity.ok(Map.of("id", roomId));
-    }
-
-    @DeleteMapping("/{roomId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> deleteRoom(@PathVariable String roomId) {
-        roomManageUsecase.deleteRoom(roomId);
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{roomId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateRoom(@PathVariable String roomId, @ModelAttribute CreateRoomParams params) {
-        roomManageUsecase.updateRoom(roomId, params);
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{roomId}/members")
