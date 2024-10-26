@@ -1,18 +1,14 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.room.RoomOverviewDTO;
-import com.pbl.star.dtos.query.room.RoomOverviewForUserDTO;
+import com.pbl.star.dtos.query.room.RoomForAdminDTO;
+import com.pbl.star.dtos.query.room.RoomForUserDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.entities.Room;
-import com.pbl.star.entities.UserRoom;
-import com.pbl.star.enums.RoomRole;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.RequiredFieldMissingException;
 import com.pbl.star.mapper.RoomCreationMapper;
 import com.pbl.star.repositories.RoomRepository;
-import com.pbl.star.repositories.UserRepository;
-import com.pbl.star.repositories.UserRoomRepository;
 import com.pbl.star.services.domain.RoomService;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +24,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
-    private final UserRoomRepository userRoomRepository;
 
     @Override
-    public List<RoomOverviewDTO> getRoomsOverview() {
+    public List<RoomForAdminDTO> getRoomsOverview() {
         return roomRepository.getRoomsOverview();
     }
 
     @Override
-    public List<RoomOverviewForUserDTO> getRoomsOverviewForUser() {
+    public List<RoomForUserDTO> getRoomsOverviewForUser() {
         String userId = AuthUtil.getCurrentUser().getId();
         return roomRepository.getRoomsOverviewForUser(userId);
     }
@@ -92,36 +86,5 @@ public class RoomServiceImpl implements RoomService {
         room.setDescription(newDescription);
 
         roomRepository.save(room);
-    }
-
-    @Override
-    @Transactional
-    public void joinRoom(String userId, String roomId) {
-
-        if (!roomRepository.existsById(roomId)) {
-            throw new EntityNotFoundException("Room with id '" + roomId + "' does not exist");
-        }
-
-        if (userRoomRepository.existsByUserIdAndRoomId(userId, roomId)) {
-            throw new EntityConflictException("User is already a member of the room");
-        }
-
-        UserRoom userRoom = UserRoom.builder()
-                .userId(userId)
-                .roomId(roomId)
-                .role(RoomRole.MEMBER)
-                .joinAt(Instant.now())
-                .build();
-
-        userRoomRepository.save(userRoom);
-    }
-
-    @Override
-    @Transactional
-    public void leaveRoom(String userId, String roomId) {
-        UserRoom userRoom = userRoomRepository.findByUserIdAndRoomId(userId, roomId)
-                .orElseThrow(() -> new EntityNotFoundException("User is not a member of the room"));
-
-        userRoomRepository.delete(userRoom);
     }
 }

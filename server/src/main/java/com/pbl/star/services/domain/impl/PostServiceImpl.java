@@ -1,6 +1,7 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.post.PostOverviewDTO;
+import com.pbl.star.dtos.query.post.PostForModDTO;
+import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostImage;
@@ -34,6 +35,7 @@ public class PostServiceImpl implements PostService {
     private final PostLikeRepository postLikeRepository;
     private final UserRoomRepository userRoomRepository;
     private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
 
     @Override
     @Transactional
@@ -75,24 +77,44 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Slice<PostOverviewDTO> getPostsOnUserWall(String userId, int limit, Instant after) {
+    public Slice<PostForUserDTO> getPostsOnUserWall(String userId, int limit, Instant after) {
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("User does not exist");
         }
 
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findPostOverviewsByStatusAndUser(pageable, after, PostStatus.APPROVED, userId);
+        return postRepository.findPostsOfUserByStatus(pageable, after, PostStatus.APPROVED, userId);
     }
 
     @Override
-    public Slice<PostOverviewDTO> getPostsOnNewsfeed(String userId, int limit, Instant after) {
+    public Slice<PostForUserDTO> getPostsOnNewsfeed(String userId, int limit, Instant after) {
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("User does not exist");
         }
 
         Pageable pageable = PageRequest.of(0, limit);
         String[] joinedRoomIds = userRoomRepository.findRoomIdsByUserId(userId).toArray(String[]::new);
-        return postRepository.findPostOverviewsByStatusInRooms(pageable, after, PostStatus.APPROVED, joinedRoomIds);
+        return postRepository.findPostsInRoomsByStatusAsUser(pageable, after, PostStatus.APPROVED, joinedRoomIds);
+    }
+
+    @Override
+    public Slice<PostForUserDTO> getPostsInRoom(String roomId, PostStatus status, int limit, Instant after) {
+        if (!roomRepository.existsById(roomId)) {
+            throw new EntityNotFoundException("Room does not exist");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit);
+        return postRepository.findPostsInRoomsByStatusAsUser(pageable, after, status, roomId);
+    }
+
+    @Override
+    public Slice<PostForModDTO> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after) {
+        if (!roomRepository.existsById(roomId)) {
+            throw new EntityNotFoundException("Room does not exist");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit);
+        return postRepository.findPostsInRoomByStatusAsMod(pageable, after, status, roomId);
     }
 
     @Override

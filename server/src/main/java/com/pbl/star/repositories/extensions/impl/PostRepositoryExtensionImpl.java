@@ -1,6 +1,7 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.post.PostOverviewDTO;
+import com.pbl.star.dtos.query.post.PostForModDTO;
+import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.repositories.extensions.PostRepositoryExtension;
 import com.pbl.star.utils.AuthUtil;
@@ -21,11 +22,11 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public Slice<PostOverviewDTO> findPostOverviewsByStatusAndUser(Pageable pageable, Instant after, PostStatus status, String userId) {
+    public Slice<PostForUserDTO> findPostsOfUserByStatus(Pageable pageable, Instant after, PostStatus status, String userId) {
 
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
-        String jpql = getPostOverviewQuery(ConditionType.USER, after, status);
+        String jpql = getPostForUserQuery(ConditionType.USER, after, status);
 
         TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
         query
@@ -39,15 +40,15 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
             query.setParameter("after", after);
         }
 
-        return getSlicePostOverviewDTOS(pageable, query);
+        return getSlicePostForUserDTOS(pageable, query);
     }
 
     @Override
-    public Slice<PostOverviewDTO> findPostOverviewsByStatusInRooms(Pageable pageable, Instant after, PostStatus
+    public Slice<PostForUserDTO> findPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus
             status, String... roomIds) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
-        String jpql = getPostOverviewQuery(ConditionType.ROOM, after, status);
+        String jpql = getPostForUserQuery(ConditionType.ROOM, after, status);
 
         TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
         query
@@ -61,10 +62,10 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
             query.setParameter("after", after);
         }
 
-        return getSlicePostOverviewDTOS(pageable, query);
+        return getSlicePostForUserDTOS(pageable, query);
     }
 
-    private static String getPostOverviewQuery(ConditionType type, Instant after, PostStatus status) {
+    private static String getPostForUserQuery(ConditionType type, Instant after, PostStatus status) {
         String jpql = "SELECT p.id, u.id,  u.username, u.avatarUrl, p.createdAt, p.content, " +
                 "(SELECT COUNT(*) FROM PostLike pl WHERE pl.postId = p.id) AS number_of_likes, " +
                 "(SELECT COUNT(*) FROM Post p1 WHERE p1.parentPostId = p.id) AS number_of_comments, " +
@@ -93,7 +94,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @NonNull
-    private Slice<PostOverviewDTO> getSlicePostOverviewDTOS(Pageable pageable, TypedQuery<Object[]> query) {
+    private Slice<PostForUserDTO> getSlicePostForUserDTOS(Pageable pageable, TypedQuery<Object[]> query) {
 
         List<Object[]> resultList = query.getResultList();
         boolean hasNext = resultList.size() > pageable.getPageSize();
@@ -102,8 +103,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
             resultList.removeLast();
         }
 
-        List<PostOverviewDTO> postList = resultList.stream()
-                .map(row -> PostOverviewDTO.builder()
+        List<PostForUserDTO> postList = resultList.stream()
+                .map(row -> (PostForUserDTO) PostForUserDTO.builder()
                         .id((String) row[0])
                         .idOfCreator((String) row[1])
                         .usernameOfCreator((String) row[2])
@@ -116,6 +117,73 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .isLiked((boolean) row[9])
                         .postImageUrls(row[10] == null ? null :
                                 List.of(((String) row[10]).split(","))
+                        )
+                        .build()
+                )
+                .toList();
+
+        return new SliceImpl<>(postList, pageable, hasNext);
+    }
+
+    @Override
+    public Slice<PostForModDTO> findPostsInRoomByStatusAsMod(Pageable pageable, Instant after, PostStatus status, String roomId) {
+
+        String jpql = getPostForModQuery(after, status);
+
+        TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
+        query
+                .setParameter("roomId", roomId)
+                .setParameter("status", status)
+                .setFirstResult(0)
+                .setMaxResults(pageable.getPageSize() + 1);
+
+        if (after != null) {
+            query.setParameter("after", after);
+        }
+
+        return getSlicePostForModDTOS(pageable, query);
+    }
+
+    private static String getPostForModQuery(Instant after, PostStatus status) {
+        String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, p.status, p.violenceScore " +
+                "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls " +
+                "FROM Post p " +
+                "INNER JOIN User u ON p.userId = u.id " +
+                "WHERE p.roomId = :roomId ";
+
+        if (status != null) {
+            jpql += "AND p.status = :status ";
+        }
+
+        if (after != null) {
+            jpql += "AND p.createdAt < :after ";
+        }
+
+        return jpql + "ORDER BY p.createdAt DESC, p.id DESC ";
+    }
+
+    @NonNull
+    private Slice<PostForModDTO> getSlicePostForModDTOS(Pageable pageable, TypedQuery<Object[]> query) {
+
+        List<Object[]> resultList = query.getResultList();
+        boolean hasNext = resultList.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            resultList.removeLast();
+        }
+
+        List<PostForModDTO> postList = resultList.stream()
+                .map(row -> (PostForModDTO) PostForModDTO.builder()
+                        .id((String) row[0])
+                        .idOfCreator((String) row[1])
+                        .usernameOfCreator((String) row[2])
+                        .avatarUrlOfCreator((String) row[3])
+                        .createdAt((Instant) row[4])
+                        .content((String) row[5])
+                        .status((PostStatus) row[6])
+                        .violenceScore((Integer) row[7])
+                        .postImageUrls(row[8] == null ? null :
+                                List.of(((String) row[8]).split(","))
                         )
                         .build()
                 )
