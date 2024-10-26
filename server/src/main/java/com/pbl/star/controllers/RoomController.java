@@ -1,14 +1,11 @@
 package com.pbl.star.controllers;
 
-import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.usecase.RoomInteractUsecase;
 import com.pbl.star.usecase.RoomManageUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

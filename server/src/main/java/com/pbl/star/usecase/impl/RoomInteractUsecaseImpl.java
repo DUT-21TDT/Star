@@ -1,6 +1,5 @@
 package com.pbl.star.usecase.impl;
 
-import com.pbl.star.services.domain.RoomService;
 import com.pbl.star.services.domain.UserRoomService;
 import com.pbl.star.usecase.RoomInteractUsecase;
 import com.pbl.star.utils.AuthUtil;

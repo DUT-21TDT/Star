@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -18,7 +16,6 @@ public class UserController {
 
     private final UserInteractUsecase userInteractUsecase;
     private final ProfileManageUsecase profileManageUsecase;
-    private final PostManageUsecase postManageUsecase;
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getPublicProfile(@PathVariable String userId) {
