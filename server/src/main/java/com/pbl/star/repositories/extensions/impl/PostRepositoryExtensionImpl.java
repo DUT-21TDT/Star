@@ -145,7 +145,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     private static String getPostForModQuery(Instant after, PostStatus status) {
-        String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, p.status, p.violenceScore " +
+        String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, p.status, p.violenceScore, " +
                 "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls " +
                 "FROM Post p " +
                 "INNER JOIN User u ON p.userId = u.id " +

@@ -5,6 +5,7 @@ import com.pbl.star.exceptions.InvalidSignUpParamsException;
 import com.pbl.star.exceptions.ModeratorAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -20,7 +21,7 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler({ModeratorAccessException.class })
+    @ExceptionHandler({ModeratorAccessException.class, AuthorizationDeniedException.class })
     public ResponseEntity<?> handleModeratorAccessException(final Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
