@@ -1,13 +1,14 @@
 package com.pbl.star.controllers;
 
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
-import com.pbl.star.usecase.PostManageUsecase;
 import com.pbl.star.usecase.ProfileManageUsecase;
 import com.pbl.star.usecase.UserInteractUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -37,5 +38,33 @@ public class UserController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> updatePersonalInformation(@ModelAttribute UpdateProfileParams updateProfileParams) {
         return ResponseEntity.ok(profileManageUsecase.updatePersonalInformation(updateProfileParams));
+    }
+
+    @PostMapping("/me/followings")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> followUser(@RequestBody Map<String, String> requestBody) {
+        String userId = requestBody.getOrDefault("userId", "");
+        return ResponseEntity.ok(userInteractUsecase.followUser(userId));
+    }
+
+    @DeleteMapping("/me/followings/{userId}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> unfollowUser(@PathVariable String userId) {
+        userInteractUsecase.unfollowUser(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/me/follow-requests/{followingId}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> acceptFollowRequest(@PathVariable String followingId) {
+        userInteractUsecase.acceptFollowRequest(followingId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/me/follow-requests/{followingId}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> rejectFollowRequest(@PathVariable String followingId) {
+        userInteractUsecase.rejectFollowRequest(followingId);
+        return ResponseEntity.ok().build();
     }
 }

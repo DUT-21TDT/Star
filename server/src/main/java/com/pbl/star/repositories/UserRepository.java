@@ -20,4 +20,7 @@ public interface UserRepository extends JpaRepository<User, String>, UserReposit
             "FROM User u " +
             "WHERE u.id = ?1")
     Optional<GeneralInformation> getGeneralInformationById(String userId);
+
+    @Query("SELECT u.privateProfile FROM User u WHERE u.id = ?1")
+    Optional<Boolean> getPrivateProfileById(String userId);
 }
