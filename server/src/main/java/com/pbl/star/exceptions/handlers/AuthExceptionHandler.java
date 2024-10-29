@@ -3,6 +3,7 @@ package com.pbl.star.exceptions.handlers;
 import com.pbl.star.exceptions.InvalidVerificationTokenException;
 import com.pbl.star.exceptions.InvalidSignUpParamsException;
 import com.pbl.star.exceptions.ModeratorAccessException;
+import com.pbl.star.exceptions.ResourceOwnershipException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -21,7 +22,7 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler({ModeratorAccessException.class, AuthorizationDeniedException.class })
+    @ExceptionHandler({ModeratorAccessException.class, AuthorizationDeniedException.class, ResourceOwnershipException.class })
     public ResponseEntity<?> handleModeratorAccessException(final Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }

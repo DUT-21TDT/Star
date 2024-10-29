@@ -134,7 +134,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (followingRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId)) {
-            throw new EntityConflictException("Already following");
+            throw new EntityConflictException("Already following or requested");
         }
 
         Following following = Following.builder()
