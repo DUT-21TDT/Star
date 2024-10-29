@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="16_create_following_indexes" author="Quang Nguyen">
+        <createIndex tableName="following" indexName="idx_following_followee_status_followat">
+            <column name="followee_id"/>
+            <column name="status"/>
+            <column name="follow_at"/>
+        </createIndex>
+        <createIndex tableName="following" indexName="idx_following_follower_status_followat">
+            <column name="follower_id"/>
+            <column name="status"/>
+            <column name="follow_at"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

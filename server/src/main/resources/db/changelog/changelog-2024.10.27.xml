@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="15_create_following_table" author="Quang Nguyen">
+        <createTable tableName="following">
+            <column name="following_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="follower_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="followee_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="follow_at" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="following"
+                                 baseColumnNames="follower_id"
+                                 constraintName="fk_following_follower"
+                                 referencedTableName="user"
+                                 referencedColumnNames="user_id"
+        />
+        <addForeignKeyConstraint baseTableName="following"
+                                 baseColumnNames="followee_id"
+                                 constraintName="fk_following_followee"
+                                 referencedTableName="user"
+                                 referencedColumnNames="user_id"
+        />
+        <addUniqueConstraint tableName="following"
+                             columnNames="follower_id, followee_id"
+                             constraintName="uq_following_follower_followee"
+        />
+    </changeSet>
+</databaseChangeLog>
