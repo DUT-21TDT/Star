@@ -7,25 +7,32 @@ const onChange = (key: string) => {
   console.log(key);
 };
 
-const items: TabsProps["items"] = [
-  {
-    key: "1",
-    label: <div className="text-[16px]  font-semibold">Posts</div>,
-    children: <PostOnWall />,
-  },
-  {
-    key: "2",
-    label: <div className="text-[16px]  font-semibold">Replies</div>,
-    children: "Content of Tab Pane 2",
-  },
-  {
-    key: "3",
-    label: <div className="text-[16px]  font-semibold">Reposts</div>,
-    children: "Content of Tab Pane 3",
-  },
-];
+interface IProps {
+  isCurrentUser: boolean;
+}
 
-const TabProfile: React.FC = () => {
+const TabProfile: React.FC<IProps> = (props) => {
+  const { isCurrentUser } = props;
+
+  // Define the `items` array inside the component where `props` is available
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: <div className="text-[16px] font-semibold">Posts</div>,
+      children: <PostOnWall isCurrentUser={isCurrentUser} />,
+    },
+    {
+      key: "2",
+      label: <div className="text-[16px] font-semibold">Replies</div>,
+      children: "Content of Tab Pane 2",
+    },
+    {
+      key: "3",
+      label: <div className="text-[16px] font-semibold">Reposts</div>,
+      children: "Content of Tab Pane 3",
+    },
+  ];
+
   return (
     <Tabs
       defaultActiveKey="1"
