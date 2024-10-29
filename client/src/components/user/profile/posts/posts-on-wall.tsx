@@ -7,6 +7,7 @@ import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../../utils/queriesKey";
+
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -49,10 +50,12 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
       });
     }
   };
+
   useEffect(() => {
     setAllPosts([]);
     setAfterTime(null);
   }, [id]);
+
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
       setAllPosts((prevPosts: PostType[]) => [
@@ -66,20 +69,27 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
       setAfterTime(lastPost.createdAt);
     }
   }, [dataPost]);
+
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPost]);
+
   return (
     <>
       {isCurrentUser && <CreatePost />}
-      {isLoading && (
+      {isLoading ? (
         <div className="flex items-center justify-center mt-8">
           <Spin indicator={<LoadingOutlined spin />} size="large" />
         </div>
-      )}
-      {allPosts &&
-        allPosts.length > 0 &&
+      ) : allPosts.length === 0 ? (
+        <div
+          className="flex items-center justify-center text-2xl"
+          style={{ fontWeight: 450, marginTop: "25vh" }}
+        >
+          No posts yet
+        </div>
+      ) : (
         allPosts.map((post) => {
           const {
             id,
@@ -111,8 +121,10 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
               liked={liked}
             />
           );
-        })}
+        })
+      )}
     </>
   );
 };
+
 export default PostOnWall;

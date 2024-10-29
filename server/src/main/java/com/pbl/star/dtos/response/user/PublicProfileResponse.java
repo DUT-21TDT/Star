@@ -12,6 +12,6 @@ public class PublicProfileResponse {
     private PublicProfile publicProfile;
     @JsonProperty("isCurrentUser")
     private boolean isCurrentUser;
-    @JsonProperty("isFollowing")
+
     private FollowStatus followStatus;
 }

@@ -8,6 +8,8 @@ import {
   editProfile,
   getPersonalInformation,
   getPresignedURL,
+  followUser,
+  unfollowUser,
 } from "../service/userAPI";
 
 const usePostNewUser = () => {
@@ -78,6 +80,18 @@ const useGetPresignedUrl = () => {
     mutationFn: getPresignedURL,
   });
 };
+
+const useFollowUser = () => {
+  return useMutation({
+    mutationFn: followUser,
+  });
+}
+
+const useUnfollowUser = () => {
+  return useMutation({
+    mutationFn: unfollowUser,
+  });
+}
 export {
   usePostNewUser,
   useConfirmAccount,
@@ -87,4 +101,6 @@ export {
   useEditProfile,
   useGetPersonalInformation,
   useGetPresignedUrl,
+  useFollowUser,
+  useUnfollowUser
 };

@@ -23,33 +23,49 @@ const Profile = () => {
   }
 
   return (
-    <ConfigProvider theme={profileTheme}>
-      <div className="w-full flex justify-center bg-white">
-        <div
-          className=" h-full pt-2 "
-          style={{ width: "100%", maxWidth: "650px" }}
-        >
-          <HeaderProfile />
+    console.log("data", data),
+    (
+      <ConfigProvider theme={profileTheme}>
+        <div className="w-full flex justify-center bg-white">
           <div
-            style={{
-              border: "1px solid #ccc",
-              marginTop: "20px",
-              height: "100%",
-              borderRadius: "30px",
-            }}
+            className=" h-full pt-2 "
+            style={{ width: "100%", maxWidth: "650px" }}
           >
-            <UserProfile
-              isCurrentUser={data?.isCurrentUser}
-              isFollowing={data?.isFollowing}
-              publicProfile={data?.publicProfile}
-            />
-            <TabProfile 
-              isCurrentUser={data?.isCurrentUser}
-            />
+            <HeaderProfile />
+            <div
+              style={{
+                border: "1px solid #ccc",
+                marginTop: "20px",
+                height: "100%",
+                borderRadius: "30px",
+              }}
+            >
+              <UserProfile
+                isCurrentUser={data?.isCurrentUser}
+                followStatus={data?.followStatus}
+                publicProfile={data?.publicProfile}
+                userId={id || ""}
+              />
+              {data?.followStatus === "FOLLOWING" ||
+              data?.publicProfile.privateProfile === false ? (
+                <TabProfile isCurrentUser={data?.isCurrentUser} />
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50vh",
+                  }}
+                >
+                  This account is private
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </ConfigProvider>
+      </ConfigProvider>
+    )
   );
 };
 export default Profile;

@@ -192,11 +192,15 @@ const getPersonalInformation = async () => {
 };
 
 const getPresignedURL = async (fileName: string) => {
-  const response = await instance.post(`/images/avatar-presigned-url`, fileName, {
-    headers: {
-      "Content-Type": "text/plain",
-    },
-  });
+  const response = await instance.post(
+    `/images/avatar-presigned-url`,
+    fileName,
+    {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    }
+  );
   return response.data;
 };
 
@@ -209,6 +213,18 @@ const resendVerifyEmail = async (email: string) => {
     email,
   });
   return response;
+};
+
+const followUser = async (userId: string) => {
+  const response = await instance.post(`/users/me/followings`, {
+    userId,
+  });
+  return response.data;
+};
+
+const unfollowUser = async (userId: string) => {
+  const response = await instance.delete(`/users/me/followings/${userId}`);
+  return response.data;
 };
 
 export {
@@ -225,4 +241,6 @@ export {
   getPersonalInformation,
   getPresignedURL,
   resendVerifyEmail,
+  followUser,
+  unfollowUser,
 };
