@@ -47,7 +47,8 @@ const Profile = () => {
                 userId={id || ""}
               />
               {data?.followStatus === "FOLLOWING" ||
-              data?.publicProfile.privateProfile === false ? (
+              data?.publicProfile.privateProfile === false ||
+              data?.isCurrentUser ? (
                 <TabProfile isCurrentUser={data?.isCurrentUser} />
               ) : (
                 <div
