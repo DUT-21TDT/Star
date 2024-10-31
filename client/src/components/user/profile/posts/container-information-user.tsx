@@ -64,7 +64,7 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
       {!data?.isCurrentUser && (
         <button className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[black] text-[white]">
           {data?.followStatus === "FOLLOWING"
-            ? "Unfollow"
+            ? "Following"
             : data?.followStatus === "REQUESTED"
             ? "Requested"
             : "Follow"}
