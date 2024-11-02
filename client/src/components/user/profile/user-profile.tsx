@@ -1,13 +1,15 @@
 import { Button, Image } from "antd";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import default_image from "../../../assets/images/default_image.jpg";
 import ModalEditProfile from "./modal-edit-profile";
 import { useFollowUser, useUnfollowUser } from "../../../hooks/user";
 import "../../../assets/css/user-profile.css";
+import ModalConfirmUnfollow from "./posts/modal-confirm-unfollow.tsx";
 
 interface IProps {
   isCurrentUser: boolean;
   followStatus: string;
+  setFollowStatus: (value: string) => void;
   publicProfile: {
     avatarUrl: string | null;
     bio: string | null;
@@ -21,37 +23,59 @@ interface IProps {
 }
 
 const UserProfile: React.FC<IProps> = (props) => {
-  const { publicProfile } = props;
+
+  const { publicProfile, followStatus, setFollowStatus } = props;
+  const [numberOfFollowers, setNumberOfFollowers] = useState<number>(publicProfile.numberOfFollowers);
+
+  console.log("numberOfFollowers", numberOfFollowers);
+
   const [openModal, setOpenModal] = useState(false);
 
-  const [followStatus, setFollowStatus] = useState(props.followStatus);
+  const [confirmUnfollowModal, setConfirmUnfollowModal] = useState(false); // New state for the confirmation modal
 
   const { mutate: followUser } = useFollowUser();
   const { mutate: unfollowUser } = useUnfollowUser();
 
+  useEffect(() => {
+    setFollowStatus(props?.followStatus);
+    setNumberOfFollowers(props?.publicProfile?.numberOfFollowers);
+  }, [props?.followStatus, props?.publicProfile, setFollowStatus]);
+
   const handleFollowUser = () => {
-    console.log("followStatus", followStatus);
-    if (followStatus === "NOT_FOLLOWING") {
-      followUser(props.userId, {
-        onSuccess: () => {
-          setFollowStatus(
-            publicProfile.privateProfile ? "REQUESTED" : "FOLLOWING"
-          );
-        },
-        onError: (error: any) => {
-          console.error("Error following user:", error);
-        },
-      });
-    } else if (followStatus === "REQUESTED" || followStatus === "FOLLOWING") {
-      unfollowUser(props.userId, {
-        onSuccess: () => {
-          setFollowStatus("NOT_FOLLOWING");
-        },
-        onError: (error: any) => {
-          console.error("Error unfollowing user:", error);
-        },
-      });
+    followUser(props.userId, {
+      onSuccess: (response) => {
+        if (response?.followStatus === "REQUESTED") {
+          setFollowStatus("REQUESTED");
+        } else if (response?.followStatus === "FOLLOWING") {
+          setFollowStatus("FOLLOWING");
+          setNumberOfFollowers(prevState => prevState + 1);
+        }
+      },
+      onError: (error: any) => {
+        console.error("Error following user:", error);
+      },
+    });
+  }
+
+  const handleUnfollowUser = () => {
+    // Show the confirmation modal if the profile is private
+    if (publicProfile.privateProfile && followStatus === "FOLLOWING") {
+      setConfirmUnfollowModal(true);
+    } else {
+      proceedWithUnfollow();
     }
+  };
+
+  const proceedWithUnfollow = () => {
+    unfollowUser(props.userId, {
+      onSuccess: () => {
+        setFollowStatus("NOT_FOLLOWING");
+        setNumberOfFollowers(prevState => prevState - 1);
+      },
+      onError: (error: any) => {
+        console.error("Error unfollowing user:", error);
+      },
+    });
   };
 
   return (
@@ -99,56 +123,64 @@ const UserProfile: React.FC<IProps> = (props) => {
 
         <div className="text-[15px]">{publicProfile.bio || ""}</div>
         <div className="text-[#a1a1a1]">
-          {publicProfile.numberOfFollowers} followers
+          {numberOfFollowers} followers
         </div>
 
         {/* Follow/Edit Profile Buttons */}
         <div>
           {props.isCurrentUser ? (
             <Button
-              className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
+              className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white] my-2"
               onClick={() => setOpenModal(true)}
             >
               Edit profile
             </Button>
           ) : (
-            <>
-              {followStatus === "FOLLOWING" ? (
-                <Button
-                  className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
-                  onClick={handleFollowUser}
-                >
-                  Following
-                </Button>
-              ) : followStatus === "REQUESTED" ? (
-                <Button
-                  className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
-                  onClick={handleFollowUser}
-                >
-                  Requested
-                </Button>
-              ) : (
-                <div className="flex space-x-2">
+              followStatus && (
+                <div className="flex space-x-2 my-2">
+                { followStatus === "FOLLOWING" ? (
+                  <Button
+                    className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
+                    onClick={handleUnfollowUser}
+                  >
+                    Following
+                  </Button>
+                  ) : followStatus === "REQUESTED" ? (
+                  <Button
+                    className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
+                    onClick={handleUnfollowUser}
+                  >
+                    Requested
+                  </Button>
+                  ) : (
                   <Button
                     className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-black text-white follow-btn"
                     onClick={handleFollowUser}
                   >
                     Follow
                   </Button>
-                  <Button className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]">
-                    Mention
-                  </Button>
-                </div>
-              )}
-            </>
+                )}
+                <Button className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]">
+                  Message
+                </Button>
+              </div>
+              )
           )}
         </div>
       </div>
 
-      {/* Modal to edit the profile */}
-      {props.isCurrentUser && (
+       {/*Modal to edit the profile */}
+      {props.isCurrentUser ? (
         <ModalEditProfile openModal={openModal} setOpenModal={setOpenModal} />
+      ) : (
+        //   Modal to confirm unfollowing a private profile
+        <ModalConfirmUnfollow
+          username={publicProfile.username}
+          proceedWithUnfollow={proceedWithUnfollow}
+          confirmUnfollowModal={confirmUnfollowModal}
+          setConfirmUnfollowModal={setConfirmUnfollowModal} />
       )}
+
     </>
   );
 };

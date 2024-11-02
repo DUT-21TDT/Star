@@ -42,6 +42,7 @@ const TabProfile: React.FC<IProps> = (props) => {
         display: "flex",
       }}
       moreIcon={null}
+      centered={true}
     />
   );
 };

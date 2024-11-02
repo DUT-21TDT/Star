@@ -43,9 +43,7 @@ const Post: React.FC<IProps> = (props) => {
   } = props;
 
   const navigate = useNavigate();
-  const [isPopoverVisibleAvatar, setIsPopoverVisibleAvatar] = useState(false);
-  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
-    useState(false);
+  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] = useState(false);
   const [popoverContent, setPopoverContent] = useState<React.ReactNode>(
     <div></div>
   );
@@ -66,15 +64,7 @@ const Post: React.FC<IProps> = (props) => {
   const handleNavigateProfileUser = (id: string) => () => {
     if (id) {
       navigate(`/profile/${id}`);
-    }
-  };
-
-  const handlePopoverAvatarVisibilityChange = (visible: boolean) => {
-    setIsPopoverVisibleAvatar(visible);
-    if (visible) {
-      setPopoverContent(
-        <ContainerInformationUser idOfCreator={idOfCreator || ""} />
-      );
+      window.scrollTo(0, 0);
     }
   };
 
@@ -94,27 +84,16 @@ const Post: React.FC<IProps> = (props) => {
         borderBottom: "1px solid #f0f0f0",
         display: "flex",
         gap: "10px",
-      }}
-    >
-      <Popover
-        content={popoverContent}
-        placement="bottomLeft"
-        trigger="hover"
-        overlayClassName="custom-popover"
-        arrow={false}
-        open={isPopoverVisibleAvatar}
-        onOpenChange={handlePopoverAvatarVisibilityChange}
-      >
-        <Avatar
-          style={{
-            width: "45px",
-            height: "45px",
-            cursor: "pointer",
-          }}
-          src={avatarUrlOfCreator || default_image}
-          onClick={handleNavigateProfileUser(idOfCreator || "")}
-        />
-      </Popover>
+      }}>
+      <Avatar
+        style={{
+          width: "45px",
+          height: "45px",
+          cursor: "pointer",
+        }}
+        src={avatarUrlOfCreator || default_image}
+        onClick={handleNavigateProfileUser(idOfCreator || "")}
+      />
       <div style={{ width: "calc(100% - 65px)" }}>
         <div className="flex justify-between w-full">
           <Popover

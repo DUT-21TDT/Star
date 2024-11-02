@@ -25,7 +25,6 @@ const getAllPostOnNewsFeed = async (config: configTypeProfileWall) => {
     url = `/newsfeed/posts?limit=${config.limit}`;
   }
   const response = await instance.get(url);
-  console.log(response);
   return response.data;
 };
 

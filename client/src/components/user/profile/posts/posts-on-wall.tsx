@@ -84,8 +84,8 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
         </div>
       ) : allPosts.length === 0 ? (
         <div
-          className="flex items-center justify-center text-2xl"
-          style={{ fontWeight: 450, marginTop: "25vh" }}
+          className="flex items-center justify-center text-xl"
+          style={{ fontWeight: 450, marginTop: "25vh", color: "#999999" }}
         >
           No posts yet
         </div>

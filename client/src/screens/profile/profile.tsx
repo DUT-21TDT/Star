@@ -9,10 +9,19 @@ import { useGetProfileUser } from "../../hooks/user";
 import { useParams } from "react-router-dom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import {useEffect, useState} from "react";
 
 const Profile = () => {
   const { id } = useParams();
   const { data, isLoading } = useGetProfileUser(id || "");
+
+  const [followStatus, setFollowStatus] = useState("");
+
+  useEffect(() => {
+    if (data && !isLoading) {
+        setFollowStatus(data.followStatus);
+    }
+  }, [data, isLoading]);
 
   if (isLoading) {
     return (
@@ -23,8 +32,8 @@ const Profile = () => {
   }
 
   return (
-    console.log("data", data),
-    (
+    // console.log("data", data),
+    (data && (
       <ConfigProvider theme={profileTheme}>
         <div className="w-full flex justify-center bg-white">
           <div
@@ -42,11 +51,12 @@ const Profile = () => {
             >
               <UserProfile
                 isCurrentUser={data?.isCurrentUser}
-                followStatus={data?.followStatus}
+                followStatus={followStatus}
+                setFollowStatus={setFollowStatus}
                 publicProfile={data?.publicProfile}
                 userId={id || ""}
               />
-              {data?.followStatus === "FOLLOWING" ||
+              {followStatus === "FOLLOWING" ||
               data?.publicProfile.privateProfile === false ||
               data?.isCurrentUser ? (
                 <TabProfile isCurrentUser={data?.isCurrentUser} />
@@ -57,9 +67,10 @@ const Profile = () => {
                     justifyContent: "center",
                     alignItems: "center",
                     height: "50vh",
+                    color: "#999999",
                   }}
                 >
-                  This account is private
+                  This profile is private
                 </div>
               )}
             </div>
@@ -67,6 +78,6 @@ const Profile = () => {
         </div>
       </ConfigProvider>
     )
-  );
+  ));
 };
 export default Profile;
