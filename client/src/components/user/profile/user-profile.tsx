@@ -37,9 +37,8 @@ const UserProfile: React.FC<IProps> = (props) => {
   const { mutate: unfollowUser } = useUnfollowUser();
 
   useEffect(() => {
-    setFollowStatus(props?.followStatus);
     setNumberOfFollowers(props?.publicProfile?.numberOfFollowers);
-  }, [props?.followStatus, props?.publicProfile, setFollowStatus]);
+  }, [props?.publicProfile]);
 
   const handleFollowUser = () => {
     followUser(props.userId, {
@@ -51,7 +50,7 @@ const UserProfile: React.FC<IProps> = (props) => {
           setNumberOfFollowers(prevState => prevState + 1);
         }
       },
-      onError: (error: any) => {
+      onError: (error: Error) => {
         console.error("Error following user:", error);
       },
     });
@@ -69,10 +68,15 @@ const UserProfile: React.FC<IProps> = (props) => {
   const proceedWithUnfollow = () => {
     unfollowUser(props.userId, {
       onSuccess: () => {
-        setFollowStatus("NOT_FOLLOWING");
-        setNumberOfFollowers(prevState => prevState - 1);
+        if (followStatus === "FOLLOWING") {
+          setFollowStatus("NOT_FOLLOWING");
+          setNumberOfFollowers(prevState => prevState - 1);
+        }
+        else if (followStatus === "REQUESTED") {
+          setFollowStatus("NOT_FOLLOWING");
+        }
       },
-      onError: (error: any) => {
+      onError: (error: Error) => {
         console.error("Error unfollowing user:", error);
       },
     });

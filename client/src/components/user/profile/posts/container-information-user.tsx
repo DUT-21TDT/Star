@@ -41,7 +41,7 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
           setNumberOfFollowers(prevState => prevState + 1);
         }
       },
-      onError: (error: any) => {
+      onError: (error: Error) => {
         console.error("Error following user:", error);
       },
     });
@@ -59,10 +59,15 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
   const proceedWithUnfollow = () => {
     unfollowUser(idOfCreator, {
       onSuccess: () => {
-        setFollowStatus("NOT_FOLLOWING");
-        setNumberOfFollowers(prevState => prevState - 1);
+        if (followStatus === "FOLLOWING") {
+          setFollowStatus("NOT_FOLLOWING");
+          setNumberOfFollowers(prevState => prevState - 1);
+        }
+        else if (followStatus === "REQUESTED") {
+          setFollowStatus("NOT_FOLLOWING");
+        }
       },
-      onError: (error: any) => {
+      onError: (error: Error) => {
         console.error("Error unfollowing user:", error);
       },
     });
