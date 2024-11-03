@@ -1,28 +1,14 @@
-import { Button, Dropdown } from "antd";
+import { Dropdown, Button, Menu } from "antd";
 import { DownOutlined, EllipsisOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
-import { useState } from "react";
 
-const HeaderNewFeed = () => {
-  const [itemActive, setItemActive] = useState("For you");
+import "../../../assets/css/header-newfeed.css";
 
-  const menuItems: MenuProps["items"] = [
-    { key: "1", label: "For you" },
-    { key: "2", label: "Following" },
-    { key: "3", label: "Like" },
-    { key: "4", label: "Save" },
-  ].map(({ key, label }) => ({
-    key,
-    label: (
-      <div
-        className="w-[200px] h-[40px] flex items-center text-[16px] font-semibold"
-        onClick={() => setItemActive(label)}
-      >
-        {label}
-      </div>
-    ),
-  }));
+interface IProps {
+  itemActive: string;
+  menuItems: { key: string; label: JSX.Element; children?: JSX.Element[] }[];
+}
 
+const HeaderNewFeed: React.FC<IProps> = ({ itemActive, menuItems }) => {
   return (
     <div className="flex">
       <div style={{ flexGrow: 1 }}></div>
@@ -35,7 +21,11 @@ const HeaderNewFeed = () => {
           className="flex items-center justify-center border border-[#ccc] rounded-full"
           style={{ width: "20px", height: "20px" }}
         >
-          <Dropdown menu={{ items: menuItems }} placement="bottom">
+          <Dropdown
+            overlay={<Menu items={menuItems} />}
+            placement="bottom"
+            trigger={["click"]}
+          >
             <DownOutlined style={{ fontSize: "14px" }} />
           </Dropdown>
         </div>

@@ -5,6 +5,7 @@ import {
   getPostOnProfileWall,
   createAPost,
   getPostPresignedURL,
+  getAllPostInRoom,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -33,6 +34,23 @@ const useFetchAllPostsOnNewsFeed = (config: configTypeProfileWall) => {
   const result = useQuery({
     queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
     queryFn: () => getAllPostOnNewsFeed(config),
+  });
+  return {
+    dataPost: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextPost: !result.data?.last,
+    afterTime: result.data?.content[result.data?.content.length - 1]?.createdAt,
+  };
+};
+
+const useGetAllPostsInRoom = (
+  roomId: string,
+  config: configTypeProfileWall
+) => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchAllPostsInRoom(roomId),
+    queryFn: () => getAllPostInRoom(roomId, config),
   });
   return {
     dataPost: result.data?.content || [],
@@ -82,4 +100,5 @@ export {
   useUnlikePost,
   useCreateAPost,
   useGetAllPresignedUrl,
+  useGetAllPostsInRoom,
 };

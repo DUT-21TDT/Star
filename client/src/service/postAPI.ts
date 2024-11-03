@@ -60,6 +60,20 @@ const getPostPresignedURL = async (fileNames: string[]) => {
   return response.data;
 };
 
+const getAllPostInRoom = async (
+  roomId: string,
+  config: configTypeProfileWall
+) => {
+  let url;
+  if (config.after !== null) {
+    url = `/rooms/${roomId}/posts?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/rooms/${roomId}/posts?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -67,4 +81,5 @@ export {
   unlikePost,
   createAPost,
   getPostPresignedURL,
+  getAllPostInRoom,
 };
