@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
-import { getAllPostOnNewsFeed, getPostOnProfileWall,   createAPost } from "../service/postAPI";
+import {
+  getAllPostOnNewsFeed,
+  getPostOnProfileWall,
+  createAPost,
+  getPostPresignedURL,
+} from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
   limit: number;
@@ -40,26 +45,41 @@ const useFetchAllPostsOnNewsFeed = (config: configTypeProfileWall) => {
 
 const useLikePost = () => {
   return useMutation({
-    mutationFn: likePost
+    mutationFn: likePost,
   });
-}
+};
 
 const useUnlikePost = () => {
   return useMutation({
-    mutationFn: unlikePost
+    mutationFn: unlikePost,
   });
-}
+};
 
 const useCreateAPost = () => {
-    return useMutation({
-        mutationFn: ({ roomId, content }: { roomId: string; content: string }) =>
-            createAPost(roomId, content),
-    });
+  return useMutation({
+    mutationFn: ({
+      roomId,
+      content,
+      imageFileNames,
+    }: {
+      roomId: string;
+      content: string;
+      imageFileNames: string[];
+    }) => createAPost(roomId, content, imageFileNames),
+  });
+};
+
+const useGetAllPresignedUrl = () => {
+  return useMutation({
+    mutationFn: (fileNames: string[]) => getPostPresignedURL(fileNames),
+  });
 };
 
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
   useLikePost,
-  useUnlikePost, useCreateAPost
+  useUnlikePost,
+  useCreateAPost,
+  useGetAllPresignedUrl,
 };

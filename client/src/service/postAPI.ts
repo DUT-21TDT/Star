@@ -31,20 +31,40 @@ const getAllPostOnNewsFeed = async (config: configTypeProfileWall) => {
 const likePost = async (postId: string) => {
   const response = await instance.post(`/posts/${postId}/likes`);
   return response.data;
-}
+};
 
 const unlikePost = async (postId: string) => {
   const response = await instance.delete(`/posts/${postId}/likes`);
   return response.data;
-}
-
-const createAPost = async (roomId: string, content: string) => {
-    const data = {
-        roomId,
-        content,
-    };
-    const response = await instance.post(`/posts`, data);
-    return response.data;
 };
 
-export { getPostOnProfileWall, getAllPostOnNewsFeed, likePost, unlikePost, createAPost };
+const createAPost = async (
+  roomId: string,
+  content: string,
+  imageFileNames: string[]
+) => {
+  const data = {
+    roomId,
+    content,
+    imageFileNames,
+  };
+  const response = await instance.post(`/posts`, data);
+  return response.data;
+};
+
+const getPostPresignedURL = async (fileNames: string[]) => {
+  const data = {
+    fileNames,
+  };
+  const response = await instance.post(`/images/post-presigned-urls`, data);
+  return response.data;
+};
+
+export {
+  getPostOnProfileWall,
+  getAllPostOnNewsFeed,
+  likePost,
+  unlikePost,
+  createAPost,
+  getPostPresignedURL,
+};
