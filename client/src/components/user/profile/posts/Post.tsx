@@ -8,7 +8,7 @@ import { timeAgo } from "../../../../utils/convertTime";
 import { useNavigate } from "react-router-dom";
 import ContainerInformationUser from "./container-information-user";
 import useEmblaCarousel from "embla-carousel-react";
-
+import { PhotoProvider, PhotoView } from "react-photo-view";
 interface IProps {
   id: string;
   usernameOfCreator: string;
@@ -141,37 +141,52 @@ const Post: React.FC<IProps> = (props) => {
           </p>
         </div>
         {postImageUrls && postImageUrls.length > 0 && (
-          <div className="embla" ref={emblaRef} style={{ overflow: "hidden", maxHeight: "400px" }}>
-            <div className="embla__container"
-              style={{ display: "flex", cursor: isDraggingImg ? "grabbing" : "grab" }}
+          <div
+            className="embla"
+            ref={emblaRef}
+            style={{ overflow: "hidden", maxHeight: "400px" }}
+          >
+            <div
+              className="embla__container"
+              style={{
+                display: "flex",
+                cursor: isDraggingImg ? "grabbing" : "grab",
+              }}
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
             >
-              {postImageUrls.map((url) => (
-                <div className="embla__slide" key={url} style={{
-                  flex: "0 0 auto",
-                  marginRight: "15px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "white"
-                }}>
-                  <img
+              <PhotoProvider maskOpacity={0.7}>
+                {postImageUrls.map((url, index) => (
+                  <div
+                    className="embla__slide"
                     key={url}
-                    src={url}
-                    alt="Post Image"
                     style={{
-                      maxHeight: "400px",
-                      maxWidth: "560px",
-                      width: "auto",
-                      objectFit: "cover",
-                      objectPosition: "center",
-                      borderRadius: "15px", /* Rounded corners */
-                      // transition: "transform 0.3s ease", /* Smooth scaling effect */
+                      flex: "0 0 auto",
+                      marginRight: "15px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "white",
                     }}
-                  />
-                </div>
-              ))}
+                  >
+                    <PhotoView key={index} src={url}>
+                      <img
+                        key={url}
+                        src={url}
+                        alt="Post Image"
+                        style={{
+                          maxHeight: "400px",
+                          maxWidth: "560px",
+                          width: "auto",
+                          objectFit: "cover",
+                          objectPosition: "center",
+                          borderRadius: "15px",
+                        }}
+                      />
+                    </PhotoView>
+                  </div>
+                ))}
+              </PhotoProvider>
             </div>
           </div>
         )}

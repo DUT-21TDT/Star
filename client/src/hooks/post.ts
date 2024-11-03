@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
-import { getAllPostOnNewsFeed, getPostOnProfileWall } from "../service/postAPI";
+import { getAllPostOnNewsFeed, getPostOnProfileWall,   createAPost } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
   limit: number;
@@ -50,9 +50,16 @@ const useUnlikePost = () => {
   });
 }
 
+const useCreateAPost = () => {
+    return useMutation({
+        mutationFn: ({ roomId, content }: { roomId: string; content: string }) =>
+            createAPost(roomId, content),
+    });
+};
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
   useLikePost,
-  useUnlikePost
+  useUnlikePost, useCreateAPost
 };

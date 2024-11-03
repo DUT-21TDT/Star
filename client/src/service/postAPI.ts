@@ -38,4 +38,13 @@ const unlikePost = async (postId: string) => {
   return response.data;
 }
 
-export { getPostOnProfileWall, getAllPostOnNewsFeed, likePost, unlikePost };
+const createAPost = async (roomId: string, content: string) => {
+    const data = {
+        roomId,
+        content,
+    };
+    const response = await instance.post(`/posts`, data);
+    return response.data;
+};
+
+export { getPostOnProfileWall, getAllPostOnNewsFeed, likePost, unlikePost, createAPost };

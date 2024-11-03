@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch } from "./redux/store/hook";
 import { getCurrentUser, handleRefreshToken } from "./service/userAPI";
 import { storeInformationUser } from "./redux/slice/user-slice";
+import "react-photo-view/dist/react-photo-view.css";
 function App() {
   const dispatch = useAppDispatch();
   const access_token = Cookies.get("access_token") || null;
@@ -23,13 +24,13 @@ function App() {
           username: res?.username,
           role: res?.role || "USER",
           status: res?.status || "INACTIVE",
-          avatarUrl: res?.avatarUrl || ""
+          avatarUrl: res?.avatarUrl || "",
         })
       );
     } catch (err) {
       try {
         if (retry) {
-          throw new Error;
+          throw new Error();
         }
 
         const response = await handleRefreshToken();
