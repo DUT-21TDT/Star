@@ -1,5 +1,6 @@
 package com.pbl.star.usecase.impl;
 
+import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
@@ -25,6 +26,12 @@ public class PostManageUsecaseImpl implements PostManageUsecase {
     public String createPost(CreatePostParams createPostParams) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.createPost(currentUserId, createPostParams);
+    }
+
+    @Override
+    public Slice<PendingPostForUserDTO> getPendingPostsByCurrentUser(int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return postService.getPendingPostsByUser(currentUserId, limit, after);
     }
 
     @Override

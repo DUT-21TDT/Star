@@ -1,5 +1,6 @@
 package com.pbl.star.repositories.extensions.impl;
 
+import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.enums.PostStatus;
@@ -41,6 +42,57 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         }
 
         return getSlicePostForUserDTOS(pageable, query);
+    }
+
+    @Override
+    public Slice<PendingPostForUserDTO> findPendingPostsOfUser(Pageable pageable, Instant after, String userId) {
+        String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, p.status, " +
+                "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls " +
+                "FROM Post p " +
+                "INNER JOIN User u ON p.userId = u.id " +
+                "WHERE p.userId = :userId " +
+                "AND p.status = 'PENDING' " +
+                (after == null ? "" : "AND p.createdAt < :after ") +
+                "ORDER BY p.createdAt DESC, p.id DESC ";
+
+        TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
+        query
+                .setParameter("userId", userId)
+                .setFirstResult(0)
+                .setMaxResults(pageable.getPageSize() + 1);
+
+        if (after != null) {
+            query.setParameter("after", after);
+        }
+
+        return getSlicePendingPostForUserDTOS(pageable, query);
+    }
+
+    private Slice<PendingPostForUserDTO> getSlicePendingPostForUserDTOS(Pageable pageable, TypedQuery<Object[]> query) {
+        List<Object[]> resultList = query.getResultList();
+        boolean hasNext = resultList.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            resultList.removeLast();
+        }
+
+        List<PendingPostForUserDTO> postList = resultList.stream()
+                .map(row -> (PendingPostForUserDTO) PendingPostForUserDTO.builder()
+                        .id((String) row[0])
+                        .idOfCreator((String) row[1])
+                        .usernameOfCreator((String) row[2])
+                        .avatarUrlOfCreator((String) row[3])
+                        .createdAt((Instant) row[4])
+                        .content((String) row[5])
+                        .status((PostStatus) row[6])
+                        .postImageUrls(row[7] == null ? null :
+                                List.of(((String) row[7]).split(","))
+                        )
+                        .build()
+                )
+                .toList();
+
+        return new SliceImpl<>(postList, pageable, hasNext);
     }
 
     @Override

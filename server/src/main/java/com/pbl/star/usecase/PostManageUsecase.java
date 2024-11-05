@@ -1,5 +1,6 @@
 package com.pbl.star.usecase;
 
+import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
@@ -10,6 +11,7 @@ import java.time.Instant;
 
 public interface PostManageUsecase {
     String createPost(CreatePostParams createPostParams);
+    Slice<PendingPostForUserDTO> getPendingPostsByCurrentUser(int limit, Instant after);
     Slice<PostForUserDTO> getPostsOnUserWall(String userId, int limit, Instant after);
     Slice<PostForUserDTO> getPostsOnNewsfeed(int limit, Instant after);
     Slice<PostForUserDTO> getApprovedPostsInRoom(String roomId, int limit, Instant after);

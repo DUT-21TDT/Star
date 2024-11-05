@@ -1,5 +1,6 @@
 package com.pbl.star.services.domain.impl;
 
+import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
@@ -92,6 +93,12 @@ public class PostServiceImpl implements PostService {
 
         Pageable pageable = PageRequest.of(0, limit);
         return postRepository.findPostsOfUserByStatus(pageable, after, PostStatus.APPROVED, targetUserId);
+    }
+
+    @Override
+    public Slice<PendingPostForUserDTO> getPendingPostsByUser(String currentUserId, int limit, Instant after) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return postRepository.findPendingPostsOfUser(pageable, after, currentUserId);
     }
 
     @Override

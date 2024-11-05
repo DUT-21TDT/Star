@@ -32,6 +32,13 @@ public class PostViewController {
         return ResponseEntity.ok(postManageUsecase.getPostsOnUserWall(userId, limit, after));
     }
 
+    @GetMapping("/users/me/pending-posts")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> getPendingPostsByCurrentUser(@RequestParam(defaultValue = "20") int limit,
+                                                   @RequestParam(required = false) Instant after) {
+        return ResponseEntity.ok(postManageUsecase.getPendingPostsByCurrentUser(limit, after));
+    }
+
     @GetMapping("/rooms/{roomId}/posts")
     public ResponseEntity<?> getPostsInRoom(@PathVariable String roomId,
                                            @RequestParam(defaultValue = "APPROVED") PostStatus status,
