@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,20 +30,26 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
     after: afterTime,
   });
   const [allPosts, setAllPosts] = useState<PostType[]>([]);
-  const handleScroll = () => {
-    const isBottom =
-      window.innerHeight + window.scrollY >=
-      document.documentElement.scrollHeight - 1;
 
-    if (isBottom && hasNextPost) {
+  const fetchMorePosts = useCallback(() => {
+    if (hasNextPost) {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEY.fetchAllPostsInRoom(roomId),
       });
     }
-  };
+  }, [queryClient, roomId, hasNextPost]);
+
+  const handleScroll = useCallback(() => {
+    const isBottom =
+      window.innerHeight + window.scrollY >=
+      document.documentElement.scrollHeight - 1;
+
+    if (isBottom) fetchMorePosts();
+  }, [fetchMorePosts]);
+
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
-      setAllPosts((prevPosts: PostType[]) => [
+      setAllPosts((prevPosts) => [
         ...prevPosts,
         ...dataPost.map((post: PostType) => ({
           ...post,
@@ -54,13 +60,13 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
       setAfterTime(lastPost.createdAt);
     }
   }, [dataPost]);
+
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => {
-      setAllPosts([]);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [hasNextPost, roomId]);
+  }, [handleScroll]);
   return (
     <>
       {isLoading && (

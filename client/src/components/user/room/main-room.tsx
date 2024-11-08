@@ -3,6 +3,7 @@ import { Button, Input, Divider, Spin } from "antd";
 import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import { useGetAllRoomForUser } from "../../../hooks/room";
 import ModalConfirmJoinRoom from "./modal-confirm-join-room";
+import { useNavigate } from "react-router-dom";
 
 interface RoomType {
   id: number;
@@ -28,6 +29,7 @@ const MainRoomContent: React.FC = () => {
   const filteredRoomNotJoined = listRoomNotJoined.filter((room: RoomType) =>
     room.name.toLowerCase().includes(searchValue.toLowerCase())
   );
+  const navigate = useNavigate();
 
   return (
     <>
@@ -57,7 +59,13 @@ const MainRoomContent: React.FC = () => {
 
           <div className="flex flex-col mt-2 w-full">
             {filteredRoomJoined.map((item: RoomType) => (
-              <div key={item.id}>
+              <div
+                key={item.id}
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={() => navigate(`/posts/${item.id}`)}
+              >
                 <div className="flex items-center justify-between w-full">
                   <div>
                     <p className="text-[17px] font-semibold">{item.name}</p>

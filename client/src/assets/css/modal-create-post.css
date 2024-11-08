@@ -1,0 +1,6 @@
+.ant-input-outlined:focus {
+  box-shadow: none;
+}
+.ant-input-outlined:focus-within {
+  box-shadow: none;
+}

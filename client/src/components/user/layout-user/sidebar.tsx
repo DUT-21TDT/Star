@@ -12,6 +12,7 @@ import {
 } from "../../../assets/icon/sidebar-homepage-icon";
 import { useState } from "react";
 import { useAppSelector } from "../../../redux/store/hook";
+import ModalCreatePost from "../profile/posts/modal-create-post";
 
 const SideBar: React.FC = () => {
   const id = useAppSelector((state) => state.user.id);
@@ -59,7 +60,9 @@ const SideBar: React.FC = () => {
     },
   ];
   const [activeIcon, setActiveIcon] = useState<string>("home");
+  const [openModalCreatePost, setOpenModalCreatePost] = useState(false);
   const navigate = useNavigate();
+
   return (
     <div
       className=" w-[70px] h-[calc(100vh-50px)] flex flex-col justify-between items-center pt-5 "
@@ -84,8 +87,10 @@ const SideBar: React.FC = () => {
               key={name}
               className="div-hover"
               onClick={() => {
-                setActiveIcon(name);
-                if (iconNavigate) {
+                if (name === "plus") {
+                  setOpenModalCreatePost(true);
+                } else if (iconNavigate) {
+                  setActiveIcon(name);
                   navigate(iconNavigate);
                 }
               }}
@@ -99,6 +104,11 @@ const SideBar: React.FC = () => {
           )
         )}
       </div>
+
+      <ModalCreatePost
+        isModalOpen={openModalCreatePost}
+        setIsModalOpen={setOpenModalCreatePost}
+      />
 
       {/* Bottom Icons */}
       <div className="flex-grow flex flex-col items-center gap-3 justify-end">

@@ -12,6 +12,7 @@ import Profile from "../screens/profile/profile";
 import { ProtectedRoute } from "../components/auth/protected-route";
 import RoomUser from "../screens/room/room-user";
 import NewFeed from "../screens/newfeeds/newfeed";
+import PostInRoomContainer from "../screens/post-in-room/PostInRoomContainer";
 
 const router = createBrowserRouter(
   [
@@ -43,6 +44,10 @@ const router = createBrowserRouter(
         {
           path: "room",
           element: <RoomUser />,
+        },
+        {
+          path: "posts/:roomId",
+          element: <PostInRoomContainer />,
         },
       ],
     },

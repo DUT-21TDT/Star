@@ -1,11 +1,11 @@
 import { ConfigProvider } from "antd";
 import { newFeedsTheme } from "../../utils/theme";
-import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
 import CreatePost from "../../components/user/profile/posts/create-post";
-import PostsOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed";
-import { useState } from "react";
 import { useGetAllRoomForUser } from "../../hooks/room";
-import { useNavigate } from "react-router-dom";
+import PostsInRoom from "../../components/user/newfeed/posts-in-room";
+import { useNavigate, useParams } from "react-router-dom";
+import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
+import { useEffect, useState } from "react";
 interface RoomType {
   id: number;
   key: number;
@@ -16,13 +16,15 @@ interface RoomType {
   isParticipant?: boolean;
 }
 
-const NewFeed = () => {
-  const [itemActive, setItemActive] = useState({ label: "For you", key: "1" });
-  const { listRoomJoined } = useGetAllRoomForUser();
+const PostInRoomContainer = () => {
+  const { roomId } = useParams<{ roomId: string }>();
+  const { listRoomJoined, isLoading } = useGetAllRoomForUser();
   const childrenRoom = listRoomJoined.map((room: RoomType) => ({
-    key: room.id,
+    key: room.id.toString(),
     label: room.name,
   }));
+  const [itemActive, setItemActive] = useState({ label: "", key: "" });
+
   const navigate = useNavigate();
 
   const menuItems = [
@@ -68,11 +70,22 @@ const NewFeed = () => {
         }))
       : null,
   }));
+
+  useEffect(() => {
+    if (roomId) {
+      const room = childrenRoom.find(
+        (r: { key: string; label: string }) => r.key === roomId
+      );
+      if (room) {
+        setItemActive({ label: room.label, key: room.key });
+      }
+    }
+  }, [roomId, isLoading]);
   return (
     <ConfigProvider theme={newFeedsTheme}>
       <div className="w-full flex justify-center bg-white">
         <div
-          className=" h-full pt-2 "
+          className="h-full pt-2"
           style={{ width: "100%", maxWidth: "650px" }}
         >
           <HeaderNewFeed itemActive={itemActive.label} menuItems={menuItems} />
@@ -86,16 +99,12 @@ const NewFeed = () => {
             }}
           >
             <CreatePost />
-            {/* NewFeed Content */}
-            {itemActive.label === "For you" && (
-              <>
-                <PostsOnNewsFeed />
-              </>
-            )}
+            <PostsInRoom roomId={roomId || ""} key={roomId} />
           </div>
         </div>
       </div>
     </ConfigProvider>
   );
 };
-export default NewFeed;
+
+export default PostInRoomContainer;

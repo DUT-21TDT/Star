@@ -7,6 +7,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import { useGetAllRoomForUser } from "../../../../hooks/room";
 import { useCreateAPost, useGetAllPresignedUrl } from "../../../../hooks/post";
+import "../../../../assets/css/modal-create-post.css";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type RoomType = {
@@ -200,6 +201,7 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
               border: "none",
               fontSize: "16px",
               maxWidth: "500px",
+              paddingLeft: "0px",
             }}
           />
           <div
