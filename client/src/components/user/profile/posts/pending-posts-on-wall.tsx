@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
+import Post from "./Post";
+import { useGetAllPendingPostOnWall } from "../../../../hooks/post";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEY } from "../../../utils/queriesKey";
-import { useFetchAllPostsOnNewsFeed } from "../../../hooks/post";
-import Post from "../profile/posts/Post";
-import RemoveDuplicatePost from "../../../utils/removeDuplicatePost";
+import { QUERY_KEY } from "../../../../utils/queriesKey";
+
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -20,14 +20,18 @@ interface PostType {
   idOfCreator: string;
 }
 
-const PostsOnNewsFeed: React.FC = () => {
+interface IProps {
+  isCurrentUser: boolean;
+}
+
+const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
   const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
-  const [allPosts, setAllPosts] = useState<PostType[]>([]);
-  const { dataPost, isLoading, hasNextPost } = useFetchAllPostsOnNewsFeed({
+  const { dataPost, isLoading, hasNextPost } = useGetAllPendingPostOnWall({
     limit: 10,
     after: afterTime,
   });
+  const [allPosts, setAllPosts] = useState<PostType[]>([]);
 
   const handleScroll = () => {
     const isBottom =
@@ -36,21 +40,25 @@ const PostsOnNewsFeed: React.FC = () => {
 
     if (isBottom && hasNextPost) {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
+        queryKey: QUERY_KEY.fetchAllPendingPostOnWall(),
       });
     }
   };
+
+  useEffect(() => {
+    setAllPosts([]);
+    setAfterTime(null);
+  }, []);
+
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
-      setAllPosts((prevPosts: PostType[]) =>
-        RemoveDuplicatePost([
-          ...prevPosts,
-          ...dataPost.map((post: PostType) => ({
-            ...post,
-            postImageUrls: post.postImageUrls || [],
-          })),
-        ])
-      );
+      setAllPosts((prevPosts: PostType[]) => [
+        ...prevPosts,
+        ...dataPost.map((post: PostType) => ({
+          ...post,
+          postImageUrls: post.postImageUrls || [],
+        })),
+      ]);
       const lastPost = dataPost[dataPost.length - 1];
       setAfterTime(lastPost.createdAt);
     }
@@ -61,15 +69,30 @@ const PostsOnNewsFeed: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPost]);
 
+  if (!isCurrentUser) {
+    return (
+      <div
+        className="flex justify-center text-[16px]"
+        style={{ fontWeight: 450, marginTop: "25vh", color: "#999999" }}
+      >
+        You can't see this section
+      </div>
+    );
+  }
   return (
     <>
-      {isLoading && (
+      {isLoading ? (
         <div className="flex items-center justify-center mt-8">
           <Spin indicator={<LoadingOutlined spin />} size="large" />
         </div>
-      )}
-      {allPosts &&
-        allPosts.length > 0 &&
+      ) : allPosts.length === 0 ? (
+        <div
+          className="flex items-center justify-center text-xl"
+          style={{ fontWeight: 450, marginTop: "25vh", color: "#999999" }}
+        >
+          No posts yet
+        </div>
+      ) : (
         allPosts.map((post) => {
           const {
             id,
@@ -90,6 +113,7 @@ const PostsOnNewsFeed: React.FC = () => {
               id={id}
               usernameOfCreator={usernameOfCreator}
               avatarUrlOfCreator={avatarUrlOfCreator}
+              idOfCreator={idOfCreator}
               createdAt={createdAt}
               content={content}
               postImageUrls={postImageUrls}
@@ -97,11 +121,12 @@ const PostsOnNewsFeed: React.FC = () => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
-              idOfCreator={idOfCreator}
             />
           );
-        })}
+        })
+      )}
     </>
   );
 };
-export default PostsOnNewsFeed;
+
+export default PendingPostOnWall;

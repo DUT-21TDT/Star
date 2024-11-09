@@ -74,6 +74,17 @@ const getAllPostInRoom = async (
   return response.data;
 };
 
+const getAllPendingPostInUserWall = async (config: configTypeProfileWall) => {
+  let url;
+  if (config.after !== null) {
+    url = `/users/me/pending-posts?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/users/me/pending-posts?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -82,4 +93,5 @@ export {
   createAPost,
   getPostPresignedURL,
   getAllPostInRoom,
+  getAllPendingPostInUserWall,
 };

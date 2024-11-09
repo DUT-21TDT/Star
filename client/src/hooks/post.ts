@@ -6,6 +6,7 @@ import {
   createAPost,
   getPostPresignedURL,
   getAllPostInRoom,
+  getAllPendingPostInUserWall,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -93,6 +94,20 @@ const useGetAllPresignedUrl = () => {
   });
 };
 
+const useGetAllPendingPostOnWall = (config: configTypeProfileWall) => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchAllPendingPostOnWall(),
+    queryFn: () => getAllPendingPostInUserWall(config),
+  });
+  return {
+    dataPost: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextPost: !result.data?.last,
+    afterTime: result.data?.content[result.data?.content.length - 1]?.createdAt,
+  };
+};
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -101,4 +116,5 @@ export {
   useCreateAPost,
   useGetAllPresignedUrl,
   useGetAllPostsInRoom,
+  useGetAllPendingPostOnWall,
 };

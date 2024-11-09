@@ -43,7 +43,8 @@ const Post: React.FC<IProps> = (props) => {
   } = props;
 
   const navigate = useNavigate();
-  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] = useState(false);
+  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
+    useState(false);
   const [popoverContent, setPopoverContent] = useState<React.ReactNode>(
     <div></div>
   );
@@ -84,7 +85,8 @@ const Post: React.FC<IProps> = (props) => {
         borderBottom: "1px solid #f0f0f0",
         display: "flex",
         gap: "10px",
-      }}>
+      }}
+    >
       <Avatar
         style={{
           width: "45px",

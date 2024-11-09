@@ -64,10 +64,9 @@ const MainRoomContent: React.FC = () => {
                 style={{
                   cursor: "pointer",
                 }}
-                onClick={() => navigate(`/posts/${item.id}`)}
               >
                 <div className="flex items-center justify-between w-full">
-                  <div>
+                  <div onClick={() => navigate(`/posts/${item.id}`)}>
                     <p className="text-[17px] font-semibold">{item.name}</p>
                     <p
                       className="text-[#ccc] text-[14px]"

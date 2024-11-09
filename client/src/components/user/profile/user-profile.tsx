@@ -1,5 +1,5 @@
 import { Button, Image } from "antd";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import default_image from "../../../assets/images/default_image.jpg";
 import ModalEditProfile from "./modal-edit-profile";
 import { useFollowUser, useUnfollowUser } from "../../../hooks/user";
@@ -23,12 +23,10 @@ interface IProps {
 }
 
 const UserProfile: React.FC<IProps> = (props) => {
-
   const { publicProfile, followStatus, setFollowStatus } = props;
-  const [numberOfFollowers, setNumberOfFollowers] = useState<number>(publicProfile.numberOfFollowers);
-
-  console.log("numberOfFollowers", numberOfFollowers);
-
+  const [numberOfFollowers, setNumberOfFollowers] = useState<number>(
+    publicProfile.numberOfFollowers
+  );
   const [openModal, setOpenModal] = useState(false);
 
   const [confirmUnfollowModal, setConfirmUnfollowModal] = useState(false); // New state for the confirmation modal
@@ -47,14 +45,14 @@ const UserProfile: React.FC<IProps> = (props) => {
           setFollowStatus("REQUESTED");
         } else if (response?.followStatus === "FOLLOWING") {
           setFollowStatus("FOLLOWING");
-          setNumberOfFollowers(prevState => prevState + 1);
+          setNumberOfFollowers((prevState) => prevState + 1);
         }
       },
       onError: (error: Error) => {
         console.error("Error following user:", error);
       },
     });
-  }
+  };
 
   const handleUnfollowUser = () => {
     // Show the confirmation modal if the profile is private
@@ -70,9 +68,8 @@ const UserProfile: React.FC<IProps> = (props) => {
       onSuccess: () => {
         if (followStatus === "FOLLOWING") {
           setFollowStatus("NOT_FOLLOWING");
-          setNumberOfFollowers(prevState => prevState - 1);
-        }
-        else if (followStatus === "REQUESTED") {
+          setNumberOfFollowers((prevState) => prevState - 1);
+        } else if (followStatus === "REQUESTED") {
           setFollowStatus("NOT_FOLLOWING");
         }
       },
@@ -126,9 +123,7 @@ const UserProfile: React.FC<IProps> = (props) => {
         </div>
 
         <div className="text-[15px]">{publicProfile.bio || ""}</div>
-        <div className="text-[#a1a1a1]">
-          {numberOfFollowers} followers
-        </div>
+        <div className="text-[#a1a1a1]">{numberOfFollowers} followers</div>
 
         {/* Follow/Edit Profile Buttons */}
         <div>
@@ -140,23 +135,23 @@ const UserProfile: React.FC<IProps> = (props) => {
               Edit profile
             </Button>
           ) : (
-              followStatus && (
-                <div className="flex space-x-2 my-2">
-                { followStatus === "FOLLOWING" ? (
+            followStatus && (
+              <div className="flex space-x-2 my-2">
+                {followStatus === "FOLLOWING" ? (
                   <Button
                     className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
                     onClick={handleUnfollowUser}
                   >
                     Following
                   </Button>
-                  ) : followStatus === "REQUESTED" ? (
+                ) : followStatus === "REQUESTED" ? (
                   <Button
                     className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-[white]"
                     onClick={handleUnfollowUser}
                   >
                     Requested
                   </Button>
-                  ) : (
+                ) : (
                   <Button
                     className="font-semibold w-full h-[35px] text-[15px] border rounded-[10px] bg-black text-white follow-btn"
                     onClick={handleFollowUser}
@@ -168,12 +163,12 @@ const UserProfile: React.FC<IProps> = (props) => {
                   Message
                 </Button>
               </div>
-              )
+            )
           )}
         </div>
       </div>
 
-       {/*Modal to edit the profile */}
+      {/*Modal to edit the profile */}
       {props.isCurrentUser ? (
         <ModalEditProfile openModal={openModal} setOpenModal={setOpenModal} />
       ) : (
@@ -182,9 +177,9 @@ const UserProfile: React.FC<IProps> = (props) => {
           username={publicProfile.username}
           proceedWithUnfollow={proceedWithUnfollow}
           confirmUnfollowModal={confirmUnfollowModal}
-          setConfirmUnfollowModal={setConfirmUnfollowModal} />
+          setConfirmUnfollowModal={setConfirmUnfollowModal}
+        />
       )}
-
     </>
   );
 };
