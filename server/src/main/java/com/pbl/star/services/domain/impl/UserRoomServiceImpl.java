@@ -52,6 +52,7 @@ public class UserRoomServiceImpl implements UserRoomService {
     }
 
     @Override
+    @Transactional
     public void addModeratorToRoom(String userId, String roomId) {
         if (!roomRepository.existsById(roomId)) {
             throw new EntityNotFoundException("Room with id '" + roomId + "' does not exist");
@@ -69,6 +70,7 @@ public class UserRoomServiceImpl implements UserRoomService {
     }
 
     @Override
+    @Transactional
     public void removeModeratorFromRoom(String userId, String roomId) {
         UserRoom userRoom = userRoomRepository.findByUserIdAndRoomId(userId, roomId)
                 .orElseThrow(() -> new EntityNotFoundException("User is not a member of the room"));

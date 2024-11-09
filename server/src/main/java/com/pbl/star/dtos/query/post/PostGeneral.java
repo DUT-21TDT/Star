@@ -12,9 +12,11 @@ import java.util.List;
 @SuperBuilder
 abstract class PostGeneral {
     protected String id;
+    protected String idOfCreator;
     protected String usernameOfCreator;
     protected String avatarUrlOfCreator;
-    protected String idOfCreator;
+    protected String idOfRoom;
+    protected String nameOfRoom;
     protected Instant createdAt;
     protected String content;
     protected List<String> postImageUrls;

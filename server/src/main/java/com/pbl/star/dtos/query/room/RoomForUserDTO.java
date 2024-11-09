@@ -11,4 +11,6 @@ import lombok.experimental.SuperBuilder;
 public final class RoomForUserDTO extends RoomGeneral {
     @JsonProperty("isParticipant")
     private boolean isParticipant;
+    @JsonProperty("isModerator")
+    private boolean isModerator;
 }

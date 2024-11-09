@@ -47,9 +47,11 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     @Override
     public Slice<PendingPostForUserDTO> findPendingPostsOfUser(Pageable pageable, Instant after, String userId) {
         String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, p.status, " +
-                "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls " +
+                "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls, " +
+                "p.roomId, r.name " +
                 "FROM Post p " +
                 "INNER JOIN User u ON p.userId = u.id " +
+                "INNER JOIN Room r ON p.roomId = r.id " +
                 "WHERE p.userId = :userId " +
                 "AND p.status = 'PENDING' " +
                 (after == null ? "" : "AND p.createdAt < :after ") +
@@ -88,6 +90,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .postImageUrls(row[7] == null ? null :
                                 List.of(((String) row[7]).split(","))
                         )
+                        .idOfRoom((String) row[8])
+                        .nameOfRoom((String) row[9])
                         .build()
                 )
                 .toList();
@@ -118,14 +122,16 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     private static String getPostForUserQuery(ConditionType type, Instant after, PostStatus status) {
-        String jpql = "SELECT p.id, u.id,  u.username, u.avatarUrl, p.createdAt, p.content, " +
+        String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, " +
                 "(SELECT COUNT(*) FROM PostLike pl WHERE pl.postId = p.id) AS number_of_likes, " +
                 "(SELECT COUNT(*) FROM Post p1 WHERE p1.parentPostId = p.id) AS number_of_comments, " +
                 "(SELECT COUNT(*) FROM PostRepost pr WHERE pr.postId = p.id) AS number_of_reposts, " +
                 "(CASE WHEN EXISTS (SELECT 1 FROM PostLike pl WHERE pl.postId = p.id AND pl.userId = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
-                "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls " +
+                "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls, " +
+                "p.roomId, r.name " +
                 "FROM Post p " +
                 "INNER JOIN User u ON p.userId = u.id " +
+                "INNER JOIN Room r ON p.roomId = r.id " +
                 "WHERE TRUE ";
 
         if (type == ConditionType.USER) {
@@ -170,6 +176,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .postImageUrls(row[10] == null ? null :
                                 List.of(((String) row[10]).split(","))
                         )
+                        .idOfRoom((String) row[11])
+                        .nameOfRoom((String) row[12])
                         .build()
                 )
                 .toList();
@@ -198,9 +206,11 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
     private static String getPostForModQuery(Instant after, PostStatus status) {
         String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, p.status, p.violenceScore, " +
-                "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls " +
+                "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls," +
+                "p.roomId, r.name " +
                 "FROM Post p " +
                 "INNER JOIN User u ON p.userId = u.id " +
+                "INNER JOIN Room r ON p.roomId = r.id " +
                 "WHERE p.roomId = :roomId ";
 
         if (status != null) {
@@ -237,6 +247,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .postImageUrls(row[8] == null ? null :
                                 List.of(((String) row[8]).split(","))
                         )
+                        .idOfRoom((String) row[9])
+                        .nameOfRoom((String) row[10])
                         .build()
                 )
                 .toList();

@@ -37,10 +37,18 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
 
     @Override
     public List<RoomForUserDTO> getRoomsOverviewForUser(String userId) {
+
         String jpql = "SELECT r.id, r.name, r.description, r.createdAt, " +
-                "(SELECT COUNT(*) FROM UserRoom ur WHERE ur.roomId = r.id) AS participantsCount, " +
-                "CASE WHEN (SELECT COUNT(*) FROM UserRoom ur WHERE ur.roomId = r.id AND ur.userId = :userId) > 0 THEN TRUE ELSE FALSE END AS isParticipant " +
-                "FROM Room r";
+                "(SELECT COUNT(urAll.userId) FROM UserRoom urAll WHERE urAll.roomId = r.id) AS participantsCount, " +
+                "CASE " +
+                "WHEN (SELECT ur.role FROM UserRoom ur WHERE ur.roomId = r.id AND ur.userId = :userId) = 'MEMBER' THEN 'MEMBER' " +
+                "WHEN (SELECT ur.role FROM UserRoom ur WHERE ur.roomId = r.id AND ur.userId = :userId) = 'MODERATOR' THEN 'MODERATOR' " +
+                "ELSE 'NOT_JOINED' " +
+                "END AS joinRole " +
+                "FROM Room r " +
+                "LEFT JOIN UserRoom urAll ON urAll.roomId = r.id " +
+                "LEFT JOIN UserRoom ur ON ur.roomId = r.id AND ur.userId = :userId " +
+                "GROUP BY r.id, r.name, r.description, r.createdAt, joinRole";
 
         TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
         query.setParameter("userId", userId);
@@ -52,7 +60,8 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
                         .description((String) row[2])
                         .createdAt((Instant) row[3])
                         .participantsCount(((Long) row[4]).intValue())
-                        .isParticipant((boolean) row[5])
+                        .isParticipant(!"NOT_JOINED".equals(row[5]))
+                        .isModerator("MODERATOR".equals(row[5]))
                         .build())
                 .toList();
     }
