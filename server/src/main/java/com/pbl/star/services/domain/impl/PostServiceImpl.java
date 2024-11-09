@@ -8,8 +8,10 @@ import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostImage;
 import com.pbl.star.entities.PostLike;
 import com.pbl.star.enums.PostStatus;
+import com.pbl.star.enums.RoomRole;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
+import com.pbl.star.exceptions.ModeratorAccessException;
 import com.pbl.star.exceptions.ResourceOwnershipException;
 import com.pbl.star.mapper.PostCreationMapper;
 import com.pbl.star.repositories.*;
@@ -133,6 +135,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void likePost(String userId, String postId) {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException("Post does not exist");
@@ -152,10 +155,51 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void unlikePost(String userId, String postId) {
         PostLike postLike = postLikeRepository.findPostLikeByUserIdAndPostId(userId, postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post is not exist, or user did not like the post"));
 
         postLikeRepository.delete(postLike);
+    }
+
+    @Override
+    @Transactional
+    public void moderatePostStatus(String postId, PostStatus status, String moderatorId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+
+        if (!userRoomRepository.existsByUserIdAndRoomIdAndRole(moderatorId, post.getRoomId(), RoomRole.MODERATOR)) {
+            throw new ModeratorAccessException("User is not a moderator of the room");
+        }
+
+        if (post.getStatus() == status) {
+            throw new EntityConflictException("Post already has the status " + status.name());
+        }
+
+        post.setStatus(status);
+        post.setModeratedBy(moderatorId);
+        post.setModeratedAt(Instant.now());
+        postRepository.save(post);
+    }
+
+    @Override
+    @Transactional
+    public void unmoderatePostStatus(String postId, String moderatorId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+
+        if (!userRoomRepository.existsByUserIdAndRoomIdAndRole(moderatorId, post.getRoomId(), RoomRole.MODERATOR)) {
+            throw new ModeratorAccessException("User is not a moderator of the room");
+        }
+
+        if (post.getStatus() == PostStatus.PENDING) {
+            throw new EntityConflictException("Post is not moderated yet");
+        }
+
+        post.setStatus(PostStatus.PENDING);
+        post.setModeratedBy(null);
+        post.setModeratedAt(null);
+        postRepository.save(post);
     }
 }

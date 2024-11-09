@@ -1,4 +1,4 @@
-package com.pbl.star.controllers;
+package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.usecase.ProfileManageUsecase;

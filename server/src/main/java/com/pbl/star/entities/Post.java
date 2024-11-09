@@ -46,4 +46,10 @@ public class Post {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+    @Column(name = "moderated_by")
+    private String moderatedBy;
+
+    @Column(name = "moderated_at")
+    private Instant moderatedAt;
 }

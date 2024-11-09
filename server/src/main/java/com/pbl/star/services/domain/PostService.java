@@ -18,4 +18,6 @@ public interface PostService {
     Slice<PostForModDTO> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after);
     void likePost(String userId, String postId);
     void unlikePost(String userId, String postId);
+    void moderatePostStatus(String postId, PostStatus status, String moderatorId);
+    void unmoderatePostStatus(String postId, String moderatorId);
 }

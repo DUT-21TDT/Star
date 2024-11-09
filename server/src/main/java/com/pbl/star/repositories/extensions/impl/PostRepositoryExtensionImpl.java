@@ -207,10 +207,10 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     private static String getPostForModQuery(Instant after, PostStatus status) {
         String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, p.status, p.violenceScore, " +
                 "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls," +
-                "p.roomId, r.name " +
+                "p.roomId, p.moderatedBy, u1.username, p.moderatedAt " +
                 "FROM Post p " +
                 "INNER JOIN User u ON p.userId = u.id " +
-                "INNER JOIN Room r ON p.roomId = r.id " +
+                "LEFT JOIN User u1 ON p.moderatedBy = u1.id " +
                 "WHERE p.roomId = :roomId ";
 
         if (status != null) {
@@ -248,7 +248,9 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                                 List.of(((String) row[8]).split(","))
                         )
                         .idOfRoom((String) row[9])
-                        .nameOfRoom((String) row[10])
+                        .idOfModerator((String) row[10])
+                        .usernameOfModerator((String) row[11])
+                        .moderatedAt((Instant) row[12])
                         .build()
                 )
                 .toList();

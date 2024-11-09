@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="17_add_moderate_info_to_post_table" author="Quang Nguyen">
+        <addColumn tableName="post">
+            <column name="moderated_at" type="TIMESTAMP WITH TIMEZONE"/>
+            <column name="moderated_by" type="CHAR(26)"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="post"
+                                 baseColumnNames="moderated_by"
+                                 constraintName="fk_post_moderated_by"
+                                 referencedTableName="user"
+                                 referencedColumnNames="user_id"
+        />
+    </changeSet>
+</databaseChangeLog>

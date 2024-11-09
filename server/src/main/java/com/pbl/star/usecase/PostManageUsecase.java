@@ -14,6 +14,9 @@ public interface PostManageUsecase {
     Slice<PendingPostForUserDTO> getPendingPostsByCurrentUser(int limit, Instant after);
     Slice<PostForUserDTO> getPostsOnUserWall(String userId, int limit, Instant after);
     Slice<PostForUserDTO> getPostsOnNewsfeed(int limit, Instant after);
-    Slice<PostForUserDTO> getApprovedPostsInRoom(String roomId, int limit, Instant after);
+    Slice<PostForUserDTO> getPostsInRoomAsUser(String roomId, int limit, Instant after);
     Slice<PostForModDTO> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after);
+    void approvePost(String postId);
+    void rejectPost(String postId);
+    void returnPostToPending(String postId);
 }

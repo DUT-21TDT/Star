@@ -47,7 +47,7 @@ public class PostManageUsecaseImpl implements PostManageUsecase {
     }
 
     @Override
-    public Slice<PostForUserDTO> getApprovedPostsInRoom(String roomId, int limit, Instant after) {
+    public Slice<PostForUserDTO> getPostsInRoomAsUser(String roomId, int limit, Instant after) {
         return postService.getPostsInRoom(roomId, PostStatus.APPROVED, limit, after);
     }
 
@@ -59,5 +59,23 @@ public class PostManageUsecaseImpl implements PostManageUsecase {
         }
 
         return postService.getPostsInRoomAsMod(roomId, status, limit, after);
+    }
+
+    @Override
+    public void approvePost(String postId) {
+        String moderatorId = AuthUtil.getCurrentUser().getId();
+        postService.moderatePostStatus(postId, PostStatus.APPROVED, moderatorId);
+    }
+
+    @Override
+    public void rejectPost(String postId) {
+        String moderatorId = AuthUtil.getCurrentUser().getId();
+        postService.moderatePostStatus(postId, PostStatus.REJECTED, moderatorId);
+    }
+
+    @Override
+    public void returnPostToPending(String postId) {
+        String moderatorId = AuthUtil.getCurrentUser().getId();
+        postService.unmoderatePostStatus(postId, moderatorId);
     }
 }

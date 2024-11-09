@@ -1,6 +1,5 @@
-package com.pbl.star.controllers;
+package com.pbl.star.controllers.enduser;
 
-import com.pbl.star.enums.PostStatus;
 import com.pbl.star.usecase.PostManageUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,13 +40,8 @@ public class PostViewController {
 
     @GetMapping("/rooms/{roomId}/posts")
     public ResponseEntity<?> getPostsInRoom(@PathVariable String roomId,
-                                           @RequestParam(defaultValue = "APPROVED") PostStatus status,
                                            @RequestParam(defaultValue = "20") int limit,
                                            @RequestParam(required = false) Instant after) {
-
-        return switch (status) {
-            case APPROVED -> ResponseEntity.ok(postManageUsecase.getApprovedPostsInRoom(roomId, limit, after));
-            case PENDING, REJECTED -> ResponseEntity.ok(postManageUsecase.getPostsInRoomAsMod(roomId, status, limit, after));
-        };
+        return ResponseEntity.ok(postManageUsecase.getPostsInRoomAsUser(roomId, limit, after));
     }
 }
