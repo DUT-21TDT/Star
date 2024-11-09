@@ -121,6 +121,7 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
+              disableReactButton={true}
             />
           );
         })

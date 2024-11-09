@@ -42,6 +42,9 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
   const { mutate: getPostPresignedURL } = useGetAllPresignedUrl();
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+    if (!beforeUpload(newFileList[newFileList.length - 1] as FileType)) {
+      return;
+    }
     setFileList(newFileList);
     Promise.all(
       newFileList.map((file) => getBase64(file.originFileObj as FileType))
@@ -175,6 +178,19 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
   const handleDeleteImage = (index: number) => {
     setFileList((prev) => prev.filter((_, i) => i !== index));
     setFileListBase64((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const beforeUpload = (file: FileType) => {
+    const fileType = ["image/jpeg", "image/png", "image/jpg"];
+    const isJpgOrPng = fileType.includes(file.type);
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG/JPEG file!");
+    }
+    const isLt10M = file.size / 1024 / 1024 < 10;
+    if (!isLt10M) {
+      message.error("Image must smaller than 10MB!");
+    }
+    return isJpgOrPng && isLt10M;
   };
 
   return (

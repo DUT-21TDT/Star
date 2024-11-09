@@ -25,6 +25,7 @@ interface IProps {
   lastName?: string;
   bio?: string;
   numberOfFollowers?: number;
+  disableReactButton?: boolean;
 }
 
 const Post: React.FC<IProps> = (props) => {
@@ -40,6 +41,7 @@ const Post: React.FC<IProps> = (props) => {
     numberOfReposts,
     liked,
     idOfCreator,
+    disableReactButton,
   } = props;
 
   const navigate = useNavigate();
@@ -192,14 +194,15 @@ const Post: React.FC<IProps> = (props) => {
             </div>
           </div>
         )}
-
-        <ReactButton
-          postId={id}
-          numberOfLikes={numberOfLikes}
-          numberOfComments={numberOfComments}
-          numberOfReposts={numberOfReposts}
-          liked={liked}
-        />
+        {!disableReactButton && (
+          <ReactButton
+            postId={id}
+            numberOfLikes={numberOfLikes}
+            numberOfComments={numberOfComments}
+            numberOfReposts={numberOfReposts}
+            liked={liked}
+          />
+        )}
       </div>
     </div>
   );

@@ -13,5 +13,13 @@
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 .ant-tabs-tab {
+  min-width: 190px;
+}
+
+.three-items .ant-tabs-tab {
+  min-width: 190px;
+}
+
+.four-items .ant-tabs-tab {
   min-width: 135px;
 }

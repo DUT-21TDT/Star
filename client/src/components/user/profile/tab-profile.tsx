@@ -14,8 +14,6 @@ interface IProps {
 
 const TabProfile: React.FC<IProps> = (props) => {
   const { isCurrentUser } = props;
-
-  // Define the `items` array inside the component where `props` is available
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -32,12 +30,16 @@ const TabProfile: React.FC<IProps> = (props) => {
       label: <div className="text-[16px] font-semibold">Reposts</div>,
       children: "Content of Tab Pane 3",
     },
-    {
+  ];
+  if (isCurrentUser) {
+    items.push({
       key: "4",
       label: <div className="text-[16px] font-semibold">Pending</div>,
       children: <PendingPostOnWall isCurrentUser={isCurrentUser} />,
-    },
-  ];
+    });
+  }
+
+  const tabClass = items.length === 4 ? "four-items" : "three-items";
 
   return (
     <Tabs
@@ -49,6 +51,7 @@ const TabProfile: React.FC<IProps> = (props) => {
       }}
       moreIcon={null}
       centered={true}
+      className={tabClass}
     />
   );
 };
