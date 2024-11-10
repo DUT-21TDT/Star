@@ -1,12 +1,14 @@
 package com.pbl.star.usecase.impl;
 
+import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.response.user.FollowResponse;
-import com.pbl.star.dtos.response.user.PublicProfileResponse;
+import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.enums.FollowRequestAction;
 import com.pbl.star.services.domain.UserService;
 import com.pbl.star.usecase.UserInteractUsecase;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,8 +18,15 @@ public class UserInteractUsecaseImpl implements UserInteractUsecase {
     private final UserService userService;
 
     @Override
-    public PublicProfileResponse getPublicProfile(String userId) {
-        return userService.getPublicProfile(userId);
+    public Slice<OnSearchProfile> searchUsers(String keyword, int limit, String afterId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return userService.searchUsers(currentUserId, keyword, limit, afterId);
+    }
+
+    @Override
+    public OnWallProfileResponse getProfileOnWall(String userId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return userService.getProfileOnWall(currentUserId, userId);
     }
 
     @Override

@@ -7,7 +7,7 @@ import lombok.Builder;
 @Getter
 @Setter
 @Builder
-public class PublicProfile {
+public class OnWallProfile {
     private String username;
     private String firstName;
     private String lastName;

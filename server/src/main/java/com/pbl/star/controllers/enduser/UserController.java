@@ -18,9 +18,16 @@ public class UserController {
     private final UserInteractUsecase userInteractUsecase;
     private final ProfileManageUsecase profileManageUsecase;
 
+    @GetMapping
+    public ResponseEntity<?> searchUsers(@RequestParam String keyword,
+                                         @RequestParam(defaultValue = "20") int limit,
+                                         @RequestParam(required = false) String afterId) {
+        return ResponseEntity.ok(userInteractUsecase.searchUsers(keyword, limit, afterId));
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<?> getPublicProfile(@PathVariable String userId) {
-        return ResponseEntity.ok(userInteractUsecase.getPublicProfile(userId));
+        return ResponseEntity.ok(userInteractUsecase.getProfileOnWall(userId));
     }
 
     @GetMapping("/me")

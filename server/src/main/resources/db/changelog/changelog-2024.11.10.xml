@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add_indexes_to_find_users" author="Quang Nguyen">
+        <sql>
+            SET pg_trgm.similarity_threshold = 0.4;
+            CREATE INDEX user_username_gin_trgm_idx ON "user" USING gin (username gin_trgm_ops);
+            CREATE INDEX user_firstname_gin_trgm_idx ON "user" USING gin (first_name gin_trgm_ops);
+            CREATE INDEX user_lastname_gin_trgm_idx ON "user" USING gin (last_name gin_trgm_ops);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

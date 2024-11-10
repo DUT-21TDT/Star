@@ -1,10 +1,11 @@
 package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.query.user.GeneralInformation;
+import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.dtos.response.user.FollowResponse;
-import com.pbl.star.dtos.response.user.PublicProfileResponse;
+import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.entities.Following;
 import com.pbl.star.entities.User;
 import com.pbl.star.enums.FollowRequestAction;
@@ -15,10 +16,12 @@ import com.pbl.star.exceptions.*;
 import com.pbl.star.repositories.FollowingRepository;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.services.domain.UserService;
-import com.pbl.star.utils.AuthUtil;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,10 +44,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PublicProfileResponse getPublicProfile(String userId) {
-        String currentUserId = AuthUtil.getCurrentUser().getId();
+    public Slice<OnSearchProfile> searchUsers(String currentUserId, String keyword, int limit, String afterId) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return userRepository.searchUsers(pageable, afterId, currentUserId, keyword);
+    }
 
-        PublicProfileResponse publicProfileResponse = userRepository.getPublicProfile(currentUserId, userId);
+    @Override
+    public OnWallProfileResponse getProfileOnWall(String currentUserId, String targetUserId) {
+        OnWallProfileResponse publicProfileResponse = userRepository.getPublicProfile(currentUserId, targetUserId);
 
         if (publicProfileResponse == null) {
             throw new EntityNotFoundException("User not found");
