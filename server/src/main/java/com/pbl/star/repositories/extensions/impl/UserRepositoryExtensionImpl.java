@@ -27,6 +27,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query.setParameter("keyword", keyword)
+                .setParameter("keyword1", "%" + keyword + "%")
                 .setParameter("currentId", currentUserId)
                 .setFirstResult(0)
                 .setMaxResults(pageable.getPageSize() + 1);
@@ -46,10 +47,21 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
                 "   when not exists (select 1 from Following f where f.follower_id = :currentId and f.followee_id = u.user_id) then 'NOT_FOLLOWING' " +
                 "   when exists (select 1 from Following f where f.follower_id = :currentId and f.followee_id = u.user_id and f.status='ACCEPTED') then 'FOLLOWING' " +
                 "   else 'REQUESTED' end) " +
-                "   as follow_status " +
+                "   as follow_status," +
+                "GREATEST(" +
+                "    similarity(username, :keyword), " +
+                "    similarity(first_name, :keyword), " +
+                "    similarity(last_name, :keyword) " +
+                ") as similarity " +
                 "from \"user\" u " +
-                "where username % :keyword or first_name % :keyword or last_name % :keyword " +
-                "order by user_id ";
+                "where " +
+                "username ilike :keyword1 " +
+                "or first_name ilike :keyword1 " +
+                "or last_name ilike :keyword1 " +
+                "or username % :keyword " +
+                "or first_name % :keyword " +
+                "or last_name % :keyword " +
+                "order by similarity desc, user_id asc ";
 
         if (afterId != null) {
             sql += "and user_id > :afterId ";
