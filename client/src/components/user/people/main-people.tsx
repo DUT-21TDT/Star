@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, Input, Divider, Spin, Popover } from "antd";
 import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import {
@@ -30,7 +30,7 @@ const MainPeopleContent: React.FC = () => {
     Record<string, string>
   >({});
 
-  const handleFollowUser = (userId: string, currentStatus: string) => {
+  const handleFollowUser = (userId: string) => {
     followUser(userId, {
       onSuccess: (response) => {
         if (response?.followStatus === "FOLLOWING") {
@@ -51,7 +51,7 @@ const MainPeopleContent: React.FC = () => {
     });
   };
 
-  const handleUnfollowUser = (userId: string, currentStatus: string) => {
+  const handleUnfollowUser = (userId: string) => {
     unfollowUser(userId, {
       onSuccess: () => {
         setFollowStatusMap((prev) => ({
@@ -143,12 +143,9 @@ const MainPeopleContent: React.FC = () => {
                             currentFollowStatus === "FOLLOWING" ||
                             currentFollowStatus === "REQUESTED"
                           ) {
-                            handleUnfollowUser(
-                              item.userId,
-                              currentFollowStatus
-                            );
+                            handleUnfollowUser(item.userId);
                           } else {
-                            handleFollowUser(item.userId, currentFollowStatus);
+                            handleFollowUser(item.userId);
                           }
                         }}
                       >
