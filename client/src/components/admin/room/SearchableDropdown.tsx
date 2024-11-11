@@ -29,13 +29,13 @@ const SearchableDropdown: React.FC<IProps> = (props: IProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<Member[]>([]);
   const [error, setError] = useState("");
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [filteredUsers, setFilteredUsers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: any) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
