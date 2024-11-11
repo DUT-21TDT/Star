@@ -13,6 +13,10 @@ import { ProtectedRoute } from "../components/auth/protected-route";
 import RoomUser from "../screens/room/room-user";
 import NewFeed from "../screens/newfeeds/newfeed";
 import PostInRoomContainer from "../screens/post-in-room/PostInRoomContainer";
+import ModeratorContainer from "../screens/moderator/moderator-container";
+import PendingPosts from "../components/user/moderator/pending-posts";
+import ApprovedPosts from "../components/user/moderator/approved-post";
+import RejectedPosts from "../components/user/moderator/rejected-post";
 
 const router = createBrowserRouter(
   [
@@ -46,8 +50,17 @@ const router = createBrowserRouter(
           element: <RoomUser />,
         },
         {
-          path: "posts/:roomId",
+          path: "room/:roomId/posts",
           element: <PostInRoomContainer />,
+        },
+        {
+          path: "moderator/:roomId",
+          element: <ModeratorContainer />,
+          children: [
+            { path: "pending", element: <PendingPosts /> },
+            { path: "approved", element: <ApprovedPosts /> },
+            { path: "rejected", element: <RejectedPosts /> },
+          ],
         },
       ],
     },

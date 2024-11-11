@@ -52,6 +52,7 @@ const TabProfile: React.FC<IProps> = (props) => {
       moreIcon={null}
       centered={true}
       className={tabClass}
+      destroyInactiveTabPane={true}
     />
   );
 };

@@ -61,7 +61,7 @@ const PostInRoomContainer = () => {
             <div
               className="w-[200px] h-[35px] flex items-center text-[14px] font-semibold"
               onClick={() => {
-                navigate(`/posts/${child.key}`);
+                navigate(`/room/${child.key}/posts`);
               }}
             >
               {child.label}

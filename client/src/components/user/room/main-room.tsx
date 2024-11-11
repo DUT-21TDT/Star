@@ -13,11 +13,17 @@ interface RoomType {
   createdAt: Date;
   participantsCount: number;
   isParticipant?: boolean;
+  isModerator?: boolean;
 }
 
 const MainRoomContent: React.FC = () => {
-  const { listRoomJoined, listRoomNotJoined, isLoading, isError } =
-    useGetAllRoomForUser();
+  const {
+    listRoomJoined,
+    listRoomNotJoined,
+    isLoading,
+    isError,
+    listRoomYourModerator,
+  } = useGetAllRoomForUser();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [dataRoom, setDataRoom] = useState<RoomType | undefined>(undefined);
@@ -28,6 +34,11 @@ const MainRoomContent: React.FC = () => {
   );
   const filteredRoomNotJoined = listRoomNotJoined.filter((room: RoomType) =>
     room.name.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+  const filteredRoomYourModerator = listRoomYourModerator.filter(
+    (room: RoomType) =>
+      room.name.toLowerCase().includes(searchValue.toLowerCase())
   );
   const navigate = useNavigate();
 
@@ -51,6 +62,52 @@ const MainRoomContent: React.FC = () => {
             />
           </div>
 
+          {filteredRoomYourModerator.length > 0 && (
+            <div className="text-[18px] font-bold text-[#a6a6a6] mt-2">
+              Your moderator rooms
+            </div>
+          )}
+
+          <div className="flex flex-col mt-2 w-full">
+            {filteredRoomYourModerator.map((item: RoomType) => (
+              <div
+                key={item.id}
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={() => navigate(`/moderator/${item.id}/pending`)}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div>
+                    <p className="text-[17px] font-semibold">{item.name}</p>
+                    <p
+                      className="text-[#ccc] text-[14px]"
+                      style={{ lineHeight: "18px" }}
+                    >
+                      {item.description}
+                    </p>
+                  </div>
+
+                  <div>
+                    <Button
+                      style={{
+                        color: "#bdbdbd",
+                        fontWeight: 500,
+                        width: "80px",
+                      }}
+                    >
+                      Moderator
+                    </Button>
+                  </div>
+                </div>
+                <div className="mt-2 text-[15px]">
+                  {item.participantsCount} participants
+                </div>
+                <Divider style={{ margin: "8px 0px" }} />
+              </div>
+            ))}
+          </div>
+
           {filteredRoomJoined.length > 0 && (
             <div className="text-[18px] font-bold text-[#a6a6a6] mt-2">
               Your rooms
@@ -66,7 +123,7 @@ const MainRoomContent: React.FC = () => {
                 }}
               >
                 <div className="flex items-center justify-between w-full">
-                  <div onClick={() => navigate(`/posts/${item.id}`)}>
+                  <div onClick={() => navigate(`/room/${item.id}/posts`)}>
                     <p className="text-[17px] font-semibold">{item.name}</p>
                     <p
                       className="text-[#ccc] text-[14px]"

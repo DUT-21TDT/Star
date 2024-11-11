@@ -100,6 +100,23 @@ const newFeedsTheme = {
   },
 };
 
+const moderatorTheme = {
+  components: {
+    Button: {
+      defaultHoverBorderColor: "#bdbdbd",
+      defaultHoverColor: "none",
+      defaultHoverBg: "none",
+    },
+    Tabs: {
+      itemActiveColor: "black",
+      inkBarColor: "black",
+      itemColor: "#a1a1a1",
+      itemHoverColor: "black",
+      itemSelectedColor: "black",
+    },
+  },
+};
+
 export {
   SignUpTheme,
   LoginTheme,
@@ -108,4 +125,5 @@ export {
   profileTheme,
   roomUserTheme,
   newFeedsTheme,
+  moderatorTheme,
 };
