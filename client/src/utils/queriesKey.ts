@@ -9,6 +9,7 @@ export const QUERY_KEY = {
     "getCurrentUserFromToken",
     token,
   ],
+  fetchAllUsers: () => ["fetchAllUser"],
   fetchAllRoom: () => ["fetchAllRoom"],
   getRoomDetails: (roomId: string) => ["getRoomDetails", roomId],
   getModerators: (roomId: string) => ["getModerators", roomId],

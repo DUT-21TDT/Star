@@ -11,6 +11,7 @@ import { ProtectedRouteAuth } from "../components/auth/protected-route-auth";
 import Profile from "../screens/profile/profile";
 import { ProtectedRoute } from "../components/auth/protected-route";
 import RoomUser from "../screens/room/room-user";
+import PeopleUser from "../screens/people/people-user";
 import NewFeed from "../screens/newfeeds/newfeed";
 import PostInRoomContainer from "../screens/post-in-room/PostInRoomContainer";
 import ModeratorContainer from "../screens/moderator/moderator-container";
@@ -40,7 +41,7 @@ const router = createBrowserRouter(
         },
         {
           path: "search",
-          element: <div>search</div>,
+          element: <PeopleUser />,
         },
         {
           path: "activity",

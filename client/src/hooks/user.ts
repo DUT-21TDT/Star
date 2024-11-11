@@ -10,7 +10,18 @@ import {
   getPresignedURL,
   followUser,
   unfollowUser,
+  getAllUsers,
 } from "../service/userAPI";
+
+interface DataType {
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string;
+  numberOfFollowers: number;
+  followStatus: string;
+}
 
 const usePostNewUser = () => {
   return useMutation({
@@ -40,9 +51,11 @@ const useGetTokenFromCode = (code: string) => {
 };
 
 const useGoogleLogin = () => {
-  const urlAuthLogin = `${import.meta.env.VITE_BACKEND_AUTH_URL
-    }/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_CLIENT_ID
-    }&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
+  const urlAuthLogin = `${
+    import.meta.env.VITE_BACKEND_AUTH_URL
+  }/oauth2/authorize?response_type=code&client_id=${
+    import.meta.env.VITE_CLIENT_ID
+  }&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&scope=openid`;
 
   const handleGoogleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -91,7 +104,38 @@ const useUnfollowUser = () => {
   return useMutation({
     mutationFn: unfollowUser,
   });
-}
+};
+
+const useFetchAllUsers = (keyword: string) => {
+  const result = useQuery({
+    queryKey: [QUERY_KEY.fetchAllUsers(), keyword],
+    queryFn: () => getAllUsers(keyword),
+  });
+
+  const dataArray = Array.isArray(result.data)
+    ? result.data[0]
+    : Object.values(result.data || {})[0];
+
+  const listData = Array.isArray(dataArray)
+    ? dataArray.map((item: DataType) => ({
+        userId: item.userId,
+        username: item.username,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        avatarUrl: item.avatarUrl,
+        numberOfFollowers: item.numberOfFollowers,
+        followStatus: item.followStatus,
+      }))
+    : [];
+
+
+  return {
+    data: listData,
+    isLoading: result.isLoading,
+    isError: result.isError,
+  };
+};
+
 
 export {
   usePostNewUser,
@@ -104,4 +148,5 @@ export {
   useGetPresignedUrl,
   useFollowUser,
   useUnfollowUser,
+  useFetchAllUsers,
 };

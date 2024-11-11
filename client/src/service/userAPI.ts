@@ -236,6 +236,15 @@ const getMembersInRoom = async (roomId: string, searchTerm: string) => {
   return response.data;
 }
 
+const getAllUsers = async (keyword: string) => {
+  const response = await instance.get(`/users`, {
+    params: {
+      keyword: keyword,
+    },
+  });
+  return response.data;
+};
+
 export {
   createNewUser,
   confirmAccount,
@@ -252,5 +261,6 @@ export {
   resendVerifyEmail,
   followUser,
   unfollowUser,
-  getMembersInRoom
+  getMembersInRoom,
+  getAllUsers
 };
