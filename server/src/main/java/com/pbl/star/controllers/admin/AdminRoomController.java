@@ -22,6 +22,12 @@ public class AdminRoomController {
         return ResponseEntity.ok(roomManageUsecase.getAllRooms());
     }
 
+    @GetMapping("/{roomId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> getRoomDetails(@PathVariable String roomId) {
+        return ResponseEntity.ok(roomManageUsecase.getRoomDetails(roomId));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> createRoom(@ModelAttribute CreateRoomParams params) {

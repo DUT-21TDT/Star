@@ -1,5 +1,6 @@
 package com.pbl.star.usecase.impl;
 
+import com.pbl.star.dtos.query.room.RoomDetailsForAdminDTO;
 import com.pbl.star.dtos.query.room.RoomForAdminDTO;
 import com.pbl.star.dtos.query.room.RoomForUserDTO;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
@@ -15,6 +16,11 @@ import java.util.List;
 public class RoomManageUsecaseImpl implements RoomManageUsecase {
 
     private final RoomService roomService;
+
+    @Override
+    public RoomDetailsForAdminDTO getRoomDetails(String roomId) {
+        return roomService.getRoomDetails(roomId);
+    }
 
     @Override
     public List<RoomForAdminDTO> getAllRooms() {
