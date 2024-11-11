@@ -3,6 +3,7 @@ package com.pbl.star.repositories.extensions.impl;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.query.user.OnWallProfile;
+import com.pbl.star.dtos.query.user.UserInRoom;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.enums.FollowStatus;
 import com.pbl.star.enums.Gender;
@@ -183,5 +184,46 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    @Override
+    public List<UserInRoom> findUsersInRoom(String roomId, String keyword) {
+        String sql = "SELECT u.user_id, u.username, u.avatar_url, u.first_name, u.last_name, " +
+                "GREATEST(" +
+                "    similarity(username, :keyword), " +
+                "    similarity(first_name, :keyword), " +
+                "    similarity(last_name, :keyword) " +
+                ") as similarity " +
+                "FROM user_room ur " +
+                "JOIN \"user\" u " +
+                "ON ur.user_id = u.user_id " +
+                "WHERE ur.room_id=:roomId AND " +
+                "(u.username ilike :keyword1 " +
+                "OR u.username % :keyword) " +
+                "ORDER BY similarity DESC, user_id ";
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+
+        query.setParameter("roomId", roomId)
+                .setParameter("keyword", keyword)
+                .setParameter("keyword1", "%" + keyword + "%")
+                .setFirstResult(0)
+                .setMaxResults(10);
+
+        List<Object[]> resultList = query.getResultList();
+
+        if (resultList.isEmpty()) {
+            return List.of();
+        }
+
+        return resultList.stream()
+                .map(row -> UserInRoom.builder()
+                        .userId((String) row[0])
+                        .username((String) row[1])
+                        .avatarUrl((String) row[2])
+                        .firstName((String) row[3])
+                        .lastName((String) row[4])
+                        .build())
+                .toList();
     }
 }

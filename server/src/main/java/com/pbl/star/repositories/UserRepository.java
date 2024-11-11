@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, String>, UserReposit
 
     @Query("SELECT u.privateProfile FROM User u WHERE u.id = ?1")
     Optional<Boolean> getPrivateProfileById(String userId);
+
+    Optional<User> findByUsername(String username);
 }

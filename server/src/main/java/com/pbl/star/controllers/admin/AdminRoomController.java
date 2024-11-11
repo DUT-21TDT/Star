@@ -48,5 +48,41 @@ public class AdminRoomController {
         roomManageUsecase.updateRoom(roomId, params);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{roomId}/moderators")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> getModerators(@PathVariable String roomId) {
+        return ResponseEntity.ok(roomManageUsecase.getModerators(roomId));
+    }
+
+    @PostMapping("/{roomId}/moderators")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> addModerator(@PathVariable String roomId, @RequestBody Map<String, String> requestBody) {
+        String userId = requestBody.get("userId");
+        String username = requestBody.get("username");
+
+        if (userId != null) {
+            roomManageUsecase.addModeratorById(roomId, userId);
+            return ResponseEntity.ok().build();
+        } else if (username != null) {
+            roomManageUsecase.addModeratorByUsername(roomId, username);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().body("userId or username must be provided");
+        }
+    }
+
+    @DeleteMapping("/{roomId}/moderators/{userId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> removeModerator(@PathVariable String roomId, @PathVariable String userId) {
+        roomManageUsecase.removeModerator(roomId, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("{roomId}/members")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> getMembers(@PathVariable String roomId, @RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(roomManageUsecase.getMembers(roomId, keyword));
+    }
 }
 

@@ -195,4 +195,9 @@ public class UserServiceImpl implements UserService {
 
         followingRepository.delete(following);
     }
+
+    @Override
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }

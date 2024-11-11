@@ -3,7 +3,7 @@ package com.pbl.star.repositories.extensions.impl;
 import com.pbl.star.dtos.query.room.RoomDetailsForAdminDTO;
 import com.pbl.star.dtos.query.room.RoomForAdminDTO;
 import com.pbl.star.dtos.query.room.RoomForUserDTO;
-import com.pbl.star.dtos.query.user.ModInRoom;
+import com.pbl.star.dtos.query.user.UserInRoom;
 import com.pbl.star.repositories.extensions.RoomRepositoryExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -58,8 +58,6 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
             return null;
         }
 
-        List<ModInRoom> mods = getModsInRoom(roomId);
-
         return RoomDetailsForAdminDTO.builder()
                 .id((String) result[0])
                 .name((String) result[1])
@@ -67,16 +65,16 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
                 .createdAt((Instant) result[3])
                 .participantsCount(((Long) result[4]).intValue())
                 .postsCount(((Long) result[5]).intValue())
-                .moderators(mods)
                 .build();
     }
 
     @Override
-    public List<ModInRoom> getModsInRoom(String roomId) {
+    public List<UserInRoom> getModsInRoom(String roomId) {
         String jpql = "SELECT u.id, u.username, u.avatarUrl, u.firstName, u.lastName " +
                 "FROM UserRoom ur " +
                 "JOIN User u ON ur.userId = u.id " +
-                "WHERE ur.roomId = :roomId and ur.role = 'MODERATOR'";
+                "WHERE ur.roomId = :roomId and ur.role = 'MODERATOR' " +
+                "ORDER BY u.username";
 
         TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
         query.setParameter("roomId", roomId);
@@ -87,7 +85,7 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
             return List.of();
         }
 
-        return result.stream().map(row -> ModInRoom.builder()
+        return result.stream().map(row -> UserInRoom.builder()
                 .userId((String) row[0])
                 .username((String) row[1])
                 .avatarUrl((String) row[2])
