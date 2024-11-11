@@ -227,6 +227,15 @@ const unfollowUser = async (userId: string) => {
   return response.data;
 };
 
+const getMembersInRoom = async (roomId: string, searchTerm: string) => {
+  const response = await instance.get(`/admin/rooms/${roomId}/members`, {
+    params: {
+      keyword: searchTerm,
+    },
+  });
+  return response.data;
+}
+
 export {
   createNewUser,
   confirmAccount,
@@ -243,4 +252,5 @@ export {
   resendVerifyEmail,
   followUser,
   unfollowUser,
+  getMembersInRoom
 };

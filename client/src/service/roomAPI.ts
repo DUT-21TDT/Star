@@ -14,8 +14,8 @@ const getAllRoom = async () => {
 };
 
 const getRoomDetails = async (id: string) => {
-    const response = await instance.get(`/admin/rooms/${id}`);
-    return response.data;
+  const response = await instance.get(`/admin/rooms/${id}`);
+  return response.data;
 }
 
 const createRoom = async (data: DataCreateRoom) => {
@@ -52,10 +52,29 @@ const getAllRoomForUser = async () => {
   const response = await instance.get("/rooms");
   return response.data;
 };
+
 const leaveRoomForUser = async (roomId: string) => {
   const response = await instance.delete(`/rooms/${roomId}/members`);
   return response.data;
 };
+
+const getModeratorsOfRoom = async (roomId: string) => {
+  const response = await instance.get(`/admin/rooms/${roomId}/moderators`);
+  return response.data;
+}
+
+const addModeratorToRoom = async (roomId: string, username: string) => {
+  const response = await instance.post(`/admin/rooms/${roomId}/moderators`, {
+    username,
+  });
+  return response.data;
+}
+
+const removeModeratorFromRoom = async (roomId: string, userId: string) => {
+  const response = await instance.delete(`/admin/rooms/${roomId}/moderators/${userId}`);
+  return response.data;
+}
+
 export {
   getAllRoom,
   getRoomDetails,
@@ -65,4 +84,7 @@ export {
   joinRoom,
   getAllRoomForUser,
   leaveRoomForUser,
+  getModeratorsOfRoom,
+  addModeratorToRoom,
+  removeModeratorFromRoom,
 };

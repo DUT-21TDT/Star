@@ -1,9 +1,16 @@
 import React, {useEffect, useState} from "react";
-import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
-import {useGetRoomDetails} from "../../../hooks/room.ts";
-import {Spin} from "antd";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import {
+    useEditRoom,
+    useGetModerators,
+    useGetRoomDetails,
+    useRemoveModerator
+} from "../../../hooks/room.ts";
+import {message, Popconfirm, Spin} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import {useParams} from "react-router-dom";
+import {AxiosError} from "axios";
+import SearchableDropdown from "./SearchableDropdown.tsx";
 
 interface RoomDetails {
     id: string
@@ -11,10 +18,9 @@ interface RoomDetails {
     description: string;
     participantsCount: number;
     postsCount: number;
-    moderators: Moderator[];
 }
 
-interface Moderator {
+interface Member {
     userId: string;
     username: string;
     avatarUrl: string;
@@ -35,21 +41,22 @@ interface ErrorMessage {
 const RoomDetails: React.FC = () => {
     const { roomId } = useParams<{ roomId: string }>();
     const { data, isLoading, isError } = useGetRoomDetails(roomId!);
-
-    console.log("room data___", data);
-    console.log("loading___", isLoading);
+    const { data: modsData, isLoading: modsLoading, isError: modsError, refetch: refetchMods } = useGetModerators(roomId!);
 
     const [isEditing, setIsEditing] = useState(false);
 
     const [roomDetails, setRoomDetails] = useState<RoomDetails>(data);
+    const [mods, setMods] = useState<Member[]>(modsData);
 
     const [editForm, setEditForm] = useState<EditRoomForm>({
         name: "",
         description: ""
     });
 
-    const [newModUsername, setNewModUsername] = useState("");
     const [errors, setErrors] = useState<ErrorMessage>({});
+
+    const { mutate: editRoom } = useEditRoom();
+    const { mutate: removeModerator } = useRemoveModerator();
 
     useEffect(() => {
         if (roomId && !isLoading && data) {
@@ -60,6 +67,12 @@ const RoomDetails: React.FC = () => {
             });
         }
     }, [data, isLoading, roomId]);
+
+    useEffect(() => {
+        if (roomId && !modsLoading && modsData) {
+            setMods(modsData);
+        }
+    }, [modsData, modsLoading, roomId]);
 
     const validateForm = () => {
         const newErrors: ErrorMessage = {};
@@ -75,36 +88,54 @@ const RoomDetails: React.FC = () => {
 
     const handleSave = () => {
         if (validateForm()) {
-            setRoomDetails(prev => ({
-                ...prev,
+
+            const editRoomData = {
+                id: roomDetails.id,
                 name: editForm.name,
                 description: editForm.description
-            }) as RoomDetails);
-            setIsEditing(false);
+            }
+
+            editRoom(editRoomData, {
+                onSuccess: () => {
+                    setRoomDetails(prev => ({
+                        ...prev,
+                        name: editForm.name,
+                        description: editForm.description
+                    }) as RoomDetails);
+                    setIsEditing(false);
+                },
+                onError: (error: Error) => {
+                    const axiosError = error as AxiosError;
+                    const errorMessage = axiosError?.response?.status === 409 ?
+                      `Room "${editRoomData.name}" already exists` : "Something went wrong";
+                    setErrors({
+                        name: errorMessage
+                    })
+                }
+              }
+            )
         }
     };
 
-    const handleRemoveModerator = (id: string) => {
-        setRoomDetails(prev => ({
-            ...prev,
-            moderators: prev.moderators.filter(mod => mod.userId !== id)
-        }));
-    };
+    const handleRemoveModerator = (userId: string) => {
+        removeModerator({ roomId: roomDetails.id, userId }, {
+            onSuccess: () => {
+                refetchMods();
+                message.success("Moderator removed successfully");
+            },
+            onError: (error: Error) => {
+                const axiosError = error as AxiosError;
+                const statusCode = axiosError?.response?.status;
 
-    const handleAddModerator = () => {
-        if (newModUsername.length < 3) return;
-        const newMod: Moderator = {
-            userId: (roomDetails.moderators.length + 1).toString(),
-            username: newModUsername,
-            avatarUrl: "images.unsplash.com/photo-1472099645785-5658abf4ff4e",
-            firstName: "first",
-            lastName: "last"
-        };
-        setRoomDetails(prev => ({
-            ...prev,
-            moderators: [...prev.moderators, newMod]
-        }));
-        setNewModUsername("");
+                if (statusCode === 404) {
+                    message.error("User cannot be found in this room");
+                } else if (statusCode === 409) {
+                    message.error("User is not a moderator of this room");
+                } else {
+                    message.error("Something went wrong");
+                }
+            }
+        });
     };
 
     return (
@@ -187,55 +218,82 @@ const RoomDetails: React.FC = () => {
 
             <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-gray-800">Moderators</h2>
-                { roomDetails.moderators.length === 0 ? (
-                    <div className="space-y-4 px-2 text-gray-600">No moderators</div>
-                ) : (
-                <div className="space-y-4">
-                    {roomDetails.moderators.map((mod) => (
-                        <div key={mod.userId} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div className="flex items-center space-x-4">
-                                <img
-                                    src={`${mod.avatarUrl}`}
-                                    alt={mod.username}
-                                    className="w-10 h-10 rounded-full object-cover"
-                                />
-                                <div>
-                                    <p className="font-medium text-gray-800">
-                                        {mod.firstName && mod.lastName ? `${mod.firstName} ${mod.lastName}` :
-                                        mod.firstName || mod.lastName ? mod.firstName || mod.lastName : mod.username}
-                                    </p>
-                                    <p className="text-sm text-gray-500">@{mod.username}</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => handleRemoveModerator(mod.userId)}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                                aria-label={`Remove ${mod.username} as moderator`}
-                            >
-                                <FiTrash2 className="w-5 h-5" />
-                            </button>
+                <>
+                    { modsLoading ? (
+                        <div className="flex items-center justify-center mt-8">
+                            <Spin indicator={<LoadingOutlined spin />} size="large" />
                         </div>
-                    ))}
-                </div>
-                )}
-
+                    ) : modsError ? (
+                        <div>Something went wrongs</div>
+                    ) : mods ?
+                      <>
+                        { mods.length === 0 ? (
+                            <div className="space-y-4 px-2 text-gray-600">No moderators</div>
+                        ) : (
+                        <div className="space-y-4">
+                            {mods.map((mod) => (
+                                <div key={mod.userId} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                    <div className="flex items-center space-x-4">
+                                        <img
+                                            src={`${mod.avatarUrl}`}
+                                            alt={mod.username}
+                                            className="w-10 h-10 rounded-full object-cover"
+                                        />
+                                        <div>
+                                            <p className="font-medium text-gray-800">
+                                                {mod.firstName && mod.lastName ? `${mod.firstName} ${mod.lastName}` :
+                                                mod.firstName || mod.lastName ? mod.firstName || mod.lastName : mod.username}
+                                            </p>
+                                            <p className="text-sm text-gray-500">@{mod.username}</p>
+                                        </div>
+                                    </div>
+                                    <Popconfirm
+                                      title="Remove moderator"
+                                      description={`Are you sure to remove this moderator?`}
+                                      okText={`Yes`}
+                                      okType={`primary`}
+                                      icon={null}
+                                      onConfirm={() => handleRemoveModerator(mod.userId)}
+                                      cancelText="No"
+                                      placement="topRight"
+                                    >
+                                        <button
+                                            className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                            aria-label={`Remove ${mod.username} as moderator`}
+                                        >
+                                            <FiTrash2 className="w-5 h-5" />
+                                        </button>
+                                    </Popconfirm>
+                                </div>
+                            ))}
+                        </div>
+                        )}
+                      </> : (
+                        <div className="space-y-4 px-2 text-gray-600">Moderators not found</div>
+                      )
+                    }
+                </>
                 <div className="mt-4">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Add New Moderator</h3>
+                    <SearchableDropdown roomId={roomDetails.id}
+                                        mods={mods}
+                                        refetchMods={refetchMods}
+                    />
                     <div className="flex space-x-2">
-                        <input
-                            type="text"
-                            value={newModUsername}
-                            onChange={(e) => setNewModUsername(e.target.value)}
-                            placeholder="Enter username"
-                            className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <button
-                            onClick={handleAddModerator}
-                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                            disabled={newModUsername.length < 3}
-                        >
-                            <FiPlus className="w-5 h-5" />
-                        </button>
+                    {/*    <input*/}
+                    {/*        type="text"*/}
+                    {/*        value={newModUsername}*/}
+                    {/*        onChange={(e) => setNewModUsername(e.target.value)}*/}
+                    {/*        placeholder="Enter username"*/}
+                    {/*        className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"*/}
+                    {/*    />*/}
+                    {/*    <button*/}
+                    {/*        onClick={handleAddModerator}*/}
+                    {/*        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"*/}
+                    {/*        disabled={newModUsername.length < 3}*/}
+                    {/*    >*/}
+                    {/*        <FiPlus className="w-5 h-5" />*/}
+                    {/*    </button>*/}
                     </div>
                 </div>
             </div>

@@ -11,6 +11,7 @@ export const QUERY_KEY = {
   ],
   fetchAllRoom: () => ["fetchAllRoom"],
   getRoomDetails: (roomId: string) => ["getRoomDetails", roomId],
+  getModerators: (roomId: string) => ["getModerators", roomId],
   getProfileUser: (userId: string) => ["getProfileUser", userId],
   getPersonalInformation: () => ["getPersonalInformation"],
   fetchAllRoomForUser: () => ["fetchAllRoomForUser"],
@@ -24,4 +25,5 @@ export const QUERY_KEY = {
     roomId,
     status,
   ],
+  getMembersInRoom: (roomId: string) => ["getMembersInRoom", roomId],
 };

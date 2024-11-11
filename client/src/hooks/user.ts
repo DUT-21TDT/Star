@@ -9,7 +9,7 @@ import {
   getPersonalInformation,
   getPresignedURL,
   followUser,
-  unfollowUser,
+  unfollowUser, getMembersInRoom,
 } from "../service/userAPI";
 
 const usePostNewUser = () => {
@@ -92,6 +92,14 @@ const useUnfollowUser = () => {
     mutationFn: unfollowUser,
   });
 }
+
+const useGetMembersInRoom = (roomId: string) => {
+  return useQuery({
+    queryKey: QUERY_KEY.getMembersInRoom(roomId),
+    queryFn: () => getMembersInRoom(roomId),
+  });
+}
+
 export {
   usePostNewUser,
   useConfirmAccount,
@@ -102,5 +110,6 @@ export {
   useGetPersonalInformation,
   useGetPresignedUrl,
   useFollowUser,
-  useUnfollowUser
+  useUnfollowUser,
+  useGetMembersInRoom
 };

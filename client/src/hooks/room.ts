@@ -8,7 +8,7 @@ import {
   getRoomDetails,
   getAllRoomForUser,
   joinRoom,
-  leaveRoomForUser,
+  leaveRoomForUser, addModeratorToRoom, removeModeratorFromRoom, getModeratorsOfRoom,
 } from "../service/roomAPI";
 import { format } from "date-fns";
 
@@ -89,6 +89,7 @@ const useJoinRoom = () => {
     mutationFn: joinRoom,
   });
 };
+
 const useGetAllRoomForUser = () => {
   const response = useQuery({
     queryKey: QUERY_KEY.fetchAllRoomForUser(),
@@ -117,13 +118,46 @@ const useLeaveRoomForUser = () => {
     mutationFn: leaveRoomForUser,
   });
 };
+
+const useGetModerators = (roomId: string) => {
+  const response = useQuery({
+    queryKey: QUERY_KEY.getModerators(roomId),
+    queryFn: () => getModeratorsOfRoom(roomId),
+  });
+  return {
+    data: response.data,
+    isLoading: response.isLoading,
+    isError: response.isError,
+    refetch: response.refetch,
+  };
+}
+
+const useAddModerator = () => {
+  return useMutation({
+    mutationFn: (
+        { roomId, username } : { roomId: string; username: string; }
+    ) => addModeratorToRoom(roomId, username)
+  });
+}
+
+const useRemoveModerator = () => {
+  return useMutation({
+    mutationFn: (
+      { roomId, userId } : { roomId: string; userId: string; }
+    ) => removeModeratorFromRoom(roomId, userId)
+  });
+}
+
 export {
   useFetchAllRoom,
   useGetRoomDetails,
+  useGetModerators,
   useCreateRoom,
   useDeleteRoom,
   useEditRoom,
   useJoinRoom,
   useGetAllRoomForUser,
   useLeaveRoomForUser,
+  useAddModerator,
+  useRemoveModerator
 };
