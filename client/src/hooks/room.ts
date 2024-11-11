@@ -20,6 +20,7 @@ interface DataType {
   createdAt: Date;
   participantsCount: number;
   isParticipant?: boolean;
+  isModerator?: boolean;
 }
 
 const useFetchAllRoom = () => {
@@ -98,9 +99,14 @@ const useGetAllRoomForUser = () => {
 
   const listRoomNotJoined =
     response?.data?.filter((item: DataType) => !item.isParticipant) || [];
+
+  const listRoomYourModerator =
+    response?.data?.filter((item: DataType) => item.isModerator) || [];
+
   return {
     listRoomJoined: listRoomJoined,
     listRoomNotJoined: listRoomNotJoined,
+    listRoomYourModerator: listRoomYourModerator,
     isLoading: response.isLoading,
     isError: response.isError,
   };

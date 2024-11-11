@@ -19,4 +19,9 @@ export const QUERY_KEY = {
   likePost: (postId: string) => ["likePost", postId],
   fetchAllPostsInRoom: (roomId: string) => ["fetchAllPostsInRoom", roomId],
   fetchAllPendingPostOnWall: () => ["fetchAllPendingPostOnWall"],
+  fetchAllPendingPostForModerator: (roomId: string, status: string) => [
+    "fetchAllPendingPostForModerator",
+    roomId,
+    status,
+  ],
 };

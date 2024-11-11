@@ -9,7 +9,7 @@ import { useGetProfileUser } from "../../hooks/user";
 import { useParams } from "react-router-dom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 const Profile = () => {
   const { id } = useParams();
@@ -19,7 +19,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (data && !isLoading) {
-        setFollowStatus(data.followStatus);
+      setFollowStatus(data.followStatus);
     }
   }, [data, isLoading]);
 
@@ -32,8 +32,7 @@ const Profile = () => {
   }
 
   return (
-    // console.log("data", data),
-    (data && (
+    data && (
       <ConfigProvider theme={profileTheme}>
         <div className="w-full flex justify-center bg-white">
           <div
@@ -78,6 +77,6 @@ const Profile = () => {
         </div>
       </ConfigProvider>
     )
-  ));
+  );
 };
 export default Profile;

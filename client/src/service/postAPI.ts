@@ -85,6 +85,21 @@ const getAllPendingPostInUserWall = async (config: configTypeProfileWall) => {
   return response.data;
 };
 
+const getAllPendingPostForModerator = async (
+  config: configTypeProfileWall,
+  roomId: string,
+  status: string
+) => {
+  let url;
+  if (config.after !== null) {
+    url = `/moderator/rooms/${roomId}/posts?limit=${config.limit}&after=${config.after}&status=${status}`;
+  } else {
+    url = `/moderator/rooms/${roomId}/posts?limit=${config.limit}&status=${status}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -94,4 +109,5 @@ export {
   getPostPresignedURL,
   getAllPostInRoom,
   getAllPendingPostInUserWall,
+  getAllPendingPostForModerator,
 };

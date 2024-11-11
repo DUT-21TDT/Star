@@ -7,6 +7,7 @@ import {
   getPostPresignedURL,
   getAllPostInRoom,
   getAllPendingPostInUserWall,
+  getAllPendingPostForModerator,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -98,6 +99,7 @@ const useGetAllPendingPostOnWall = (config: configTypeProfileWall) => {
   const result = useQuery({
     queryKey: QUERY_KEY.fetchAllPendingPostOnWall(),
     queryFn: () => getAllPendingPostInUserWall(config),
+    staleTime: 0,
   });
   return {
     dataPost: result.data?.content || [],
@@ -105,6 +107,25 @@ const useGetAllPendingPostOnWall = (config: configTypeProfileWall) => {
     isError: result.isError,
     hasNextPost: !result.data?.last,
     afterTime: result.data?.content[result.data?.content.length - 1]?.createdAt,
+  };
+};
+
+const useGetAllPendingPostForModerator = (
+  config: configTypeProfileWall,
+  roomId: string,
+  status: string
+) => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, status),
+    queryFn: () => getAllPendingPostForModerator(config, roomId, status),
+  });
+  return {
+    dataPost: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextPost: !result.data?.last,
+    afterTimeFinalPost:
+      result.data?.content[result.data?.content.length - 1]?.createdAt,
   };
 };
 
@@ -117,4 +138,5 @@ export {
   useGetAllPresignedUrl,
   useGetAllPostsInRoom,
   useGetAllPendingPostOnWall,
+  useGetAllPendingPostForModerator,
 };

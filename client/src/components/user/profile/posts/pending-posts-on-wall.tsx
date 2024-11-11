@@ -5,6 +5,7 @@ import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../../utils/queriesKey";
+import RemoveDuplicatePost from "../../../../utils/removeDuplicatePost";
 
 interface PostType {
   id: string;
@@ -52,13 +53,15 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
 
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
-      setAllPosts((prevPosts: PostType[]) => [
-        ...prevPosts,
-        ...dataPost.map((post: PostType) => ({
-          ...post,
-          postImageUrls: post.postImageUrls || [],
-        })),
-      ]);
+      setAllPosts((prevPosts: PostType[]) =>
+        RemoveDuplicatePost([
+          ...prevPosts,
+          ...dataPost.map((post: PostType) => ({
+            ...post,
+            postImageUrls: post.postImageUrls || [],
+          })),
+        ])
+      );
       const lastPost = dataPost[dataPost.length - 1];
       setAfterTime(lastPost.createdAt);
     }
