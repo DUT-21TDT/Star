@@ -8,6 +8,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
 import ModalEditRoom from "./modal-edit-room";
+import {useNavigate} from "react-router-dom";
 
 interface DataType {
   id: number;
@@ -23,6 +24,8 @@ const Room: React.FC = () => {
   const [dataEditRoom, setDataEditRoom] = useState<DataType | null>(null);
   const { mutate: deleteRoom } = useDeleteRoom();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const confirm = (
     _: React.MouseEvent<HTMLElement, MouseEvent> | undefined,
     record: DataType
@@ -43,7 +46,13 @@ const Room: React.FC = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (text) => <a>{text}</a>,
+      render: (text, record) =>
+        <a onClick={() => {
+            navigate(`/admin/rooms/${record.id}`);
+            window.scrollTo(0, 0);
+        }}>
+          {text}
+        </a>,
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {

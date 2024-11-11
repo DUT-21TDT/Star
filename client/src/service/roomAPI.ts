@@ -13,6 +13,11 @@ const getAllRoom = async () => {
   return response.data;
 };
 
+const getRoomDetails = async (id: string) => {
+    const response = await instance.get(`/admin/rooms/${id}`);
+    return response.data;
+}
+
 const createRoom = async (data: DataCreateRoom) => {
   const fomData = new FormData();
   fomData.append("name", data.name);
@@ -53,6 +58,7 @@ const leaveRoomForUser = async (roomId: string) => {
 };
 export {
   getAllRoom,
+  getRoomDetails,
   createRoom,
   deleteRoom,
   editRoom,

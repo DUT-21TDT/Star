@@ -5,6 +5,7 @@ import {
   deleteRoom,
   editRoom,
   getAllRoom,
+  getRoomDetails,
   getAllRoomForUser,
   joinRoom,
   leaveRoomForUser,
@@ -20,6 +21,7 @@ interface DataType {
   participantsCount: number;
   isParticipant?: boolean;
 }
+
 const useFetchAllRoom = () => {
   const result = useQuery({
     queryKey: QUERY_KEY.fetchAllRoom(),
@@ -50,6 +52,18 @@ const useFetchAllRoom = () => {
     isError: result.isError,
   };
 };
+
+const useGetRoomDetails = (id: string) => {
+    const response = useQuery({
+        queryKey: QUERY_KEY.getRoomDetails(id),
+        queryFn: () => getRoomDetails(id),
+    });
+    return {
+        data: response.data,
+        isLoading: response.isLoading,
+        isError: response.isError,
+    };
+}
 
 const useCreateRoom = () => {
   return useMutation({
@@ -99,6 +113,7 @@ const useLeaveRoomForUser = () => {
 };
 export {
   useFetchAllRoom,
+  useGetRoomDetails,
   useCreateRoom,
   useDeleteRoom,
   useEditRoom,

@@ -13,6 +13,7 @@ import { ProtectedRoute } from "../components/auth/protected-route";
 import RoomUser from "../screens/room/room-user";
 import NewFeed from "../screens/newfeeds/newfeed";
 import PostInRoomContainer from "../screens/post-in-room/PostInRoomContainer";
+import RoomDetails from "../components/admin/room/room-details.tsx";
 
 const router = createBrowserRouter(
   [
@@ -76,6 +77,10 @@ const router = createBrowserRouter(
           path: "rooms",
           element: <Room />,
         },
+        {
+          path: "rooms/:roomId",
+          element: <RoomDetails />,
+        }
       ],
     },
     {
