@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Button, Input, Divider, Spin, Popover } from "antd";
 import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
+import default_image from "../../../assets/images/default_image.jpg";
 import {
   useFetchAllUsers,
   useFollowUser,
@@ -115,7 +116,7 @@ const MainPeopleContent: React.FC = () => {
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-start">
                       <img
-                        src={item.avatarUrl || "/avatar.jpg"}
+                        src={item.avatarUrl || default_image}
                         alt="avatar"
                         className="w-[40px] h-[40px] rounded-full mr-3 mt-1"
                       />
