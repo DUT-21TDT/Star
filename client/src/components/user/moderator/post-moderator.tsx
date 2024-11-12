@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { Avatar, Button, Popover } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Avatar, Button, message, Popover } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import ContainerInformationUser from "../profile/posts/container-information-user";
 import useEmblaCarousel from "embla-carousel-react";
 import default_image from "../../../assets/images/default_image.jpg";
 import { timeAgo } from "../../../utils/convertTime";
+import "../../../assets/css/post-moderator.css";
+import { useChangeStatusPostByModerator } from "../../../hooks/post";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEY } from "../../../utils/queriesKey";
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -20,20 +24,19 @@ interface PostType {
   moderatedAt?: string | null;
   violenceScore: number;
   status: string;
+  isChangeStatus?: string;
 }
 
 interface IProps {
   postData: PostType;
-  setDataPostModal: (value: PostType) => void;
-  setOpenModal: (value: boolean) => void;
-  setStatusWantToChange: (value: string) => void;
+  handleChangeStatusPostState: (postId: string, status: string) => void;
 }
 
 const PostModerator: React.FC<IProps> = (props) => {
-  const { postData, setDataPostModal, setOpenModal, setStatusWantToChange } =
-    props;
-
+  const { postData, handleChangeStatusPostState } = props;
+  const { roomId = "" } = useParams<{ roomId: string }>();
   const {
+    id,
     avatarUrlOfCreator,
     createdAt,
     content,
@@ -45,6 +48,7 @@ const PostModerator: React.FC<IProps> = (props) => {
     moderatedAt,
     violenceScore,
     status,
+    isChangeStatus,
   } = postData;
 
   const navigate = useNavigate();
@@ -95,10 +99,111 @@ const PostModerator: React.FC<IProps> = (props) => {
   const getViolenceScoreColor = (score: number | undefined) => {
     if (score === undefined) return "#999";
     if (score > 80) return "red";
-    if (score >= 21) return "yellow";
+    if (score >= 21) return "#ffcc00";
     return "green";
   };
 
+  const { mutate: changeStatusPost } = useChangeStatusPostByModerator();
+  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const handleChangeStatusPostByModerator = (statusToChange: string) => {
+    setLoading(true);
+    changeStatusPost(
+      { postId: id, status: statusToChange },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, status),
+          });
+          handleChangeStatusPostState(id, statusToChange);
+          setLoading(false);
+        },
+        onError: (error) => {
+          console.error(error);
+          message.error("Change status post failed");
+          setLoading(false);
+        },
+      }
+    );
+  };
+
+  if (isChangeStatus === "APPROVED") {
+    return (
+      <div
+        style={{
+          height: "70px",
+          padding: "10px 0px",
+          borderBottom: "1px solid #f0f0f0",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#f5f5f5",
+            height: "50px",
+            paddingLeft: "20px",
+            display: "flex",
+            alignItems: "center",
+            borderRadius: "10px",
+            color: "#adadad",
+          }}
+        >
+          This post has been approved
+        </div>
+      </div>
+    );
+  }
+
+  if (isChangeStatus === "REJECTED") {
+    return (
+      <div
+        style={{
+          height: "70px",
+          padding: "10px 0px",
+          borderBottom: "1px solid #f0f0f0",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#f5f5f5",
+            height: "50px",
+            paddingLeft: "20px",
+            display: "flex",
+            alignItems: "center",
+            borderRadius: "10px",
+            color: "#adadad",
+          }}
+        >
+          This post has been rejected
+        </div>
+      </div>
+    );
+  }
+
+  if (isChangeStatus === "PENDING") {
+    return (
+      <div
+        style={{
+          height: "70px",
+          padding: "10px 0px",
+          borderBottom: "1px solid #f0f0f0",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#f5f5f5",
+            height: "50px",
+            paddingLeft: "20px",
+            display: "flex",
+            alignItems: "center",
+            borderRadius: "10px",
+            color: "#adadad",
+          }}
+        >
+          This post has been moved to pending
+        </div>
+      </div>
+    );
+  }
   return (
     <div
       className="p-3"
@@ -231,7 +336,12 @@ const PostModerator: React.FC<IProps> = (props) => {
 
         {usernameOfModerator && moderatedAt && (
           <div style={{ marginTop: "8px", fontSize: "14px", color: "#999" }}>
-            Moderated by {usernameOfModerator} on {convertDateTime(moderatedAt)}
+            {status === "APPROVED"
+              ? "Approved"
+              : status === "REJECTED"
+              ? "Rejected"
+              : "Move to pending"}{" "}
+            by {usernameOfModerator} on {convertDateTime(moderatedAt)}
           </div>
         )}
 
@@ -254,10 +364,10 @@ const PostModerator: React.FC<IProps> = (props) => {
                   fontWeight: "500",
                   fontSize: "16px",
                 }}
+                className="buttonChangeStatus"
+                loading={loading}
                 onClick={() => {
-                  setDataPostModal(postData);
-                  setOpenModal(true);
-                  setStatusWantToChange("APPROVED");
+                  handleChangeStatusPostByModerator("APPROVED");
                 }}
               >
                 Approve
@@ -269,10 +379,9 @@ const PostModerator: React.FC<IProps> = (props) => {
                   fontWeight: "500",
                   fontSize: "16px",
                 }}
+                className="buttonChangeStatus"
                 onClick={() => {
-                  setDataPostModal(postData);
-                  setOpenModal(true);
-                  setStatusWantToChange("REJECTED");
+                  handleChangeStatusPostByModerator("REJECTED");
                 }}
               >
                 Reject
@@ -288,10 +397,9 @@ const PostModerator: React.FC<IProps> = (props) => {
                   fontWeight: "500",
                   fontSize: "16px",
                 }}
+                className="buttonChangeStatus"
                 onClick={() => {
-                  setDataPostModal(postData);
-                  setOpenModal(true);
-                  setStatusWantToChange("PENDING");
+                  handleChangeStatusPostByModerator("PENDING");
                 }}
               >
                 Move to Pending
@@ -303,10 +411,9 @@ const PostModerator: React.FC<IProps> = (props) => {
                   fontWeight: "500",
                   fontSize: "16px",
                 }}
+                className="buttonChangeStatus"
                 onClick={() => {
-                  setDataPostModal(postData);
-                  setOpenModal(true);
-                  setStatusWantToChange("REJECTED");
+                  handleChangeStatusPostByModerator("REJECTED");
                 }}
               >
                 Reject
@@ -322,10 +429,9 @@ const PostModerator: React.FC<IProps> = (props) => {
                   fontWeight: "500",
                   fontSize: "16px",
                 }}
+                className="buttonChangeStatus"
                 onClick={() => {
-                  setDataPostModal(postData);
-                  setOpenModal(true);
-                  setStatusWantToChange("PENDING");
+                  handleChangeStatusPostByModerator("PENDING");
                 }}
               >
                 Move to Pending
@@ -337,10 +443,9 @@ const PostModerator: React.FC<IProps> = (props) => {
                   fontWeight: "500",
                   fontSize: "16px",
                 }}
+                className="buttonChangeStatus"
                 onClick={() => {
-                  setDataPostModal(postData);
-                  setOpenModal(true);
-                  setStatusWantToChange("APPROVED");
+                  handleChangeStatusPostByModerator("APPROVED");
                 }}
               >
                 Approve

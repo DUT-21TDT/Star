@@ -100,6 +100,17 @@ const getAllPendingPostForModerator = async (
   return response.data;
 };
 
+const changeStatusPostByModerator = async (status: string, postId: string) => {
+  const data = {
+    status: status,
+  };
+  const response = await instance.patch(
+    `/moderator/posts/${postId}/status`,
+    data
+  );
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -110,4 +121,5 @@ export {
   getAllPostInRoom,
   getAllPendingPostInUserWall,
   getAllPendingPostForModerator,
+  changeStatusPostByModerator,
 };
