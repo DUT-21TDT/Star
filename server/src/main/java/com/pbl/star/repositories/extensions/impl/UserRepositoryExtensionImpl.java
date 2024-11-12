@@ -55,13 +55,13 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
                 "    similarity(last_name, :keyword) " +
                 ") as similarity " +
                 "from \"user\" u " +
-                "where " +
-                "username ilike :keyword1 " +
+                "where role = 'USER' AND status = 'ACTIVE' AND " +
+                "(username ilike :keyword1 " +
                 "or first_name ilike :keyword1 " +
                 "or last_name ilike :keyword1 " +
                 "or username % :keyword " +
                 "or first_name % :keyword " +
-                "or last_name % :keyword " +
+                "or last_name % :keyword) " +
                 "order by similarity desc, user_id asc ";
 
         if (afterId != null) {
@@ -198,6 +198,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
                 "JOIN \"user\" u " +
                 "ON ur.user_id = u.user_id " +
                 "WHERE ur.room_id=:roomId AND " +
+                "u.role = 'USER' AND u.status = 'ACTIVE' AND " +
                 "(u.username ilike :keyword1 " +
                 "OR u.username % :keyword) " +
                 "ORDER BY similarity DESC, user_id ";
