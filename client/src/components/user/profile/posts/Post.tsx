@@ -26,6 +26,7 @@ interface IProps {
   bio?: string;
   numberOfFollowers?: number;
   disableReactButton?: boolean;
+  nameOfRoom?: string;
 }
 
 const Post: React.FC<IProps> = (props) => {
@@ -42,6 +43,7 @@ const Post: React.FC<IProps> = (props) => {
     liked,
     idOfCreator,
     disableReactButton,
+    nameOfRoom,
   } = props;
 
   const navigate = useNavigate();
@@ -195,13 +197,66 @@ const Post: React.FC<IProps> = (props) => {
           </div>
         )}
         {!disableReactButton && (
-          <ReactButton
-            postId={id}
-            numberOfLikes={numberOfLikes}
-            numberOfComments={numberOfComments}
-            numberOfReposts={numberOfReposts}
-            liked={liked}
-          />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <ReactButton
+              postId={id}
+              numberOfLikes={numberOfLikes}
+              numberOfComments={numberOfComments}
+              numberOfReposts={numberOfReposts}
+              liked={liked}
+            />
+            <div
+              style={{
+                marginTop: "5px",
+              }}
+            >
+              <span
+                style={{
+                  fontStyle: "italic",
+                  marginTop: "5px",
+                  fontWeight: "400",
+                  color: "rgb(153,153,153)",
+                }}
+              >
+                - in {""}
+                {nameOfRoom}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {disableReactButton && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <div
+              style={{
+                marginTop: "5px",
+              }}
+            >
+              <span
+                style={{
+                  fontStyle: "italic",
+                  marginTop: "5px",
+                  fontWeight: "400",
+                  color: "rgb(153,153,153)",
+                }}
+              >
+                - in {""}
+                {nameOfRoom}
+              </span>
+            </div>
+          </div>
         )}
       </div>
     </div>
