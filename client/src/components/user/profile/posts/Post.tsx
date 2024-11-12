@@ -106,6 +106,7 @@ const Post: React.FC<IProps> = (props) => {
             content={popoverContent}
             placement="bottomLeft"
             trigger="hover"
+            mouseEnterDelay={0.35}
             overlayClassName="custom-popover"
             arrow={false}
             open={isPopoverVisibleUsername}
@@ -135,12 +136,13 @@ const Post: React.FC<IProps> = (props) => {
             style={{ borderRadius: "50%", width: "25px", height: "25px" }}
           />
         </div>
-        <div className="py-2">
+        <div>
           <p
             style={{
-              lineHeight: "20px",
+              lineHeight: "22px",
               fontSize: "15px",
               textAlign: "left",
+              marginTop: "4px",
             }}
           >
             {content}
@@ -148,7 +150,7 @@ const Post: React.FC<IProps> = (props) => {
         </div>
         {postImageUrls && postImageUrls.length > 0 && (
           <div
-            className="embla"
+            className="embla mt-2"
             ref={emblaRef}
             style={{ overflow: "hidden", maxHeight: "400px" }}
           >

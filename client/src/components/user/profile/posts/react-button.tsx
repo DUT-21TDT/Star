@@ -83,7 +83,7 @@ const ReactButton: React.FC<IProps> = ({
             strokeWidth="1"
           />
         </svg>
-        <span style={{ color: `${isLiked ? "#ff0034" : "black"}` }} >{likesCount !== 0 ? likesCount : ""}</span>
+        <span style={{ color: `${isLiked ? "#ff0034" : "black"}`, fontSize: "14px" }} >{likesCount !== 0 ? likesCount : ""}</span>
       </div>
 
       <div
@@ -105,7 +105,7 @@ const ReactButton: React.FC<IProps> = ({
             strokeWidth="1"
           />
         </svg>
-        <span>{numberOfComments !== 0 ? numberOfComments : ""}</span>
+        <span className={"text-[14px]"}>{numberOfComments !== 0 ? numberOfComments : ""}</span>
       </div>
       <div
         className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${selectedButton == "repost" ? "scale-[.80]" : ""}`} // Apply scale on press
@@ -127,7 +127,7 @@ const ReactButton: React.FC<IProps> = ({
             strokeLinejoin="round"
           />
         </svg>
-        {numberOfReposts !== 0 ? numberOfReposts : ""}
+        <span className={"text-[14px]"}>{numberOfReposts !== 0 ? numberOfReposts : ""}</span>
       </div>
     </div>
   );

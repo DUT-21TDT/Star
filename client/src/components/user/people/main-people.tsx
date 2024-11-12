@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Button, Input, Divider, Spin, Popover } from "antd";
 import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import {
@@ -8,6 +8,7 @@ import {
 } from "../../../hooks/user";
 import { useNavigate } from "react-router-dom";
 import ContainerInformationUser from "../profile/posts/container-information-user";
+import {getAllUsers} from "../../../service/userAPI.ts";
 
 interface PeopleType {
   userId: string;
@@ -21,7 +22,7 @@ interface PeopleType {
 
 const MainPeopleContent: React.FC = () => {
   const [searchValue, setSearchValue] = useState<string>("");
-  const { data, isLoading, isError } = useFetchAllUsers(searchValue);
+  const { data, isLoading, isError } = useFetchAllUsers("");
   const { mutate: followUser } = useFollowUser();
   const { mutate: unfollowUser } = useUnfollowUser();
   const navigate = useNavigate();
@@ -29,6 +30,26 @@ const MainPeopleContent: React.FC = () => {
   const [followStatusMap, setFollowStatusMap] = useState<
     Record<string, string>
   >({});
+
+  const [resultList, setResultList] = useState<PeopleType[]>(data);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+        // Call the API to get filtered members based on search term
+        getAllUsers(searchValue)
+          .then((res) => {
+            setResultList(res.content);
+            // setIsLoading(false);
+          })
+          .catch((error) => {
+            console.error("Error fetching members:", error);
+            setResultList([]);
+          });
+    }, 300); // Debounce duration: 300ms
+
+    return () => clearTimeout(timeoutId); // Cleanup timeout on unmount or searchTerm change
+  }, [searchValue]);
+
 
   const handleFollowUser = (userId: string) => {
     followUser(userId, {
@@ -85,18 +106,18 @@ const MainPeopleContent: React.FC = () => {
               onChange={(e) => setSearchValue(e.target.value)}
             />
           </div>
-          <div className="flex flex-col mt-2 w-full">
-            {data.map((item: PeopleType) => {
+          <div className="flex flex-col mt-6 w-full">
+            {resultList.map((item: PeopleType) => {
               const currentFollowStatus =
                 followStatusMap[item.userId] || item.followStatus;
               return (
                 <div key={item.userId} style={{ cursor: "pointer" }}>
                   <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center">
+                    <div className="flex items-start">
                       <img
                         src={item.avatarUrl || "/avatar.jpg"}
                         alt="avatar"
-                        className="w-[50px] h-[50px] rounded-full mr-3"
+                        className="w-[40px] h-[40px] rounded-full mr-3 mt-1"
                       />
                       <div>
                         <Popover
@@ -111,18 +132,25 @@ const MainPeopleContent: React.FC = () => {
                           arrow={false}
                         >
                           <p
-                            className="text-[17px] font-semibold"
+                            className="text-[16px] font-semibold"
                             onClick={() => navigate(`/profile/${item.userId}`)}
                           >
                             {item.username}
                           </p>
                         </Popover>
                         <p
-                          className="text-[#ccc] text-[14px]"
-                          style={{ lineHeight: "18px" }}
+                          className="text-gray-400 text-[14px] mt-[2px]"
+                          style={{lineHeight: "18px"}}
                         >
-                          {item.firstName} {item.lastName}
+                          {item.firstName && item.lastName ?
+                            `${item.firstName} ${item.lastName}` :
+                            item.firstName || item.lastName ?
+                              item.firstName || item.lastName :
+                              item.username}
                         </p>
+                        <div className="mt-2 text-[15px]">
+                          {item.numberOfFollowers} followers
+                        </div>
                       </div>
                     </div>
 
@@ -136,7 +164,9 @@ const MainPeopleContent: React.FC = () => {
                               ? "#9e9e9e"
                               : "black",
                           fontWeight: 500,
-                          width: "80px",
+                          width: "120px",
+                          borderRadius: "16px",
+                          padding: "10px 0px",
                         }}
                         onClick={() => {
                           if (
@@ -157,9 +187,7 @@ const MainPeopleContent: React.FC = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="mt-2 ml-16 text-[15px]">
-                    {item.numberOfFollowers} followers
-                  </div>
+
                   <Divider style={{ margin: "8px 0px" }} />
                 </div>
               );
