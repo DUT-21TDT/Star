@@ -18,6 +18,7 @@ interface PostType {
   numberOfReposts: number;
   liked: boolean;
   idOfCreator: string;
+  nameOfRoom: string;
 }
 
 const PostsOnNewsFeed: React.FC = () => {
@@ -83,6 +84,7 @@ const PostsOnNewsFeed: React.FC = () => {
             numberOfReposts,
             liked,
             idOfCreator,
+            nameOfRoom,
           } = post;
           return (
             <Post
@@ -98,6 +100,7 @@ const PostsOnNewsFeed: React.FC = () => {
               numberOfReposts={numberOfReposts}
               liked={liked}
               idOfCreator={idOfCreator}
+              nameOfRoom={nameOfRoom}
             />
           );
         })}

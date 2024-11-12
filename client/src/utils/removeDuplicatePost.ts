@@ -10,6 +10,7 @@ interface PostType {
   numberOfReposts: number;
   liked: boolean;
   idOfCreator: string;
+  nameOfRoom: string;
 }
 const RemoveDuplicatePost = (posts: PostType[]): PostType[] => {
   const uniquePostsMap = new Map<string, PostType>();

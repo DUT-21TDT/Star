@@ -21,6 +21,7 @@ interface PostType {
   numberOfReposts: number;
   liked: boolean;
   idOfCreator: string;
+  nameOfRoom: string;
 }
 
 interface IProps {
@@ -106,6 +107,7 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
             numberOfReposts,
             liked,
             idOfCreator,
+            nameOfRoom,
           } = post;
           const getTime = new Date(createdAt).getTime();
           return (
@@ -122,6 +124,7 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
+              nameOfRoom={nameOfRoom}
             />
           );
         })

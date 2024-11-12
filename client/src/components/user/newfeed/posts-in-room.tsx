@@ -17,6 +17,7 @@ interface PostType {
   numberOfReposts: number;
   liked: boolean;
   idOfCreator: string;
+  nameOfRoom: string;
 }
 interface IProps {
   roomId: string;
@@ -89,6 +90,7 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
             numberOfReposts,
             liked,
             idOfCreator,
+            nameOfRoom,
           } = post;
           return (
             <Post
@@ -104,6 +106,7 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
               numberOfReposts={numberOfReposts}
               liked={liked}
               idOfCreator={idOfCreator}
+              nameOfRoom={nameOfRoom}
             />
           );
         })}

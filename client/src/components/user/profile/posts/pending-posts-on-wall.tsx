@@ -19,6 +19,7 @@ interface PostType {
   numberOfReposts: number;
   liked: boolean;
   idOfCreator: string;
+  nameOfRoom: string;
 }
 
 interface IProps {
@@ -109,6 +110,7 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
             numberOfReposts,
             liked,
             idOfCreator,
+            nameOfRoom,
           } = post;
           return (
             <Post
@@ -125,6 +127,7 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
               numberOfReposts={numberOfReposts}
               liked={liked}
               disableReactButton={true}
+              nameOfRoom={nameOfRoom}
             />
           );
         })
