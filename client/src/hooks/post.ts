@@ -8,6 +8,7 @@ import {
   getAllPostInRoom,
   getAllPendingPostInUserWall,
   getAllPendingPostForModerator,
+  changeStatusPostByModerator,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -118,6 +119,7 @@ const useGetAllPendingPostForModerator = (
   const result = useQuery({
     queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, status),
     queryFn: () => getAllPendingPostForModerator(config, roomId, status),
+    staleTime: 0,
   });
   return {
     dataPost: result.data?.content || [],
@@ -127,6 +129,13 @@ const useGetAllPendingPostForModerator = (
     afterTimeFinalPost:
       result.data?.content[result.data?.content.length - 1]?.createdAt,
   };
+};
+
+const useChangeStatusPostByModerator = () => {
+  return useMutation({
+    mutationFn: ({ status, postId }: { status: string; postId: string }) =>
+      changeStatusPostByModerator(status, postId),
+  });
 };
 
 export {
@@ -139,4 +148,5 @@ export {
   useGetAllPostsInRoom,
   useGetAllPendingPostOnWall,
   useGetAllPendingPostForModerator,
+  useChangeStatusPostByModerator,
 };

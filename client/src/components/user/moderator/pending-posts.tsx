@@ -6,7 +6,6 @@ import { QUERY_KEY } from "../../../utils/queriesKey";
 import { useGetAllPendingPostForModerator } from "../../../hooks/post";
 import { useParams } from "react-router-dom";
 import PostModerator from "./post-moderator";
-import ModalConfirmApprovePost from "./modal-confirm-approve-post";
 
 interface PostType {
   id: string;
@@ -22,15 +21,26 @@ interface PostType {
   moderatedAt?: string | null;
   violenceScore: number;
   status: string;
+  isChangeStatus?: string;
 }
+
+const RemoveDuplicatePost = (posts: PostType[]): PostType[] => {
+  const uniquePostsMap = new Map<string, PostType>();
+  for (let i = posts.length - 1; i >= 0; i--) {
+    const post = posts[i];
+    if (!uniquePostsMap.has(post.id)) {
+      uniquePostsMap.set(post.id, post);
+    }
+  }
+  return Array.from(uniquePostsMap.values()).sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+};
 
 const PendingPosts = () => {
   const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
   const [allPosts, setAllPosts] = useState<PostType[]>([]);
-  const [dataPostModal, setDataPostModal] = useState<PostType | null>(null);
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
-  const [statusWantToChange, setStatusWantToChange] = useState<string>("");
   const { roomId = "" } = useParams<{ roomId: string }>();
   const { dataPost, isLoading, hasNextPost } = useGetAllPendingPostForModerator(
     {
@@ -60,13 +70,16 @@ const PendingPosts = () => {
 
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
-      setAllPosts((prevPosts: PostType[]) => [
-        ...prevPosts,
-        ...dataPost.map((post: PostType) => ({
-          ...post,
-          postImageUrls: post.postImageUrls || [],
-        })),
-      ]);
+      setAllPosts((prevPosts: PostType[]) =>
+        RemoveDuplicatePost([
+          ...prevPosts,
+          ...dataPost.map((post: PostType) => ({
+            ...post,
+            postImageUrls: post.postImageUrls || [],
+            isChangeStatus: "",
+          })),
+        ])
+      );
       const lastPost = dataPost[dataPost.length - 1];
       setAfterTime(lastPost.createdAt);
     }
@@ -76,6 +89,20 @@ const PendingPosts = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPost]);
+
+  const handleChangeStatusPostState = (postId: string, status: string) => {
+    const newPosts = allPosts.map((post) => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          isChangeStatus: status,
+        };
+      }
+      return post;
+    });
+    setAllPosts(newPosts);
+  };
+
   return (
     <>
       {isLoading ? (
@@ -83,22 +110,16 @@ const PendingPosts = () => {
           <Spin indicator={<LoadingOutlined spin />} size="large" />
         </div>
       ) : (
+        allPosts &&
+        allPosts.length > 0 &&
         allPosts.map((post) => (
           <PostModerator
             key={`pending-${post.id}`}
             postData={post}
-            setDataPostModal={setDataPostModal}
-            setOpenModal={setIsOpenModal}
-            setStatusWantToChange={setStatusWantToChange}
+            handleChangeStatusPostState={handleChangeStatusPostState}
           />
         ))
       )}
-      <ModalConfirmApprovePost
-        isOpenModal={isOpenModal}
-        setIsOpenModal={setIsOpenModal}
-        dataPost={dataPostModal}
-        statusWantToChange={statusWantToChange}
-      />
     </>
   );
 };
