@@ -1,18 +1,18 @@
-package com.pbl.star.usecase.impl;
+package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.entities.User;
 import com.pbl.star.services.domain.UserService;
-import com.pbl.star.usecase.ProfileManageUsecase;
+import com.pbl.star.usecase.enduser.ManageProfileUsecase;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ProfileManageUsecaseImpl implements ProfileManageUsecase {
+public class ManageProfileUsecaseImpl implements ManageProfileUsecase {
 
     private final UserService userService;
 

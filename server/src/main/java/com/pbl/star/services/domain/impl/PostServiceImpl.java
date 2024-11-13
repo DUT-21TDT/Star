@@ -6,7 +6,6 @@ import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostImage;
-import com.pbl.star.entities.PostLike;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.enums.RoomRole;
 import com.pbl.star.exceptions.EntityConflictException;
@@ -36,7 +35,6 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
-    private final PostLikeRepository postLikeRepository;
     private final UserRoomRepository userRoomRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
@@ -94,13 +92,13 @@ public class PostServiceImpl implements PostService {
         }
 
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findPostsOfUserByStatus(pageable, after, PostStatus.APPROVED, targetUserId);
+        return postRepository.findExistPostsOfUserByStatus(pageable, after, PostStatus.APPROVED, targetUserId);
     }
 
     @Override
     public Slice<PendingPostForUserDTO> getPendingPostsByUser(String currentUserId, int limit, Instant after) {
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findPendingPostsOfUser(pageable, after, currentUserId);
+        return postRepository.findExistPendingPostsOfUser(pageable, after, currentUserId);
     }
 
     @Override
@@ -111,7 +109,7 @@ public class PostServiceImpl implements PostService {
 
         Pageable pageable = PageRequest.of(0, limit);
         String[] joinedRoomIds = userRoomRepository.findRoomIdsByUserId(userId).toArray(String[]::new);
-        return postRepository.findPostsInRoomsByStatusAsUser(pageable, after, PostStatus.APPROVED, joinedRoomIds);
+        return postRepository.findExistPostsInRoomsByStatusAsUser(pageable, after, PostStatus.APPROVED, joinedRoomIds);
     }
 
     @Override
@@ -121,7 +119,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findPostsInRoomsByStatusAsUser(pageable, after, status, roomId);
+        return postRepository.findExistPostsInRoomsByStatusAsUser(pageable, after, status, roomId);
     }
 
     @Override
@@ -131,42 +129,13 @@ public class PostServiceImpl implements PostService {
         }
 
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findPostsInRoomByStatusAsMod(pageable, after, status, roomId);
-    }
-
-    @Override
-    @Transactional
-    public void likePost(String userId, String postId) {
-        if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("Post does not exist");
-        }
-
-        if (postLikeRepository.existsByPostIdAndUserId(postId, userId)) {
-            throw new EntityConflictException("User already liked the post");
-        }
-
-        PostLike postLike = PostLike.builder()
-                .postId(postId)
-                .userId(userId)
-                .likeAt(Instant.now())
-                .build();
-
-        postLikeRepository.save(postLike);
-    }
-
-    @Override
-    @Transactional
-    public void unlikePost(String userId, String postId) {
-        PostLike postLike = postLikeRepository.findPostLikeByUserIdAndPostId(userId, postId)
-                .orElseThrow(() -> new EntityNotFoundException("Post is not exist, or user did not like the post"));
-
-        postLikeRepository.delete(postLike);
+        return postRepository.findExistPostsInRoomByStatusAsMod(pageable, after, status, roomId);
     }
 
     @Override
     @Transactional
     public void moderatePostStatus(String postId, PostStatus status, String moderatorId) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
 
         if (!userRoomRepository.existsByUserIdAndRoomIdAndRole(moderatorId, post.getRoomId(), RoomRole.MODERATOR)) {
@@ -186,7 +155,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void unmoderatePostStatus(String postId, String moderatorId) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
 
         if (!userRoomRepository.existsByUserIdAndRoomIdAndRole(moderatorId, post.getRoomId(), RoomRole.MODERATOR)) {
@@ -200,6 +169,20 @@ public class PostServiceImpl implements PostService {
         post.setStatus(PostStatus.PENDING);
         post.setModeratedBy(null);
         post.setModeratedAt(null);
+        postRepository.save(post);
+    }
+
+    @Override
+    public void deletePostOfUser(String postId, String userId) {
+        Post post = postRepository.findExistPostById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+
+        if (!post.getUserId().equals(userId)) {
+            throw new ResourceOwnershipException("Cannot delete post of another user");
+        }
+
+        post.setDeleted(true);
+        post.setDeletedAt(Instant.now());
         postRepository.save(post);
     }
 }

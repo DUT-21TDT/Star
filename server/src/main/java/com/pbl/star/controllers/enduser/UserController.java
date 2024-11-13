@@ -1,8 +1,8 @@
 package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
-import com.pbl.star.usecase.ProfileManageUsecase;
-import com.pbl.star.usecase.UserInteractUsecase;
+import com.pbl.star.usecase.enduser.ManageProfileUsecase;
+import com.pbl.star.usecase.enduser.InteractUserUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,8 +15,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserInteractUsecase userInteractUsecase;
-    private final ProfileManageUsecase profileManageUsecase;
+    private final InteractUserUsecase userInteractUsecase;
+    private final ManageProfileUsecase profileManageUsecase;
 
     @GetMapping
     public ResponseEntity<?> searchUsers(@RequestParam String keyword,

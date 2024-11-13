@@ -1,9 +1,9 @@
-package com.pbl.star.usecase.impl;
+package com.pbl.star.usecase.common.impl;
 
 import com.pbl.star.dtos.response.image.PostPresignedUrlsResponse;
 import com.pbl.star.exceptions.IllegalRequestArgumentException;
 import com.pbl.star.services.external.S3Service;
-import com.pbl.star.usecase.ImageUploadUsecase;
+import com.pbl.star.usecase.common.ImageUploadUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,11 +1,12 @@
-package com.pbl.star.usecase.impl;
+package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.response.user.FollowResponse;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.enums.FollowRequestAction;
+import com.pbl.star.services.domain.FollowService;
 import com.pbl.star.services.domain.UserService;
-import com.pbl.star.usecase.UserInteractUsecase;
+import com.pbl.star.usecase.enduser.InteractUserUsecase;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
@@ -13,9 +14,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserInteractUsecaseImpl implements UserInteractUsecase {
+public class InteractUserUsecaseImpl implements InteractUserUsecase {
 
     private final UserService userService;
+    private final FollowService followService;
 
     @Override
     public Slice<OnSearchProfile> searchUsers(String keyword, int limit, String afterId) {
@@ -32,24 +34,24 @@ public class UserInteractUsecaseImpl implements UserInteractUsecase {
     @Override
     public FollowResponse followUser(String followeeId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return userService.sendFollowRequest(currentUserId, followeeId);
+        return followService.sendFollowRequest(currentUserId, followeeId);
     }
 
     @Override
     public void unfollowUser(String followeeId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        userService.removeFollowRequest(currentUserId, followeeId);
+        followService.removeFollowRequest(currentUserId, followeeId);
     }
 
     @Override
     public void acceptFollowRequest(String followingId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        userService.updateFollowRequestStatus(currentUserId, followingId, FollowRequestAction.ACCEPT);
+        followService.updateFollowRequestStatus(currentUserId, followingId, FollowRequestAction.ACCEPT);
     }
 
     @Override
     public void rejectFollowRequest(String followingId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        userService.updateFollowRequestStatus(currentUserId, followingId, FollowRequestAction.REJECT);
+        followService.updateFollowRequestStatus(currentUserId, followingId, FollowRequestAction.REJECT);
     }
 }

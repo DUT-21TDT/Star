@@ -2,7 +2,7 @@ package com.pbl.star.controllers.moderator;
 
 import com.pbl.star.dtos.request.post.ModeratePostParams;
 import com.pbl.star.enums.PostStatus;
-import com.pbl.star.usecase.PostManageUsecase;
+import com.pbl.star.usecase.moderator.ModeratePostUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/moderator/posts")
 public class ModPostController {
-    private final PostManageUsecase postManageUsecase;
+    private final ModeratePostUsecase postManageUsecase;
 
     @PatchMapping("/{postId}/status")
     @PreAuthorize("hasAuthority('USER')")

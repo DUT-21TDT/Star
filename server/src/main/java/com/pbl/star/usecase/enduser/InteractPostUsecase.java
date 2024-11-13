@@ -1,6 +1,6 @@
-package com.pbl.star.usecase;
+package com.pbl.star.usecase.enduser;
 
-public interface PostInteractUsecase {
+public interface InteractPostUsecase {
     void likePost(String postId);
     void unlikePost(String postId);
     void repostPost(String postId);

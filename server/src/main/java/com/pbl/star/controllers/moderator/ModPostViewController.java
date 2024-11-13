@@ -1,7 +1,7 @@
 package com.pbl.star.controllers.moderator;
 
 import com.pbl.star.enums.PostStatus;
-import com.pbl.star.usecase.PostManageUsecase;
+import com.pbl.star.usecase.moderator.ModeratePostUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.time.Instant;
 @RequestMapping("/moderator")
 public class ModPostViewController {
 
-    private final PostManageUsecase postManageUsecase;
+    private final ModeratePostUsecase postManageUsecase;
 
     @GetMapping("/rooms/{roomId}/posts")
     public ResponseEntity<?> getPostsInRoomAsMod(@PathVariable String roomId,

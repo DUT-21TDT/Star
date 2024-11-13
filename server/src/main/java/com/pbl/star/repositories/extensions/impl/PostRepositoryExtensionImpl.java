@@ -23,7 +23,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public Slice<PostForUserDTO> findPostsOfUserByStatus(Pageable pageable, Instant after, PostStatus status, String userId) {
+    public Slice<PostForUserDTO> findExistPostsOfUserByStatus(Pageable pageable, Instant after, PostStatus status, String userId) {
 
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
@@ -45,7 +45,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public Slice<PendingPostForUserDTO> findPendingPostsOfUser(Pageable pageable, Instant after, String userId) {
+    public Slice<PendingPostForUserDTO> findExistPendingPostsOfUser(Pageable pageable, Instant after, String userId) {
         String jpql = "SELECT p.id, u.id, u.username, u.avatarUrl, p.createdAt, p.content, p.status, " +
                 "(SELECT string_agg(pi.imageUrl, ',') FROM PostImage pi WHERE pi.postId = p.id) AS post_image_urls, " +
                 "p.roomId, r.name " +
@@ -53,6 +53,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "INNER JOIN User u ON p.userId = u.id " +
                 "INNER JOIN Room r ON p.roomId = r.id " +
                 "WHERE p.userId = :userId " +
+                "AND p.isDeleted = false " +
                 "AND p.status = 'PENDING' " +
                 (after == null ? "" : "AND p.createdAt < :after ") +
                 "ORDER BY p.createdAt DESC, p.id DESC ";
@@ -100,7 +101,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public Slice<PostForUserDTO> findPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus
+    public Slice<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus
             status, String... roomIds) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
@@ -132,7 +133,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "FROM Post p " +
                 "INNER JOIN User u ON p.userId = u.id " +
                 "INNER JOIN Room r ON p.roomId = r.id " +
-                "WHERE TRUE ";
+                "WHERE p.isDeleted = false ";
 
         if (type == ConditionType.USER) {
             jpql += "AND p.userId = :userId ";
@@ -186,7 +187,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public Slice<PostForModDTO> findPostsInRoomByStatusAsMod(Pageable pageable, Instant after, PostStatus status, String roomId) {
+    public Slice<PostForModDTO> findExistPostsInRoomByStatusAsMod(Pageable pageable, Instant after, PostStatus status, String roomId) {
 
         String jpql = getPostForModQuery(after, status);
 
@@ -211,7 +212,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "FROM Post p " +
                 "INNER JOIN User u ON p.userId = u.id " +
                 "LEFT JOIN User u1 ON p.moderatedBy = u1.id " +
-                "WHERE p.roomId = :roomId ";
+                "WHERE p.roomId = :roomId " +
+                "AND p.isDeleted = false ";
 
         if (status != null) {
             jpql += "AND p.status = :status ";

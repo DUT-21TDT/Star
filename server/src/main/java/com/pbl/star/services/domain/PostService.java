@@ -16,8 +16,7 @@ public interface PostService {
     Slice<PostForUserDTO> getPostsOnNewsfeed(String currentUserId, int limit, Instant after);
     Slice<PostForUserDTO> getPostsInRoom(String roomId, PostStatus status, int limit, Instant after);
     Slice<PostForModDTO> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after);
-    void likePost(String userId, String postId);
-    void unlikePost(String userId, String postId);
     void moderatePostStatus(String postId, PostStatus status, String moderatorId);
     void unmoderatePostStatus(String postId, String moderatorId);
+    void deletePostOfUser(String postId, String userId);
 }

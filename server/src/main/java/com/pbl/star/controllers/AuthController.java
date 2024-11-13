@@ -2,7 +2,7 @@ package com.pbl.star.controllers;
 
 import com.pbl.star.dtos.request.user.ResendEmailParams;
 import com.pbl.star.dtos.request.user.SignUpParams;
-import com.pbl.star.usecase.AuthUsecase;
+import com.pbl.star.usecase.common.AuthUsecase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

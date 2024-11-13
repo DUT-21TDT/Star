@@ -1,14 +1,11 @@
-package com.pbl.star.usecase.impl;
+package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
-import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.enums.PostStatus;
-import com.pbl.star.exceptions.ModeratorAccessException;
 import com.pbl.star.services.domain.PostService;
-import com.pbl.star.services.domain.UserRoomService;
-import com.pbl.star.usecase.PostManageUsecase;
+import com.pbl.star.usecase.enduser.ManagePostUsecase;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
@@ -18,9 +15,8 @@ import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
-public class PostManageUsecaseImpl implements PostManageUsecase {
+public class ManagePostUsecaseImpl implements ManagePostUsecase {
     private final PostService postService;
-    private final UserRoomService userRoomService;
 
     @Override
     public String createPost(CreatePostParams createPostParams) {
@@ -29,7 +25,7 @@ public class PostManageUsecaseImpl implements PostManageUsecase {
     }
 
     @Override
-    public Slice<PendingPostForUserDTO> getPendingPostsByCurrentUser(int limit, Instant after) {
+    public Slice<PendingPostForUserDTO> getMyPendingPosts(int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.getPendingPostsByUser(currentUserId, limit, after);
     }
@@ -52,30 +48,8 @@ public class PostManageUsecaseImpl implements PostManageUsecase {
     }
 
     @Override
-    public Slice<PostForModDTO> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after) {
-        String userId = AuthUtil.getCurrentUser().getId();
-        if (!userRoomService.isModeratorOfRoom(userId, roomId)) {
-            throw new ModeratorAccessException("User is not a moderator of the room");
-        }
-
-        return postService.getPostsInRoomAsMod(roomId, status, limit, after);
-    }
-
-    @Override
-    public void approvePost(String postId) {
-        String moderatorId = AuthUtil.getCurrentUser().getId();
-        postService.moderatePostStatus(postId, PostStatus.APPROVED, moderatorId);
-    }
-
-    @Override
-    public void rejectPost(String postId) {
-        String moderatorId = AuthUtil.getCurrentUser().getId();
-        postService.moderatePostStatus(postId, PostStatus.REJECTED, moderatorId);
-    }
-
-    @Override
-    public void returnPostToPending(String postId) {
-        String moderatorId = AuthUtil.getCurrentUser().getId();
-        postService.unmoderatePostStatus(postId, moderatorId);
+    public void deletePost(String postId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        postService.deletePostOfUser(postId, currentUserId);
     }
 }

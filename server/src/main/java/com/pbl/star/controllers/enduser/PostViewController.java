@@ -1,6 +1,6 @@
 package com.pbl.star.controllers.enduser;
 
-import com.pbl.star.usecase.PostManageUsecase;
+import com.pbl.star.usecase.enduser.ManagePostUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +15,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class PostViewController {
 
-    private final PostManageUsecase postManageUsecase;
+    private final ManagePostUsecase postManageUsecase;
 
     @GetMapping("/newsfeed/posts")
     @PreAuthorize("hasAuthority('USER')")
@@ -35,7 +35,7 @@ public class PostViewController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> getPendingPostsByCurrentUser(@RequestParam(defaultValue = "20") int limit,
                                                    @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(postManageUsecase.getPendingPostsByCurrentUser(limit, after));
+        return ResponseEntity.ok(postManageUsecase.getMyPendingPosts(limit, after));
     }
 
     @GetMapping("/rooms/{roomId}/posts")

@@ -10,8 +10,8 @@ import org.springframework.data.domain.Slice;
 import java.time.Instant;
 
 public interface PostRepositoryExtension {
-    Slice<PostForUserDTO> findPostsOfUserByStatus(Pageable pageable, Instant after, PostStatus status, String userId);
-    Slice<PendingPostForUserDTO> findPendingPostsOfUser(Pageable pageable, Instant after, String userId);
-    Slice<PostForUserDTO> findPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus status, String... roomIds);
-    Slice<PostForModDTO> findPostsInRoomByStatusAsMod(Pageable pageable, Instant after, PostStatus status, String roomId);
+    Slice<PostForUserDTO> findExistPostsOfUserByStatus(Pageable pageable, Instant after, PostStatus status, String userId);
+    Slice<PendingPostForUserDTO> findExistPendingPostsOfUser(Pageable pageable, Instant after, String userId);
+    Slice<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus status, String... roomIds);
+    Slice<PostForModDTO> findExistPostsInRoomByStatusAsMod(Pageable pageable, Instant after, PostStatus status, String roomId);
 }

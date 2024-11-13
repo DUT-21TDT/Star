@@ -1,4 +1,4 @@
-package com.pbl.star.usecase.impl;
+package com.pbl.star.usecase.common.impl;
 
 import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.request.user.SignUpParams;
@@ -13,7 +13,7 @@ import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.services.domain.AuthService;
 import com.pbl.star.services.domain.VerificationTokenService;
 import com.pbl.star.services.external.EmailService;
-import com.pbl.star.usecase.AuthUsecase;
+import com.pbl.star.usecase.common.AuthUsecase;
 import com.pbl.star.utils.AuthUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;

@@ -52,4 +52,10 @@ public class Post {
 
     @Column(name = "moderated_at")
     private Instant moderatedAt;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 }

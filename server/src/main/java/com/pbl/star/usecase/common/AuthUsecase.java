@@ -1,4 +1,4 @@
-package com.pbl.star.usecase;
+package com.pbl.star.usecase.common;
 
 import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.dtos.response.user.ConfirmSignUpResponse;

@@ -1,7 +1,7 @@
 package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.dtos.request.image.PostPresignedUrlsParams;
-import com.pbl.star.usecase.ImageUploadUsecase;
+import com.pbl.star.usecase.common.ImageUploadUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

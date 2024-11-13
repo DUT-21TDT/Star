@@ -1,7 +1,7 @@
 package com.pbl.star.controllers.admin;
 
 import com.pbl.star.dtos.request.room.CreateRoomParams;
-import com.pbl.star.usecase.RoomManageUsecase;
+import com.pbl.star.usecase.admin.AdminManageRoomUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +14,7 @@ import java.util.Map;
 @RequestMapping("/admin/rooms")
 public class AdminRoomController {
 
-    private final RoomManageUsecase roomManageUsecase;
+    private final AdminManageRoomUsecase roomManageUsecase;
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -47,42 +47,6 @@ public class AdminRoomController {
     public ResponseEntity<?> updateRoom(@PathVariable String roomId, @ModelAttribute CreateRoomParams params) {
         roomManageUsecase.updateRoom(roomId, params);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{roomId}/moderators")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> getModerators(@PathVariable String roomId) {
-        return ResponseEntity.ok(roomManageUsecase.getModerators(roomId));
-    }
-
-    @PostMapping("/{roomId}/moderators")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> addModerator(@PathVariable String roomId, @RequestBody Map<String, String> requestBody) {
-        String userId = requestBody.get("userId");
-        String username = requestBody.get("username");
-
-        if (userId != null) {
-            roomManageUsecase.addModeratorById(roomId, userId);
-            return ResponseEntity.ok().build();
-        } else if (username != null) {
-            roomManageUsecase.addModeratorByUsername(roomId, username);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().body("userId or username must be provided");
-        }
-    }
-
-    @DeleteMapping("/{roomId}/moderators/{userId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> removeModerator(@PathVariable String roomId, @PathVariable String userId) {
-        roomManageUsecase.removeModerator(roomId, userId);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("{roomId}/members")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> getMembers(@PathVariable String roomId, @RequestParam(required = false) String keyword) {
-        return ResponseEntity.ok(roomManageUsecase.getMembers(roomId, keyword));
     }
 }
 

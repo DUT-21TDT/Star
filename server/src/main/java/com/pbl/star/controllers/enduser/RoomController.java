@@ -1,7 +1,6 @@
 package com.pbl.star.controllers.enduser;
 
-import com.pbl.star.usecase.RoomInteractUsecase;
-import com.pbl.star.usecase.RoomManageUsecase;
+import com.pbl.star.usecase.enduser.InteractRoomUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,26 +11,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/rooms")
 public class RoomController {
 
-    private final RoomManageUsecase roomManageUsecase;
-    private final RoomInteractUsecase roomInteractUsecase;
+    private final InteractRoomUsecase interactRoomUsecase;
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> getUserRooms() {
-        return ResponseEntity.ok(roomManageUsecase.getAllRoomsForUser());
+        return ResponseEntity.ok(interactRoomUsecase.getAllRoomsForUser());
     }
 
     @PostMapping("/{roomId}/members")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> joinRoom(@PathVariable String roomId) {
-        roomInteractUsecase.joinRoom(roomId);
+        interactRoomUsecase.joinRoom(roomId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{roomId}/members")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> leaveRoom(@PathVariable String roomId) {
-        roomInteractUsecase.leaveRoom(roomId);
+        interactRoomUsecase.leaveRoom(roomId);
         return ResponseEntity.ok().build();
     }
 }
