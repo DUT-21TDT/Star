@@ -1,10 +1,14 @@
-import {Image, Spin} from "antd";
-import {useFollowUser, useGetProfileUser, useUnfollowUser} from "../../../../hooks/user";
+import { Image, Spin } from "antd";
+import {
+  useFollowUser,
+  useGetProfileUser,
+  useUnfollowUser,
+} from "../../../../hooks/user";
 import default_image from "../../../../assets/images/default_image.jpg";
 import { useNavigate } from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import ModalConfirmUnfollow from "./modal-confirm-unfollow.tsx";
-import {LoadingOutlined} from "@ant-design/icons";
+import { LoadingOutlined } from "@ant-design/icons";
 interface ContainerInformationUserProps {
   idOfCreator: string;
 }
@@ -16,8 +20,12 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
   const { data, isLoading } = useGetProfileUser(idOfCreator || "");
   const navigate = useNavigate();
 
-  const [followStatus, setFollowStatus] = useState<string>(data?.followStatus || "");
-  const [numberOfFollowers, setNumberOfFollowers] = useState<number>(data?.publicProfile?.numberOfFollowers || 0);
+  const [followStatus, setFollowStatus] = useState<string>(
+    data?.followStatus || ""
+  );
+  const [numberOfFollowers, setNumberOfFollowers] = useState<number>(
+    data?.publicProfile?.numberOfFollowers || 0
+  );
 
   const [confirmUnfollowModal, setConfirmUnfollowModal] = useState(false); // New state for the confirmation modal
 
@@ -38,14 +46,14 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
           setFollowStatus("REQUESTED");
         } else if (response?.followStatus === "FOLLOWING") {
           setFollowStatus("FOLLOWING");
-          setNumberOfFollowers(prevState => prevState + 1);
+          setNumberOfFollowers((prevState) => prevState + 1);
         }
       },
       onError: (error: Error) => {
         console.error("Error following user:", error);
       },
     });
-  }
+  };
 
   const handleUnfollowUser = () => {
     // Show the confirmation modal if the profile is private
@@ -61,9 +69,8 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
       onSuccess: () => {
         if (followStatus === "FOLLOWING") {
           setFollowStatus("NOT_FOLLOWING");
-          setNumberOfFollowers(prevState => prevState - 1);
-        }
-        else if (followStatus === "REQUESTED") {
+          setNumberOfFollowers((prevState) => prevState - 1);
+        } else if (followStatus === "REQUESTED") {
           setFollowStatus("NOT_FOLLOWING");
         }
       },
@@ -75,9 +82,9 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
 
   if (isLoading) {
     return (
-    <div className="flex items-center justify-center mt-8 w-full">
-      <Spin indicator={<LoadingOutlined spin />} size="large" />
-    </div>
+      <div className="flex items-center justify-center mt-8 w-full">
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
+      </div>
     );
   }
 
@@ -89,10 +96,9 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
           padding: "15px 10px",
         }}
         onClick={() => {
-            navigate(`/profile/${idOfCreator}`);
-            window.scrollTo(0, 0);
-          }
-        }
+          navigate(`/profile/${idOfCreator}`);
+          window.scrollTo(0, 0);
+        }}
       >
         <div className="flex justify-between items-center cursor-pointer">
           <div>
@@ -122,6 +128,11 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
               height={60}
               style={{
                 borderRadius: "50%",
+                position: "absolute",
+                objectFit: "cover",
+                objectPosition: "center",
+                left: 0,
+                top: 0,
               }}
               id="avatar-profile"
             />
@@ -134,33 +145,38 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
           {numberOfFollowers || 0} followers
         </div>
       </div>
-      {!data?.isCurrentUser && (
-        followStatus === "NOT_FOLLOWING" ?
-          <button className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[black] text-[white]"
-            onClick={handleFollowUser}>
+      {!data?.isCurrentUser &&
+        (followStatus === "NOT_FOLLOWING" ? (
+          <button
+            className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[black] text-[white]"
+            onClick={handleFollowUser}
+          >
             Follow
           </button>
-        : followStatus === "REQUESTED" ?
-          <button className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[white]"
-            onClick={handleUnfollowUser}>
+        ) : followStatus === "REQUESTED" ? (
+          <button
+            className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[white]"
+            onClick={handleUnfollowUser}
+          >
             Requested
           </button>
-        : followStatus === "FOLLOWING" ?
-          <button className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[white]"
-            onClick={handleUnfollowUser}>
+        ) : followStatus === "FOLLOWING" ? (
+          <button
+            className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[white]"
+            onClick={handleUnfollowUser}
+          >
             Following
           </button>
-        : null
-      )}
+        ) : null)}
 
       {!data?.isCurrentUser && (
-          <ModalConfirmUnfollow
-              username={data?.publicProfile?.username}
-              proceedWithUnfollow={proceedWithUnfollow}
-              confirmUnfollowModal={confirmUnfollowModal}
-              setConfirmUnfollowModal={setConfirmUnfollowModal} />
+        <ModalConfirmUnfollow
+          username={data?.publicProfile?.username}
+          proceedWithUnfollow={proceedWithUnfollow}
+          confirmUnfollowModal={confirmUnfollowModal}
+          setConfirmUnfollowModal={setConfirmUnfollowModal}
+        />
       )}
-
     </>
   );
 };

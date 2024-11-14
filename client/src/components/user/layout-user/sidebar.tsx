@@ -10,7 +10,7 @@ import {
   SearchIcon,
   UserIcon,
 } from "../../../assets/icon/sidebar-homepage-icon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppSelector } from "../../../redux/store/hook";
 import ModalCreatePost from "../profile/posts/modal-create-post";
 
@@ -62,6 +62,27 @@ const SideBar: React.FC = () => {
   const [activeIcon, setActiveIcon] = useState<string>("home");
   const [openModalCreatePost, setOpenModalCreatePost] = useState(false);
   const navigate = useNavigate();
+  const path = window.location.pathname;
+
+  useEffect(() => {
+    switch (path) {
+      case "/":
+        setActiveIcon("home");
+        break;
+      case "/search":
+        setActiveIcon("search");
+        break;
+      case "/activity":
+        setActiveIcon("heart");
+        break;
+      case "/room":
+        setActiveIcon("room");
+        break;
+      default:
+        setActiveIcon("user");
+        break;
+    }
+  }, [path]);
 
   return (
     <div
@@ -92,6 +113,7 @@ const SideBar: React.FC = () => {
                 } else if (iconNavigate) {
                   setActiveIcon(name);
                   navigate(iconNavigate);
+                  // window.scrollTo(0, 0);
                 }
               }}
             >

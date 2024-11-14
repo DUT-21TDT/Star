@@ -22,6 +22,7 @@ interface PostType {
   liked: boolean;
   idOfCreator: string;
   nameOfRoom: string;
+  isRemoved?: boolean;
 }
 
 interface IProps {
@@ -66,6 +67,7 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
           ...dataPost.map((post: PostType) => ({
             ...post,
             postImageUrls: post.postImageUrls || [],
+            isRemoved: false,
           })),
         ])
       );
@@ -78,6 +80,28 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPost]);
+
+  const handleDeletePostSuccess = (postId: string) => {
+    setAllPosts((prevPosts) => {
+      return prevPosts.map((post) => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            isRemoved: true,
+          };
+        }
+        return post;
+      });
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      queryClient.resetQueries({
+        queryKey: QUERY_KEY.fetchAllPostsOnWall(id || ""),
+      });
+    };
+  }, []);
 
   return (
     <>
@@ -108,6 +132,7 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
             liked,
             idOfCreator,
             nameOfRoom,
+            isRemoved,
           } = post;
           const getTime = new Date(createdAt).getTime();
           return (
@@ -125,6 +150,8 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
               numberOfReposts={numberOfReposts}
               liked={liked}
               nameOfRoom={nameOfRoom}
+              handleDeletePostSuccess={handleDeletePostSuccess}
+              isRemoved={isRemoved}
             />
           );
         })

@@ -9,6 +9,7 @@ import {
   getAllPendingPostInUserWall,
   getAllPendingPostForModerator,
   changeStatusPostByModerator,
+  deletePost,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -138,6 +139,12 @@ const useChangeStatusPostByModerator = () => {
   });
 };
 
+const useDeletePost = () => {
+  return useMutation({
+    mutationFn: (postId: string) => deletePost(postId),
+  });
+};
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -149,4 +156,5 @@ export {
   useGetAllPendingPostOnWall,
   useGetAllPendingPostForModerator,
   useChangeStatusPostByModerator,
+  useDeletePost,
 };

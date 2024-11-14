@@ -6,6 +6,7 @@ import { QUERY_KEY } from "../../../utils/queriesKey";
 import { useFetchAllPostsOnNewsFeed } from "../../../hooks/post";
 import Post from "../profile/posts/Post";
 import RemoveDuplicatePost from "../../../utils/removeDuplicatePost";
+
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -19,6 +20,7 @@ interface PostType {
   liked: boolean;
   idOfCreator: string;
   nameOfRoom: string;
+  isRemoved?: boolean;
 }
 
 const PostsOnNewsFeed: React.FC = () => {
@@ -49,6 +51,7 @@ const PostsOnNewsFeed: React.FC = () => {
           ...dataPost.map((post: PostType) => ({
             ...post,
             postImageUrls: post.postImageUrls || [],
+            isRemoved: false,
           })),
         ])
       );
@@ -61,6 +64,28 @@ const PostsOnNewsFeed: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPost]);
+
+  const handleDeletePostSuccess = (postId: string) => {
+    setAllPosts((prevPosts) => {
+      return prevPosts.map((post) => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            isRemoved: true,
+          };
+        }
+        return post;
+      });
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      queryClient.resetQueries({
+        queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
+      });
+    };
+  }, []);
 
   return (
     <>
@@ -85,6 +110,7 @@ const PostsOnNewsFeed: React.FC = () => {
             liked,
             idOfCreator,
             nameOfRoom,
+            isRemoved,
           } = post;
           return (
             <Post
@@ -101,6 +127,8 @@ const PostsOnNewsFeed: React.FC = () => {
               liked={liked}
               idOfCreator={idOfCreator}
               nameOfRoom={nameOfRoom}
+              isRemoved={isRemoved}
+              handleDeletePostSuccess={handleDeletePostSuccess}
             />
           );
         })}
