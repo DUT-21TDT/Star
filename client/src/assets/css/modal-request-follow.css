@@ -1,0 +1,14 @@
+/* .ant-tabs-tab {
+  min-width: 120px;
+} */
+
+.modal-three-items .ant-tabs-tab {
+  min-width: 135px;
+}
+
+.modal-two-items .ant-tabs-tab {
+  min-width: 220px;
+}
+.ant-modal-content {
+  padding-top: 5px !important;
+}

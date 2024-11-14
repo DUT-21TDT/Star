@@ -27,4 +27,12 @@ export const QUERY_KEY = {
     status,
   ],
   getMembersInRoom: (roomId: string) => ["getMembersInRoom", roomId],
+  fetchAllFollowersByUserId: (userId: string) => [
+    "fetchAllFollowersByUserId",
+    userId,
+  ],
+  fetchAllFollowingByUserId: (userId: string) => [
+    "fetchAllFollowingByUserId",
+    userId,
+  ],
 };

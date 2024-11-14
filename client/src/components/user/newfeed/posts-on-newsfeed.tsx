@@ -87,6 +87,8 @@ const PostsOnNewsFeed: React.FC = () => {
     };
   }, []);
 
+  console.log("allPosts", allPosts);
+
   return (
     <>
       {isLoading && (
