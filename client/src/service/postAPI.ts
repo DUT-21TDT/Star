@@ -111,6 +111,11 @@ const changeStatusPostByModerator = async (status: string, postId: string) => {
   return response.data;
 };
 
+const deletePost = async (postId: string) => {
+  const response = await instance.delete(`/posts/${postId}`);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -122,4 +127,5 @@ export {
   getAllPendingPostInUserWall,
   getAllPendingPostForModerator,
   changeStatusPostByModerator,
+  deletePost,
 };

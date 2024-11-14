@@ -20,6 +20,7 @@ interface PostType {
   liked: boolean;
   idOfCreator: string;
   nameOfRoom: string;
+  isRemoved?: boolean;
 }
 
 interface IProps {
@@ -60,6 +61,7 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
           ...dataPost.map((post: PostType) => ({
             ...post,
             postImageUrls: post.postImageUrls || [],
+            isRemoved: false,
           })),
         ])
       );
@@ -73,6 +75,14 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPost]);
 
+  useEffect(() => {
+    return () => {
+      queryClient.resetQueries({
+        queryKey: QUERY_KEY.fetchAllPendingPostOnWall(),
+      });
+    };
+  }, []);
+
   if (!isCurrentUser) {
     return (
       <div
@@ -83,6 +93,21 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
       </div>
     );
   }
+
+  const handleDeletePostSuccess = (postId: string) => {
+    setAllPosts((prevPosts) => {
+      return prevPosts.map((post) => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            isRemoved: true,
+          };
+        }
+        return post;
+      });
+    });
+  };
+
   return (
     <>
       {isLoading ? (
@@ -111,6 +136,7 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
             liked,
             idOfCreator,
             nameOfRoom,
+            isRemoved,
           } = post;
           return (
             <Post
@@ -128,6 +154,8 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
               liked={liked}
               disableReactButton={true}
               nameOfRoom={nameOfRoom}
+              handleDeletePostSuccess={handleDeletePostSuccess}
+              isRemoved={isRemoved}
             />
           );
         })

@@ -20,6 +20,9 @@ const RemoveDuplicatePost = (posts: PostType[]): PostType[] => {
       uniquePostsMap.set(post.id, post);
     }
   }
-  return Array.from(uniquePostsMap.values()).reverse();
+  // return Array.from(uniquePostsMap.values()).reverse();
+  return Array.from(uniquePostsMap.values()).sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 };
 export default RemoveDuplicatePost;

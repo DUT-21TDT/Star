@@ -18,6 +18,7 @@ interface PostType {
   liked: boolean;
   idOfCreator: string;
   nameOfRoom: string;
+  isRemoved?: boolean;
 }
 interface IProps {
   roomId: string;
@@ -55,6 +56,7 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
         ...dataPost.map((post: PostType) => ({
           ...post,
           postImageUrls: post.postImageUrls || [],
+          isRemoved: false,
         })),
       ]);
       const lastPost = dataPost[dataPost.length - 1];
@@ -68,6 +70,28 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [handleScroll]);
+
+  const handleDeletePostSuccess = (postId: string) => {
+    setAllPosts((prevPosts) => {
+      return prevPosts.map((post) => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            isRemoved: true,
+          };
+        }
+        return post;
+      });
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      queryClient.resetQueries({
+        queryKey: QUERY_KEY.fetchAllPostsInRoom(roomId),
+      });
+    };
+  }, []);
   return (
     <>
       {isLoading && (
@@ -91,6 +115,7 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
             liked,
             idOfCreator,
             nameOfRoom,
+            isRemoved,
           } = post;
           return (
             <Post
@@ -107,6 +132,8 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
               liked={liked}
               idOfCreator={idOfCreator}
               nameOfRoom={nameOfRoom}
+              isRemoved={isRemoved}
+              handleDeletePostSuccess={handleDeletePostSuccess}
             />
           );
         })}

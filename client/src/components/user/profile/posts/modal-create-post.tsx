@@ -248,6 +248,21 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
               onChange={(value) => setOptionSelected(value)}
               options={optionRoom}
               style={{ minWidth: "150px", height: "35px" }}
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toString()
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? "")
+                  .toString()
+                  .toLowerCase()
+                  .localeCompare(
+                    (optionB?.label ?? "").toString().toLowerCase()
+                  )
+              }
             />
           </div>
         </div>

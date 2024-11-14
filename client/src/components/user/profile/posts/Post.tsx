@@ -1,6 +1,10 @@
-import { Avatar, Button, Popover } from "antd";
+import { Avatar, Button, Dropdown, MenuProps, message, Popover } from "antd";
 import React, { useState } from "react";
-import { EllipsisOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+} from "@ant-design/icons";
 import ReactButton from "./react-button";
 import "../../../../assets/css/posts.css";
 import default_image from "../../../../assets/images/default_image.jpg";
@@ -9,6 +13,9 @@ import { useNavigate } from "react-router-dom";
 import ContainerInformationUser from "./container-information-user";
 import useEmblaCarousel from "embla-carousel-react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
+import { useAppSelector } from "../../../../redux/store/hook";
+import ModalConfirmDeletePost from "./modal-confirm-delete-post";
+import { useDeletePost } from "../../../../hooks/post";
 interface IProps {
   id: string;
   usernameOfCreator: string;
@@ -27,6 +34,8 @@ interface IProps {
   numberOfFollowers?: number;
   disableReactButton?: boolean;
   nameOfRoom?: string;
+  handleDeletePostSuccess?: (id: string) => void;
+  isRemoved?: boolean;
 }
 
 const Post: React.FC<IProps> = (props) => {
@@ -44,6 +53,8 @@ const Post: React.FC<IProps> = (props) => {
     idOfCreator,
     disableReactButton,
     nameOfRoom,
+    isRemoved,
+    handleDeletePostSuccess,
   } = props;
 
   const navigate = useNavigate();
@@ -81,6 +92,83 @@ const Post: React.FC<IProps> = (props) => {
       );
     }
   };
+
+  // delete post
+  const [openModalDeletePost, setOpenModalDeletePost] = useState(false);
+  const currentUserId = useAppSelector((state) => state.user.id);
+  const { mutate: deletePost } = useDeletePost();
+
+  const handleDeletePost = () => {
+    deletePost(id, {
+      onSuccess: () => {
+        if (handleDeletePostSuccess) {
+          handleDeletePostSuccess(id);
+        }
+        setOpenModalDeletePost(false);
+      },
+      onError: () => {
+        message.error("Delete post failed");
+        setOpenModalDeletePost(false);
+      },
+    });
+  };
+  const items: MenuProps["items"] = [
+    {
+      label: (
+        <div className="w-[120px] h-[35px] text-[16px] flex gap-3 items-center">
+          <DeleteOutlined
+            style={{
+              fontSize: "16px",
+            }}
+          />
+          <span>Delete</span>
+        </div>
+      ),
+      key: "1",
+      onClick: () => {
+        setOpenModalDeletePost(true);
+      },
+    },
+    {
+      label: (
+        <div className="w-[120px] h-[35px] text-[16px] flex gap-3 items-center">
+          <EditOutlined
+            style={{
+              fontSize: "16px",
+            }}
+          />
+          <span>Edit</span>
+        </div>
+      ),
+      key: "2",
+    },
+  ];
+
+  if (isRemoved) {
+    return (
+      <div
+        style={{
+          height: "70px",
+          padding: "10px 0px",
+          borderBottom: "1px solid #f0f0f0",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#f5f5f5",
+            height: "50px",
+            paddingLeft: "20px",
+            display: "flex",
+            alignItems: "center",
+            borderRadius: "10px",
+            color: "#adadad",
+          }}
+        >
+          This post has been deleted
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -131,10 +219,20 @@ const Post: React.FC<IProps> = (props) => {
               </span>
             </div>
           </Popover>
-          <Button
-            icon={<EllipsisOutlined />}
-            style={{ borderRadius: "50%", width: "25px", height: "25px" }}
-          />
+
+          {currentUserId === idOfCreator ? (
+            <Dropdown menu={{ items }} placement="bottomRight">
+              <Button
+                icon={<EllipsisOutlined />}
+                style={{ borderRadius: "50%", width: "25px", height: "25px" }}
+              />
+            </Dropdown>
+          ) : (
+            <Button
+              icon={<EllipsisOutlined />}
+              style={{ borderRadius: "50%", width: "25px", height: "25px" }}
+            />
+          )}
         </div>
         <div>
           <p
@@ -260,6 +358,11 @@ const Post: React.FC<IProps> = (props) => {
             </div>
           </div>
         )}
+        <ModalConfirmDeletePost
+          openModal={openModalDeletePost}
+          setOpenModal={setOpenModalDeletePost}
+          handleDeletePost={handleDeletePost}
+        />
       </div>
     </div>
   );
