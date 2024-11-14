@@ -15,5 +15,6 @@ public interface UserService {
     Slice<OnSearchProfile> searchUsers(String currentUserId, String keyword, int limit, String afterId);
     OnWallProfileResponse getProfileOnWall(String currentUserId, String targetUserId);
     PersonalInformation getPersonalInformation(String userId);
-    User updatePersonalInformation(String userId, UpdateProfileParams updateProfileParams);
+    User updatePersonalInformation(User user, UpdateProfileParams updateProfileParams);
+    User getUserById(String userId);
 }

@@ -64,9 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User updatePersonalInformation(String userId, UpdateProfileParams updateProfileParams) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    public User updatePersonalInformation(User user, UpdateProfileParams updateProfileParams) {
 
         if (StringUtils.isBlank(updateProfileParams.getUsername())) {
             throw new RequiredFieldMissingException("Username cannot be empty");
@@ -119,5 +117,12 @@ public class UserServiceImpl implements UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public User getUserById(String userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User not found")
+        );
     }
 }

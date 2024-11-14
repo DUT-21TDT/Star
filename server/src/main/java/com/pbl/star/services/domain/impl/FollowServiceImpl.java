@@ -91,4 +91,9 @@ public class FollowServiceImpl implements FollowService {
 
         followingRepository.delete(following);
     }
+
+    @Override
+    public void acceptAllFollowRequests(String userId) {
+        followingRepository.updateAllPendingRequestsToAccepted(userId);
+    }
 }

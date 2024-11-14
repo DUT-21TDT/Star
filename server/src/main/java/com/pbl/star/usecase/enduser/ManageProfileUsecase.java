@@ -8,4 +8,5 @@ public interface ManageProfileUsecase {
     GeneralInformation getGeneralInformation();
     PersonalInformation getPersonalInformation();
     GeneralInformation updatePersonalInformation(UpdateProfileParams updateProfileParams);
+    void acceptAllFollowRequests();
 }
