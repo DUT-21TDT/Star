@@ -5,6 +5,7 @@ import ModalEditProfile from "./modal-edit-profile";
 import { useFollowUser, useUnfollowUser } from "../../../hooks/user";
 import "../../../assets/css/user-profile.css";
 import ModalConfirmUnfollow from "./posts/modal-confirm-unfollow.tsx";
+import ModalRequestFollow from "./modal-request-follow.tsx";
 
 interface IProps {
   isCurrentUser: boolean;
@@ -23,13 +24,15 @@ interface IProps {
 }
 
 const UserProfile: React.FC<IProps> = (props) => {
-  const { publicProfile, followStatus, setFollowStatus } = props;
+  const { publicProfile, followStatus, setFollowStatus, userId } = props;
   const [numberOfFollowers, setNumberOfFollowers] = useState<number>(
     publicProfile.numberOfFollowers
   );
   const [openModal, setOpenModal] = useState(false);
 
-  const [confirmUnfollowModal, setConfirmUnfollowModal] = useState(false); // New state for the confirmation modal
+  const [confirmUnfollowModal, setConfirmUnfollowModal] = useState(false);
+
+  const [openModalRequestFollow, setOpenModalRequestFollow] = useState(false);
 
   const { mutate: followUser } = useFollowUser();
   const { mutate: unfollowUser } = useUnfollowUser();
@@ -123,7 +126,16 @@ const UserProfile: React.FC<IProps> = (props) => {
         </div>
 
         <div className="text-[15px]">{publicProfile.bio || ""}</div>
-        <div className="text-[#a1a1a1]">{numberOfFollowers} followers</div>
+        <div
+          className="text-[#a1a1a1] numberFollowers"
+          onClick={() => {
+            if (!publicProfile.privateProfile) {
+              setOpenModalRequestFollow(true);
+            }
+          }}
+        >
+          {numberOfFollowers} followers
+        </div>
 
         {/* Follow/Edit Profile Buttons */}
         <div>
@@ -180,6 +192,12 @@ const UserProfile: React.FC<IProps> = (props) => {
           setConfirmUnfollowModal={setConfirmUnfollowModal}
         />
       )}
+      <ModalRequestFollow
+        isCurrentUser={props.isCurrentUser}
+        isOpenModalRequestFollow={openModalRequestFollow}
+        setIsOpenModalRequestFollow={setOpenModalRequestFollow}
+        userId={userId}
+      />
     </>
   );
 };

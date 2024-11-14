@@ -23,3 +23,8 @@
 .four-items .ant-tabs-tab {
   min-width: 135px;
 }
+
+.numberFollowers:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
