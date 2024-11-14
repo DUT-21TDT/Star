@@ -1,5 +1,7 @@
 package com.pbl.star.services.domain.impl;
 
+import com.pbl.star.dtos.query.user.OnFollowProfile;
+import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.user.FollowResponse;
 import com.pbl.star.entities.Following;
 import com.pbl.star.enums.FollowRequestAction;
@@ -12,7 +14,11 @@ import com.pbl.star.exceptions.ResourceOwnershipException;
 import com.pbl.star.repositories.FollowingRepository;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.services.domain.FollowService;
+import com.pbl.star.services.helper.ResourceAccessControl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +30,8 @@ public class FollowServiceImpl implements FollowService {
 
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
+
+    private final ResourceAccessControl resourceAccessControl;
 
     @Override
     @Transactional
@@ -95,5 +103,47 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public void acceptAllFollowRequests(String userId) {
         followingRepository.updateAllPendingRequestsToAccepted(userId);
+    }
+
+    @Override
+    public CustomSlice<OnFollowProfile> getFollowingsOfUser(String currentUserId, String targetUserId, int limit, Instant after) {
+
+        if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
+            throw new ResourceOwnershipException("User has private profile");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit);
+        Slice<OnFollowProfile> followings = followingRepository.getFollowingsOfUser(pageable, after, currentUserId, targetUserId);
+
+        CustomSlice<OnFollowProfile> followingsPage = new CustomSlice<>(followings);
+
+        if (after != null) {
+            followingsPage.setTotalElements(
+                    followingRepository.countByFollowerIdAndStatus(targetUserId, FollowRequestStatus.ACCEPTED).intValue()
+            );
+        }
+
+        return followingsPage;
+    }
+
+    @Override
+    public CustomSlice<OnFollowProfile> getFollowersOfUser(String currentUserId, String targetUserId, int limit, Instant after) {
+
+        if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
+            throw new ResourceOwnershipException("User has private profile");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit);
+        Slice<OnFollowProfile> followers = followingRepository.getFollowersOfUser(pageable, after, currentUserId, targetUserId);
+
+        CustomSlice<OnFollowProfile> followersPage = new CustomSlice<>(followers);
+
+        if (after != null) {
+            followersPage.setTotalElements(
+                    followingRepository.countByFolloweeIdAndStatus(targetUserId, FollowRequestStatus.ACCEPTED).intValue()
+            );
+        }
+
+        return followersPage;
     }
 }

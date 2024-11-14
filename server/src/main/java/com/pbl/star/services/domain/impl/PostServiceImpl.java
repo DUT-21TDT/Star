@@ -15,6 +15,7 @@ import com.pbl.star.exceptions.ResourceOwnershipException;
 import com.pbl.star.mapper.PostCreationMapper;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.PostService;
+import com.pbl.star.services.helper.ResourceAccessControl;
 import com.pbl.star.utils.CreatePostValidator;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,8 @@ public class PostServiceImpl implements PostService {
     private final UserRoomRepository userRoomRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
-    private final FollowingRepository followingRepository;
+
+    private final ResourceAccessControl resourceAccessControl;
 
     @Override
     @Transactional
@@ -81,14 +83,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Slice<PostForUserDTO> getPostsOnUserWall(String currentUserId, String targetUserId, int limit, Instant after) {
-        boolean privateProfile = userRepository.getPrivateProfileById(targetUserId)
-                .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
 
-        if (privateProfile &&
-                !currentUserId.equals(targetUserId) &&
-                !followingRepository.isFollowing(currentUserId, targetUserId)
-        ) {
-            throw new ResourceOwnershipException("User has private profile");
+        if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
+            throw new ResourceOwnershipException("User have private profile");
         }
 
         Pageable pageable = PageRequest.of(0, limit);

@@ -1,6 +1,8 @@
 package com.pbl.star.usecase.enduser.impl;
 
+import com.pbl.star.dtos.query.user.OnFollowProfile;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
+import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.user.FollowResponse;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.enums.FollowRequestAction;
@@ -11,6 +13,8 @@ import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +33,23 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     public OnWallProfileResponse getProfileOnWall(String userId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return userService.getProfileOnWall(currentUserId, userId);
+    }
+
+    @Override
+    public CustomSlice<OnFollowProfile> getFollowers(String userId, int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return followService.getFollowersOfUser(currentUserId, userId, limit, after);
+    }
+
+    @Override
+    public CustomSlice<OnFollowProfile> getFollowings(String userId, int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return followService.getFollowingsOfUser(currentUserId, userId, limit, after);
+    }
+
+    @Override
+    public CustomSlice<OnFollowProfile> getFollowRequests(String userId, int limit, Instant after) {
+        return null;
     }
 
     @Override
