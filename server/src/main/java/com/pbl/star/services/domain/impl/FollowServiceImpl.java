@@ -118,7 +118,7 @@ public class FollowServiceImpl implements FollowService {
 
         CustomSlice<OnFollowProfile> followingsPage = new CustomSlice<>(followings);
 
-        if (after != null) {
+        if (after == null) {
             followingsPage.setTotalElements(
                     followingRepository.countByFollowerIdAndStatus(targetUserId, FollowRequestStatus.ACCEPTED).intValue()
             );
@@ -139,7 +139,7 @@ public class FollowServiceImpl implements FollowService {
 
         CustomSlice<OnFollowProfile> followersPage = new CustomSlice<>(followers);
 
-        if (after != null) {
+        if (after == null) {
             followersPage.setTotalElements(
                     followingRepository.countByFolloweeIdAndStatus(targetUserId, FollowRequestStatus.ACCEPTED).intValue()
             );
@@ -156,7 +156,7 @@ public class FollowServiceImpl implements FollowService {
 
         CustomSlice<OnFollowRequestProfile> requestsPage = new CustomSlice<>(requests);
 
-        if (after != null) {
+        if (after == null) {
             requestsPage.setTotalElements(
                     followingRepository.countByFolloweeIdAndStatus(userId, FollowRequestStatus.PENDING).intValue()
             );
