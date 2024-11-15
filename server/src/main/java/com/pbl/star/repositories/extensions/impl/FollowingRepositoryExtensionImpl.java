@@ -1,6 +1,7 @@
 package com.pbl.star.repositories.extensions.impl;
 
 import com.pbl.star.dtos.query.user.OnFollowProfile;
+import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.enums.FollowStatus;
 import com.pbl.star.repositories.extensions.FollowingRepositoryExtension;
 import jakarta.persistence.EntityManager;
@@ -119,6 +120,53 @@ public class FollowingRepositoryExtensionImpl implements FollowingRepositoryExte
                         .firstName((String) row[3])
                         .lastName((String) row[4])
                         .followStatus(FollowStatus.valueOf((String) row[5]))
+                        .followAt((Instant) row[6])
+                        .build())
+                .toList();
+
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    @Override
+    public Slice<OnFollowRequestProfile> getFollowRequestsOfUser(Pageable pageable, Instant after, String userId) {
+        String jpql = "SELECT u.id, u.username, u.avatarUrl, u.firstName, u.lastName, f.id, f.followAt " +
+                "FROM Following f " +
+                "INNER JOIN User u " +
+                "ON f.followerId = u.id " +
+                "WHERE f.followeeId = :userId " +
+                "AND f.status = 'PENDING' " +
+                (after != null ? "AND f.followAt < :after " : "") +
+                "ORDER BY f.followAt DESC, f.id";
+
+        TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
+
+        query.setParameter("userId", userId)
+                .setMaxResults(pageable.getPageSize() + 1);
+
+        if (after != null) {
+            query.setParameter("after", after);
+        }
+
+        return toOnFollowRequestProfileSlice(query, pageable);
+    }
+
+    private Slice<OnFollowRequestProfile> toOnFollowRequestProfileSlice(TypedQuery<Object[]> query, Pageable pageable) {
+
+        List<Object[]> resultList = query.getResultList();
+        boolean hasNext = resultList.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            resultList.removeLast();
+        }
+
+        List<OnFollowRequestProfile> content = resultList.stream()
+                .map(row -> OnFollowRequestProfile.builder()
+                        .userId((String) row[0])
+                        .username((String) row[1])
+                        .avatarUrl((String) row[2])
+                        .firstName((String) row[3])
+                        .lastName((String) row[4])
+                        .followingId((String) row[5])
                         .followAt((Instant) row[6])
                         .build())
                 .toList();

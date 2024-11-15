@@ -46,9 +46,9 @@ public class FollowController {
 
     @GetMapping("/me/follow-requests")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> getFollowRequests() {
-        return null;
-//        return ResponseEntity.ok(interactUserUsecase.getFollowRequests());
+    public ResponseEntity<?> getFollowRequests(@RequestParam(defaultValue = "20") int limit,
+                                               @RequestParam(required = false) Instant after) {
+        return ResponseEntity.ok(interactUserUsecase.getFollowRequests(limit, after));
     }
 
     @GetMapping("/{userId}/followings")

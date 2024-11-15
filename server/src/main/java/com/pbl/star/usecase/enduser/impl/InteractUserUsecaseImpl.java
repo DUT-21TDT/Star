@@ -1,6 +1,7 @@
 package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.query.user.OnFollowProfile;
+import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.user.FollowResponse;
@@ -48,8 +49,9 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     }
 
     @Override
-    public CustomSlice<OnFollowProfile> getFollowRequests(String userId, int limit, Instant after) {
-        return null;
+    public CustomSlice<OnFollowRequestProfile> getFollowRequests(int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return followService.getFollowRequestsOfUser(currentUserId, limit, after);
     }
 
     @Override

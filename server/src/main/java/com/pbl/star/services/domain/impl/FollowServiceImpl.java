@@ -1,6 +1,7 @@
 package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.query.user.OnFollowProfile;
+import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.user.FollowResponse;
 import com.pbl.star.entities.Following;
@@ -145,5 +146,22 @@ public class FollowServiceImpl implements FollowService {
         }
 
         return followersPage;
+    }
+
+    @Override
+    public CustomSlice<OnFollowRequestProfile> getFollowRequestsOfUser(String userId, int limit, Instant after) {
+
+        Pageable pageable = PageRequest.of(0, limit);
+        Slice<OnFollowRequestProfile> requests = followingRepository.getFollowRequestsOfUser(pageable, after, userId);
+
+        CustomSlice<OnFollowRequestProfile> requestsPage = new CustomSlice<>(requests);
+
+        if (after != null) {
+            requestsPage.setTotalElements(
+                    followingRepository.countByFolloweeIdAndStatus(userId, FollowRequestStatus.PENDING).intValue()
+            );
+        }
+
+        return requestsPage;
     }
 }
