@@ -63,7 +63,13 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     @Override
     public void unfollowUser(String followeeId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        followService.removeFollowRequest(currentUserId, followeeId);
+        followService.removeFollowing(currentUserId, followeeId);
+    }
+
+    @Override
+    public void removeFollower(String userId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        followService.removeFollowing(userId, currentUserId);
     }
 
     @Override

@@ -17,7 +17,8 @@ public interface InteractUserUsecase {
     CustomSlice<OnFollowProfile> getFollowings(String userId, int limit, Instant after);
     CustomSlice<OnFollowRequestProfile> getFollowRequests(int limit, Instant after);
     FollowResponse followUser(String userId);
+    void unfollowUser(String userId);
+    void removeFollower(String userId);
     void acceptFollowRequest(String followingId);
     void rejectFollowRequest(String followingId);
-    void unfollowUser(String userId);
 }

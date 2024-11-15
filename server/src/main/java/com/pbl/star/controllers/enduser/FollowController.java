@@ -30,6 +30,21 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/me/followers/{userId}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> removeFollower(@PathVariable String userId) {
+        interactUserUsecase.removeFollower(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me/follow-requests")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> getFollowRequests(@RequestParam(defaultValue = "20") int limit,
+                                               @RequestParam(required = false) Instant after
+    ) {
+        return ResponseEntity.ok(interactUserUsecase.getFollowRequests(limit, after));
+    }
+
     @PatchMapping("/me/follow-requests/{followingId}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> acceptFollowRequest(@PathVariable String followingId) {
@@ -44,12 +59,6 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/me/follow-requests")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> getFollowRequests(@RequestParam(defaultValue = "20") int limit,
-                                               @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(interactUserUsecase.getFollowRequests(limit, after));
-    }
 
     @GetMapping("/{userId}/followings")
     public ResponseEntity<?> getFollowings(@PathVariable String userId,
@@ -62,7 +71,8 @@ public class FollowController {
     @GetMapping("/{userId}/followers")
     public ResponseEntity<?> getFollowers(@PathVariable String userId,
                                           @RequestParam(defaultValue = "20") int limit,
-                                          @RequestParam(required = false) Instant after) {
+                                          @RequestParam(required = false) Instant after
+    ) {
         return ResponseEntity.ok(interactUserUsecase.getFollowers(userId, limit, after));
     }
 }

@@ -94,7 +94,7 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
-    public void removeFollowRequest(String followerId, String followeeId) {
+    public void removeFollowing(String followerId, String followeeId) {
         Following following = followingRepository.findByFollowerIdAndFolloweeId(followerId, followeeId)
                 .orElseThrow(() -> new EntityNotFoundException("Following not found"));
 
