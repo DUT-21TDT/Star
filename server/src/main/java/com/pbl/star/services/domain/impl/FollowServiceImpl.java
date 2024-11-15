@@ -1,5 +1,6 @@
 package com.pbl.star.services.domain.impl;
 
+import com.pbl.star.dtos.query.follow.FollowSectionCount;
 import com.pbl.star.dtos.query.user.OnFollowProfile;
 import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.dtos.response.CustomSlice;
@@ -163,5 +164,15 @@ public class FollowServiceImpl implements FollowService {
         }
 
         return requestsPage;
+    }
+
+    @Override
+    public FollowSectionCount countFollowSection(String currentUserId, String targetUserId) {
+
+        if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
+            throw new ResourceOwnershipException("User has private profile");
+        }
+
+        return followingRepository.countFollowSection(currentUserId, targetUserId);
     }
 }

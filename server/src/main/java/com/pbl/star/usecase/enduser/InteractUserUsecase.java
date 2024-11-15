@@ -1,5 +1,6 @@
 package com.pbl.star.usecase.enduser;
 
+import com.pbl.star.dtos.query.follow.FollowSectionCount;
 import com.pbl.star.dtos.query.user.OnFollowProfile;
 import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
@@ -21,4 +22,5 @@ public interface InteractUserUsecase {
     void removeFollower(String userId);
     void acceptFollowRequest(String followingId);
     void rejectFollowRequest(String followingId);
+    FollowSectionCount countFollowSection(String userId);
 }

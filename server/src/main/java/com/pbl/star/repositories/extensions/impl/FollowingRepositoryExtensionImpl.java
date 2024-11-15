@@ -1,5 +1,6 @@
 package com.pbl.star.repositories.extensions.impl;
 
+import com.pbl.star.dtos.query.follow.FollowSectionCount;
 import com.pbl.star.dtos.query.user.OnFollowProfile;
 import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.enums.FollowStatus;
@@ -172,5 +173,39 @@ public class FollowingRepositoryExtensionImpl implements FollowingRepositoryExte
                 .toList();
 
         return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    @Override
+    public FollowSectionCount countFollowSection(String currentUserId, String targetUserId) {
+
+        String jpql;
+        boolean isCurrentUser = currentUserId.equals(targetUserId);
+
+        if (!isCurrentUser) {
+            jpql = "SELECT (" +
+                    "(SELECT COUNT(f) FROM Following f WHERE f.followerId = :targetUserId AND f.status = 'ACCEPTED'), " +
+                    "(SELECT COUNT(f) FROM Following f WHERE f.followeeId = :targetUserId AND f.status = 'ACCEPTED'), " +
+                    "0)";
+        }
+
+        else {
+            jpql = "SELECT " +
+                    "(SELECT COUNT(f) FROM Following f WHERE f.followerId = :targetUserId AND f.status = 'ACCEPTED'), " +
+                    "(SELECT COUNT(f) FROM Following f WHERE f.followeeId = :targetUserId AND f.status = 'ACCEPTED'), " +
+                    "(SELECT COUNT(f) FROM Following f WHERE f.followeeId = :targetUserId AND f.status = 'PENDING')";
+        }
+
+        TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
+        query.setParameter("targetUserId", targetUserId);
+
+        Object[] result = query.getSingleResult();
+
+        return FollowSectionCount.builder()
+                .followingsCount(((Long) result[0]).intValue())
+                .followersCount(((Long) result[1]).intValue())
+                .followRequestsCount(
+                        isCurrentUser ? ((Long) result[2]).intValue() : null
+                )
+                .build();
     }
 }

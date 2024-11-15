@@ -1,5 +1,6 @@
 package com.pbl.star.usecase.enduser.impl;
 
+import com.pbl.star.dtos.query.follow.FollowSectionCount;
 import com.pbl.star.dtos.query.user.OnFollowProfile;
 import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
@@ -82,5 +83,11 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     public void rejectFollowRequest(String followingId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         followService.updateFollowRequestStatus(currentUserId, followingId, FollowRequestAction.REJECT);
+    }
+
+    @Override
+    public FollowSectionCount countFollowSection(String userId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return followService.countFollowSection(currentUserId, userId);
     }
 }

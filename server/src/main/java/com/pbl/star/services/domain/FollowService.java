@@ -1,5 +1,6 @@
 package com.pbl.star.services.domain;
 
+import com.pbl.star.dtos.query.follow.FollowSectionCount;
 import com.pbl.star.dtos.query.user.OnFollowProfile;
 import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.dtos.response.CustomSlice;
@@ -16,4 +17,5 @@ public interface FollowService {
     CustomSlice<OnFollowProfile> getFollowingsOfUser(String currentUserId, String targetUserId, int limit, Instant after);
     CustomSlice<OnFollowProfile> getFollowersOfUser(String currentUserId, String targetUserId, int limit, Instant after);
     CustomSlice<OnFollowRequestProfile> getFollowRequestsOfUser(String userId, int limit, Instant after);
+    FollowSectionCount countFollowSection(String currentUserId, String targetUserId);
 }

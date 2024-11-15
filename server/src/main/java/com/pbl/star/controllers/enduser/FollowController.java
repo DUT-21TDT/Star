@@ -75,4 +75,9 @@ public class FollowController {
     ) {
         return ResponseEntity.ok(interactUserUsecase.getFollowers(userId, limit, after));
     }
+
+    @GetMapping("/{userId}/follow-sections")
+    public ResponseEntity<?> getFollowSections(@PathVariable String userId) {
+        return ResponseEntity.ok(interactUserUsecase.countFollowSection(userId));
+    }
 }
