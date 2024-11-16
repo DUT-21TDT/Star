@@ -1,5 +1,5 @@
 import { Spin } from "antd";
-import { useGetAllFollowersByUserId } from "../../../hooks/follow";
+import { useGetAllFollowRequest } from "../../../hooks/follow";
 import { useEffect, useState } from "react";
 import { QUERY_KEY } from "../../../utils/queriesKey";
 import { useQueryClient } from "@tanstack/react-query";
@@ -17,51 +17,51 @@ interface IFollowerType {
   firstName: string;
   followAt: string;
   followStatus: string;
+  followingId?: string;
   lastName: string;
   userId: string;
   username: string;
   tab?: string;
 }
 
-const TabFollowers: React.FC<IProps> = ({
+const TabRequested: React.FC<IProps> = ({
   userId,
   setIsOpenModalRequestFollow,
 }) => {
   const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
-  const [allFollowers, setAllFollowers] = useState<IFollowerType[]>([]);
-  const { dataFollowers, isLoading, hasNextFollower } =
-    useGetAllFollowersByUserId(userId, {
-      limit: 10,
-      after: afterTime,
-    });
+  const [allRequested, setAllRequested] = useState<IFollowerType[]>([]);
+  const { dataRequest, isLoading, hasNextRequest } = useGetAllFollowRequest({
+    limit: 10,
+    after: afterTime,
+  });
 
   const handleScrollYReachEnd = () => {
-    if (hasNextFollower) {
+    if (hasNextRequest) {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEY.fetchAllFollowersByUserId(userId),
+        queryKey: QUERY_KEY.fetchAllFollowRequest(),
       });
     }
   };
 
   useEffect(() => {
-    if (dataFollowers && dataFollowers.length > 0) {
-      setAllFollowers((prevFollowers: IFollowerType[]) => [
-        ...prevFollowers,
-        ...dataFollowers.map((follower: IFollowerType) => ({
+    if (dataRequest && dataRequest.length > 0) {
+      setAllRequested((prevRequest: IFollowerType[]) => [
+        ...prevRequest,
+        ...dataRequest.map((follower: IFollowerType) => ({
           ...follower,
-          tab: "FOLLOWER",
+          tab: "REQUEST",
         })),
       ]);
-      const lastFollower = dataFollowers[dataFollowers.length - 1];
-      setAfterTime(lastFollower.followAt);
+      const lastRequest = dataRequest[dataRequest.length - 1];
+      setAfterTime(lastRequest.followAt);
     }
-  }, [dataFollowers]);
+  }, [dataRequest]);
 
   useEffect(() => {
     return () => {
       queryClient.resetQueries({
-        queryKey: QUERY_KEY.fetchAllFollowersByUserId(userId),
+        queryKey: QUERY_KEY.fetchAllFollowRequest(),
       });
     };
   }, []);
@@ -72,10 +72,10 @@ const TabFollowers: React.FC<IProps> = ({
         <Spin indicator={<LoadingOutlined spin />} size="large" />
       </div>
     );
-  if (allFollowers && allFollowers.length === 0)
+  if (allRequested && allRequested.length === 0)
     return (
       <div className="w-full flex justify-center text-[16px] text-[gray] font-semibold">
-        The account doesn't have any followers yet.
+        The user has no request
       </div>
     );
 
@@ -83,19 +83,19 @@ const TabFollowers: React.FC<IProps> = ({
     <PerfectScrollbar
       options={{ suppressScrollX: true }}
       onYReachEnd={handleScrollYReachEnd}
-      style={{ maxHeight: "500px" }}
+      style={{ maxHeight: "500px", minHeight: "400px" }}
     >
-      {allFollowers.map((item: IFollowerType) => (
+      {allRequested.map((item: IFollowerType) => (
         <FollowerItem
           key={item.userId}
           {...item}
           setIsOpenModalRequestFollow={setIsOpenModalRequestFollow}
           currentProfileId={userId}
-          setAllFollowers={setAllFollowers}
+          setAllFollowers={setAllRequested}
         />
       ))}
     </PerfectScrollbar>
   );
 };
 
-export default TabFollowers;
+export default TabRequested;
