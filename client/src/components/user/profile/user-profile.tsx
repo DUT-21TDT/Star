@@ -129,7 +129,11 @@ const UserProfile: React.FC<IProps> = (props) => {
         <div
           className="text-[#a1a1a1] numberFollowers"
           onClick={() => {
-            if (!publicProfile.privateProfile) {
+            if (
+              !publicProfile.privateProfile ||
+              props.isCurrentUser ||
+              (publicProfile.privateProfile && followStatus === "FOLLOWING")
+            ) {
               setOpenModalRequestFollow(true);
             }
           }}

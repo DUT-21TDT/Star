@@ -1,7 +1,10 @@
-import { Modal, Tabs, TabsProps } from "antd";
+import { message, Modal, Tabs, TabsProps } from "antd";
 import "../../../assets/css/modal-request-follow.css";
 import TabFollowers from "./tab-followers";
+import TabFollowing from "./tab-following";
+import TabRequested from "./tab-requested";
 import { useEffect, useState } from "react";
+import { getCountFollowerByUserId } from "../../../service/followAPI";
 
 interface IProps {
   isOpenModalRequestFollow: boolean;
@@ -16,20 +19,15 @@ const ModalRequestFollow: React.FC<IProps> = (props) => {
     setIsOpenModalRequestFollow,
     userId,
   } = props;
-  const [countFollower, setCountFollower] = useState<number>(0);
+
   const items: TabsProps["items"] = [
     {
       key: "1",
-      label: (
-        <span className="text-[18px] font-semibold ">
-          Followers ({countFollower})
-        </span>
-      ),
+      label: <span className="text-[18px] font-semibold ">Followers</span>,
 
       children: (
         <TabFollowers
           userId={userId}
-          setCountFollower={setCountFollower}
           setIsOpenModalRequestFollow={setIsOpenModalRequestFollow}
         />
       ),
@@ -37,26 +35,47 @@ const ModalRequestFollow: React.FC<IProps> = (props) => {
     {
       key: "2",
       label: <span className="text-[18px] font-semibold ">Following</span>,
-      children: "Content of Tab Pane 2",
+      children: (
+        <TabFollowing
+          userId={userId}
+          setIsOpenModalRequestFollow={setIsOpenModalRequestFollow}
+        />
+      ),
     },
   ];
   if (isCurrentUser) {
     items.push({
       key: "3",
       label: <span className="text-[18px] font-semibold ">Request</span>,
-      children: <div>request</div>,
+      children: (
+        <TabRequested
+          userId={userId}
+          setIsOpenModalRequestFollow={setIsOpenModalRequestFollow}
+        />
+      ),
     });
   }
-
-  const onChange = (key: string) => {
-    console.log(key);
-  };
 
   const handleOk = () => {
     setIsOpenModalRequestFollow(false);
   };
 
   const tabClass = items.length === 3 ? "modal-three-items" : "modal-two-items";
+
+  const [countFollow, setCountFollow] = useState<object>({});
+  const fetchCount = async () => {
+    try {
+      const response = await getCountFollowerByUserId(userId);
+      console.log("check response", response);
+    } catch (error) {
+      console.error("Error fetching count follower:", error);
+      message.error("Error fetching count follower");
+    }
+  };
+
+  useEffect(() => {
+    fetchCount();
+  }, []);
 
   return (
     <Modal
@@ -67,11 +86,11 @@ const ModalRequestFollow: React.FC<IProps> = (props) => {
       width={520}
       footer={null}
       closeIcon={null}
+      destroyOnClose={true}
     >
       <Tabs
         defaultActiveKey="1"
         items={items}
-        onChange={onChange}
         tabBarStyle={{
           display: "flex",
         }}
