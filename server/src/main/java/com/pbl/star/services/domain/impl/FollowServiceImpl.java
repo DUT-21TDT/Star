@@ -103,6 +103,7 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
+    @Transactional
     public void acceptAllFollowRequests(String userId) {
         followingRepository.updateAllPendingRequestsToAccepted(userId);
     }
