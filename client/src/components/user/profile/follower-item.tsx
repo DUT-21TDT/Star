@@ -25,6 +25,7 @@ interface IProps {
   setIsOpenModalRequestFollow: (value: boolean) => void;
   currentProfileId: string;
   setAllFollowers: React.Dispatch<React.SetStateAction<IFollowerType[]>>;
+  fetchCount: () => void;
 }
 const FollowerItem: React.FC<IFollowerType & IProps> = ({
   avatarUrl,
@@ -38,6 +39,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
   followingId,
   tab,
   setAllFollowers,
+  fetchCount,
 }) => {
   const navigate = useNavigate();
   const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
@@ -68,6 +70,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
         setAllFollowers((prevFollowers) =>
           prevFollowers.filter((follower) => follower.userId !== userId)
         );
+        fetchCount();
       },
       onError: () => {
         message.error("Error removing follower");
@@ -85,6 +88,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
               : follower
           )
         );
+        fetchCount();
       },
       onError: () => {
         message.error("Error unfollowing user");
@@ -101,6 +105,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
               (follower) => follower.followingId !== followingId
             )
           );
+          fetchCount();
         },
         onError: () => {
           message.error("Error accept user");
@@ -111,21 +116,25 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
     }
   };
 
+  const currentUserId = useAppSelector((state) => state.user.id);
+
   const handleFollowerUser = () => {
-    followeUser(userId, {
-      onSuccess: (response) => {
-        setAllFollowers((prevFollowers) =>
-          prevFollowers.map((follower) =>
-            follower.userId === userId
-              ? { ...follower, followStatus: response?.followStatus }
-              : follower
-          )
-        );
-      },
-      onError: () => {
-        message.error("Error following user");
-      },
-    });
+    if (userId !== currentUserId)
+      followeUser(userId, {
+        onSuccess: (response) => {
+          setAllFollowers((prevFollowers) =>
+            prevFollowers.map((follower) =>
+              follower.userId === userId
+                ? { ...follower, followStatus: response?.followStatus }
+                : follower
+            )
+          );
+          fetchCount();
+        },
+        onError: () => {
+          message.error("Error following user");
+        },
+      });
   };
 
   return (
@@ -202,7 +211,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
             </div>
           )}
 
-          {!isCurrentUser && followStatus === "NOT_FOLLOWING" && (
+          {followStatus === "NOT_FOLLOWING" && (
             <Button
               className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-5 "
               onClick={handleFollowerUser}
