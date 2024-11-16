@@ -14,4 +14,14 @@ public class CreatePostValidator {
             throw new RequiredFieldMissingException("Content is required");
         }
     }
+
+    public static void validateCreateReplyRequiredFields(CreatePostParams createReplyParams) {
+        if (StringUtils.isBlank(createReplyParams.getParentPostId())) {
+            throw new RequiredFieldMissingException("Post ID is required");
+        }
+
+        if (StringUtils.isBlank(createReplyParams.getContent())) {
+            throw new RequiredFieldMissingException("Content is required");
+        }
+    }
 }

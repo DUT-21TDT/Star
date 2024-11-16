@@ -24,4 +24,7 @@ public class PostImage {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @Column(name = "position")
+    private int position;
 }

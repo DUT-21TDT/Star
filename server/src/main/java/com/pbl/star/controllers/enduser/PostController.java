@@ -20,8 +20,19 @@ public class PostController {
     @PostMapping
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> createPost(@RequestBody CreatePostParams createPostParams) {
-        String postId = postManageUsecase.createPost(createPostParams);
-        return ResponseEntity.ok(Map.of("id", postId));
+
+        String newPostId;
+
+        if (createPostParams.getParentPostId() == null) {
+            newPostId = postManageUsecase.createPost(createPostParams);
+        }
+
+        else {
+            newPostId = postInteractUsecase.replyPost(createPostParams);
+        }
+
+        return ResponseEntity.ok(Map.of("id", newPostId));
+
     }
 
     @DeleteMapping("/{postId}")

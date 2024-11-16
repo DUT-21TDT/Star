@@ -19,4 +19,5 @@ public interface PostService {
     void moderatePostStatus(String postId, PostStatus status, String moderatorId);
     void unmoderatePostStatus(String postId, String moderatorId);
     void deletePostOfUser(String postId, String userId);
+    String createReply(String userId, CreatePostParams createReplyParams);
 }

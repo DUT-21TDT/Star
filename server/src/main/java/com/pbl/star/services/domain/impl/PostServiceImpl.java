@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -47,6 +48,12 @@ public class PostServiceImpl implements PostService {
     public String createPost(String userId, CreatePostParams createPostParams) {
 
         CreatePostValidator.validateCreatePostRequiredFields(createPostParams);
+
+        List<String> imageFileNames = createPostParams.getImageFileNames();
+        if (imageFileNames != null && imageFileNames.size() > 20) {
+            throw new EntityConflictException("Number of images exceeds the limit");
+        }
+
         PostCreationMapper postCreationMapper = Mappers.getMapper(PostCreationMapper.class);
         Post post = postCreationMapper.toEntity(createPostParams);
 
@@ -62,8 +69,8 @@ public class PostServiceImpl implements PostService {
 
         Post savedPost = postRepository.save(post);
 
-        if (createPostParams.getImageFileNames() != null) {
-            saveImagesInPost(savedPost.getId(), createPostParams.getImageFileNames());
+        if (imageFileNames!= null) {
+            saveImagesInPost(savedPost.getId(), imageFileNames);
         }
 
         return savedPost.getId();
@@ -71,12 +78,15 @@ public class PostServiceImpl implements PostService {
 
     private void saveImagesInPost(String postId, @NonNull List<String> imageFileNames) {
         String imagePrefixUrl = ImageUtil.getImagePrefixUrl();
-        List<PostImage> postImages = imageFileNames.stream()
-                .map(imageFileName -> PostImage.builder()
-                        .postId(postId)
-                        .imageUrl(imagePrefixUrl + imageFileName)
-                        .build())
-                .toList();
+
+        List<PostImage> postImages = new ArrayList<>(imageFileNames.size());
+        for (int i = 0; i < imageFileNames.size(); i++) {
+            postImages.add(PostImage.builder()
+                    .postId(postId)
+                    .position(i)
+                    .imageUrl(imagePrefixUrl + imageFileNames.get(i))
+                    .build());
+        }
 
         postImageRepository.saveAll(postImages);
     }
@@ -181,5 +191,43 @@ public class PostServiceImpl implements PostService {
         post.setDeleted(true);
         post.setDeletedAt(Instant.now());
         postRepository.save(post);
+    }
+
+    @Override
+    @Transactional
+    public String createReply(String userId, CreatePostParams createReplyParams) {
+
+        CreatePostValidator.validateCreateReplyRequiredFields(createReplyParams);
+
+        List<String> imageFileNames = createReplyParams.getImageFileNames();
+        if (imageFileNames != null && imageFileNames.size() > 20) {
+            throw new EntityConflictException("Number of images exceeds the limit");
+        }
+
+        Post parentPost = postRepository.findExistPostById(createReplyParams.getParentPostId())
+                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+
+        if (!userRoomRepository.existsByUserIdAndRoomId(userId, parentPost.getRoomId())) {
+            throw new EntityNotFoundException("Room does not exist, or " +
+                    "user is not a member of the room");
+        }
+
+        Post reply = Post.builder()
+                .userId(userId)
+                .roomId(parentPost.getRoomId())
+                .parentPostId(parentPost.getId())
+                .content(createReplyParams.getContent())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .status(PostStatus.APPROVED)
+                .build();
+
+        Post savedReply = postRepository.save(reply);
+
+        if (imageFileNames != null) {
+            saveImagesInPost(savedReply.getId(), imageFileNames);
+        }
+
+        return savedReply.getId();
     }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 public class CreatePostParams {
     private String roomId;
+    private String parentPostId;
     private String content;
     private List<String> imageFileNames;
 }
