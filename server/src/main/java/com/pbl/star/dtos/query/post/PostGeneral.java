@@ -13,6 +13,7 @@ import java.util.List;
 abstract class PostGeneral {
     protected String id;
     protected String idOfCreator;
+    private String idOfParentPost;
     protected String usernameOfCreator;
     protected String avatarUrlOfCreator;
     protected String idOfRoom;

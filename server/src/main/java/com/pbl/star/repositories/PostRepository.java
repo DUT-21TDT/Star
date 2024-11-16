@@ -12,4 +12,7 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, String>, PostRepositoryExtension {
     @Query("SELECT p FROM Post p WHERE p.id = :id AND p.isDeleted = false")
     Optional<Post> findExistPostById(String id);
+
+    @Query("SELECT COUNT(*) FROM Post p WHERE p.parentPostId = :postId AND p.isDeleted = false")
+    int countExistRepliesOfPost(String postId);
 }

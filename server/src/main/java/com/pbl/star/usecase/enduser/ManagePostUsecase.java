@@ -9,6 +9,7 @@ import java.time.Instant;
 
 public interface ManagePostUsecase {
     String createPost(CreatePostParams createPostParams);
+    PostForUserDTO getPostById(String postId);
     Slice<PendingPostForUserDTO> getMyPendingPosts(int limit, Instant after);
     Slice<PostForUserDTO> getPostsOnUserWall(String userId, int limit, Instant after);
     Slice<PostForUserDTO> getPostsOnNewsfeed(int limit, Instant after);

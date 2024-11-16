@@ -1,12 +1,16 @@
 package com.pbl.star.usecase.enduser.impl;
 
+import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
+import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.usecase.enduser.InteractPostUsecase;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +35,12 @@ public class InteractPostUsecaseImpl implements InteractPostUsecase {
     public String replyPost(CreatePostParams createReplyParams) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.createReply(currentUserId, createReplyParams);
+    }
+
+    @Override
+    public CustomSlice<PostForUserDTO> getRepliesOfPost(String postId, int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return postService.getReplies(currentUserId, postId, limit, after);
     }
 
     @Override

@@ -25,6 +25,12 @@ public class ManagePostUsecaseImpl implements ManagePostUsecase {
     }
 
     @Override
+    public PostForUserDTO getPostById(String postId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return postService.getPostById(currentUserId, postId);
+    }
+
+    @Override
     public Slice<PendingPostForUserDTO> getMyPendingPosts(int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.getPendingPostsByUser(currentUserId, limit, after);

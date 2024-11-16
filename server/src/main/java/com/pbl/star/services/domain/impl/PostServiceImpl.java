@@ -4,6 +4,7 @@ import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
+import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostImage;
 import com.pbl.star.enums.PostStatus;
@@ -89,6 +90,12 @@ public class PostServiceImpl implements PostService {
         }
 
         postImageRepository.saveAll(postImages);
+    }
+
+    @Override
+    public PostForUserDTO getPostById(String currentUserId, String postId) {
+        return postRepository.findExistPostByIdAsUser(currentUserId, postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
     }
 
     @Override
@@ -229,5 +236,19 @@ public class PostServiceImpl implements PostService {
         }
 
         return savedReply.getId();
+    }
+
+    @Override
+    public CustomSlice<PostForUserDTO> getReplies(String userId, String postId, int limit, Instant after) {
+        Pageable pageable = PageRequest.of(0, limit);
+        Slice<PostForUserDTO> replies = postRepository.findExistRepliesOfPostAsUser(pageable, after, userId, postId);
+
+        CustomSlice<PostForUserDTO> repliesPage = new CustomSlice<>(replies);
+
+        if (after == null) {
+            repliesPage.setTotalElements(postRepository.countExistRepliesOfPost(postId));
+        }
+
+        return repliesPage;
     }
 }

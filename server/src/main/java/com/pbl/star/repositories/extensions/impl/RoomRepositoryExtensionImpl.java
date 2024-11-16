@@ -45,7 +45,7 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
                 "where ur.roomId = r.id) AS participantsCount, " +
                 "(SELECT COUNT(*) " +
                 "FROM Post p " +
-                "WHERE p.roomId = r.id) as postsCount " +
+                "WHERE p.roomId = r.id and p.parentPostId is null and p.isDeleted = false) as postsCount " +
                 "FROM Room r " +
                 "WHERE r.id = :roomId";
 
