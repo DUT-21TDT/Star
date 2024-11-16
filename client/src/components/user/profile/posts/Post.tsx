@@ -16,6 +16,8 @@ import { PhotoProvider, PhotoView } from "react-photo-view";
 import { useAppSelector } from "../../../../redux/store/hook";
 import ModalConfirmDeletePost from "./modal-confirm-delete-post";
 import { useDeletePost } from "../../../../hooks/post";
+import DOMPurify from "dompurify";
+
 interface IProps {
   id: string;
   usernameOfCreator: string;
@@ -56,6 +58,16 @@ const Post: React.FC<IProps> = (props) => {
     isRemoved,
     handleDeletePostSuccess,
   } = props;
+
+  const sanitizedContent = DOMPurify.sanitize(
+  content.replace(
+      /(https?:\/\/\S+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#1B75D0] hover:text-[#165ca3]">$1</a>'
+    ), {
+      ADD_ATTR: ['target'],
+      FORBID_TAGS: ['style'],
+    }
+  );
 
   const navigate = useNavigate();
   const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
@@ -242,8 +254,8 @@ const Post: React.FC<IProps> = (props) => {
               textAlign: "left",
               marginTop: "4px",
             }}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           >
-            {content}
           </p>
         </div>
         {postImageUrls && postImageUrls.length > 0 && (
