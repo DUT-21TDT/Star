@@ -10,6 +10,7 @@ import "../../../assets/css/post-moderator.css";
 import { useChangeStatusPostByModerator } from "../../../hooks/post";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
+import DOMPurify from "dompurify";
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -50,6 +51,16 @@ const PostModerator: React.FC<IProps> = (props) => {
     status,
     isChangeStatus,
   } = postData;
+
+  const sanitizedContent = DOMPurify.sanitize(
+    content.replace(
+      /(https?:\/\/\S+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#1B75D0] hover:text-[#165ca3]">$1</a>'
+    ), {
+      ADD_ATTR: ['target'],
+      FORBID_TAGS: ['style'],
+    }
+  );
 
   const navigate = useNavigate();
   const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
@@ -278,8 +289,8 @@ const PostModerator: React.FC<IProps> = (props) => {
               fontSize: "15px",
               textAlign: "left",
             }}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           >
-            {content}
           </p>
         </div>
 
