@@ -6,6 +6,7 @@ import {
   getAllFollowersByUserId,
   getAllFollowingsByUserId,
   getAllFollowRequest,
+  getCountFollowerByUserId,
 } from "../service/followAPI";
 type configType = {
   limit: number;
@@ -68,10 +69,18 @@ const useAcceptFollowRequest = () => {
   });
 };
 
+const useFetchCountFollowerByUserId = (userId: string) => {
+  return useQuery({
+    queryKey: QUERY_KEY.fetchCountFollowerByUserId(userId),
+    queryFn: () => getCountFollowerByUserId(userId),
+  });
+};
+
 export {
   useGetAllFollowersByUserId,
   useGetAllFollowingByUserId,
   useDeleteFollowerByUserId,
   useGetAllFollowRequest,
   useAcceptFollowRequest,
+  useFetchCountFollowerByUserId,
 };

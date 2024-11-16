@@ -36,4 +36,8 @@ export const QUERY_KEY = {
     userId,
   ],
   fetchAllFollowRequest: () => ["fetchAllFollowRequest"],
+  fetchCountFollowerByUserId: (userId: string) => [
+    "fetchCountFollowerByUserId",
+    userId,
+  ],
 };

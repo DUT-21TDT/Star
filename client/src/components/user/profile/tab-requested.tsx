@@ -11,6 +11,7 @@ import "react-perfect-scrollbar/dist/css/styles.css";
 interface IProps {
   userId: string;
   setIsOpenModalRequestFollow: (value: boolean) => void;
+  fetchCount: () => void;
 }
 interface IFollowerType {
   avatarUrl: string;
@@ -27,6 +28,7 @@ interface IFollowerType {
 const TabRequested: React.FC<IProps> = ({
   userId,
   setIsOpenModalRequestFollow,
+  fetchCount,
 }) => {
   const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
@@ -92,6 +94,7 @@ const TabRequested: React.FC<IProps> = ({
           setIsOpenModalRequestFollow={setIsOpenModalRequestFollow}
           currentProfileId={userId}
           setAllFollowers={setAllRequested}
+          fetchCount={fetchCount}
         />
       ))}
     </PerfectScrollbar>
