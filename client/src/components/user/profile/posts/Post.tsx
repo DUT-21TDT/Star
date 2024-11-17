@@ -60,12 +60,13 @@ const Post: React.FC<IProps> = (props) => {
   } = props;
 
   const sanitizedContent = DOMPurify.sanitize(
-  content.replace(
+    content.replace(
       /(https?:\/\/\S+)/g,
-    '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#1B75D0] hover:text-[#165ca3]">$1</a>'
-    ), {
-      ADD_ATTR: ['target'],
-      FORBID_TAGS: ['style'],
+      '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#1B75D0] hover:text-[#165ca3]">$1</a>'
+    ),
+    {
+      ADD_ATTR: ["target"],
+      FORBID_TAGS: ["style"],
     }
   );
 
@@ -184,11 +185,27 @@ const Post: React.FC<IProps> = (props) => {
 
   return (
     <div
-      className="p-3"
+      className="p-3 hover:cursor-pointer"
       style={{
         borderBottom: "1px solid #f0f0f0",
         display: "flex",
         gap: "10px",
+      }}
+      onClick={(e) => {
+        console.log(e.target as HTMLElement);
+        console.log(e.currentTarget);
+        if (
+          e.target === e.currentTarget ||
+          (e.target as HTMLElement).nodeName === "P" ||
+          (e.target as HTMLElement).className.includes(
+            "flex justify-between w-full"
+          ) ||
+          (e.target as HTMLElement).className.includes(
+            "flex items-center justify-between"
+          )
+        ) {
+          navigate(`/post/${id}`);
+        }
       }}
     >
       <Avatar
@@ -255,8 +272,7 @@ const Post: React.FC<IProps> = (props) => {
               marginTop: "4px",
             }}
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-          >
-          </p>
+          ></p>
         </div>
         {postImageUrls && postImageUrls.length > 0 && (
           <div
@@ -309,13 +325,7 @@ const Post: React.FC<IProps> = (props) => {
           </div>
         )}
         {!disableReactButton && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+          <div className="flex items-center justify-between">
             <ReactButton
               postId={id}
               avatarUrlOfCreator={avatarUrlOfCreator}
@@ -329,23 +339,25 @@ const Post: React.FC<IProps> = (props) => {
               numberOfReposts={numberOfReposts}
               liked={liked}
             />
-            <div
-              style={{
-                marginTop: "5px",
-              }}
-            >
-              <span
+            {nameOfRoom && (
+              <div
                 style={{
-                  fontStyle: "italic",
                   marginTop: "5px",
-                  fontWeight: "400",
-                  color: "rgb(153,153,153)",
                 }}
               >
-                - in {""}
-                {nameOfRoom}
-              </span>
-            </div>
+                <span
+                  style={{
+                    fontStyle: "italic",
+                    marginTop: "5px",
+                    fontWeight: "400",
+                    color: "rgb(153,153,153)",
+                  }}
+                >
+                  - in {""}
+                  {nameOfRoom}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
@@ -357,23 +369,25 @@ const Post: React.FC<IProps> = (props) => {
               justifyContent: "flex-end",
             }}
           >
-            <div
-              style={{
-                marginTop: "5px",
-              }}
-            >
-              <span
+            {nameOfRoom && (
+              <div
                 style={{
-                  fontStyle: "italic",
                   marginTop: "5px",
-                  fontWeight: "400",
-                  color: "rgb(153,153,153)",
                 }}
               >
-                - in {""}
-                {nameOfRoom}
-              </span>
-            </div>
+                <span
+                  style={{
+                    fontStyle: "italic",
+                    marginTop: "5px",
+                    fontWeight: "400",
+                    color: "rgb(153,153,153)",
+                  }}
+                >
+                  - in {""}
+                  {nameOfRoom}
+                </span>
+              </div>
+            )}
           </div>
         )}
         <ModalConfirmDeletePost

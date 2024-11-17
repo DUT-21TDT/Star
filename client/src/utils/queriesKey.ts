@@ -40,4 +40,6 @@ export const QUERY_KEY = {
     "fetchCountFollowerByUserId",
     userId,
   ],
+  fetchPostDetailById: (postId: string) => ["fetchPostDetailById", postId],
+  fetchRepliesByPostId: (postId: string) => ["fetchRepliesByPostId", postId],
 };

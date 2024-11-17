@@ -11,6 +11,8 @@ import {
   changeStatusPostByModerator,
   deletePost,
   replyPost,
+  getPostDetailById,
+  getRepliesByPostId,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -160,6 +162,38 @@ const useReplyPost = () => {
   });
 };
 
+const useGetPostDetailById = (postId: string) => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchPostDetailById(postId),
+    queryFn: () => getPostDetailById(postId),
+    staleTime: 0,
+  });
+  return {
+    data: result.data || {},
+    isLoading: result.isLoading,
+    isError: result.isError,
+  };
+};
+
+const useGetRepliesByPostId = (
+  postId: string,
+  config: configTypeProfileWall
+) => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchRepliesByPostId(postId),
+    queryFn: () => getRepliesByPostId(postId, config),
+    staleTime: 0,
+  });
+  return {
+    dataPost: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextPost: !result.data?.last,
+    afterTimeFinalPost:
+      result.data?.content[result.data?.content.length - 1]?.createdAt,
+  };
+};
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -173,4 +207,6 @@ export {
   useChangeStatusPostByModerator,
   useDeletePost,
   useReplyPost,
+  useGetPostDetailById,
+  useGetRepliesByPostId,
 };
