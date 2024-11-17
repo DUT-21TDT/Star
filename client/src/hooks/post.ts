@@ -10,6 +10,7 @@ import {
   getAllPendingPostForModerator,
   changeStatusPostByModerator,
   deletePost,
+  replyPost,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -145,6 +146,20 @@ const useDeletePost = () => {
   });
 };
 
+const useReplyPost = () => {
+  return useMutation({
+    mutationFn: ({
+      parentPostId,
+      content,
+      imageFileNames,
+    }: {
+      parentPostId: string;
+      content: string;
+      imageFileNames: string[];
+    }) => replyPost(parentPostId, content, imageFileNames),
+  });
+};
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -157,4 +172,5 @@ export {
   useGetAllPendingPostForModerator,
   useChangeStatusPostByModerator,
   useDeletePost,
+  useReplyPost,
 };

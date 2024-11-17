@@ -83,7 +83,7 @@ const TabFollowing: React.FC<IProps> = ({
     <PerfectScrollbar
       options={{ suppressScrollX: true }}
       onYReachEnd={handleScrollYReachEnd}
-      style={{ maxHeight: "500px", minHeight: "400px" }}
+      style={{ maxHeight: "500px" }}
     >
       {allFollowing.map((item: IFollowerType) => (
         <FollowerItem
