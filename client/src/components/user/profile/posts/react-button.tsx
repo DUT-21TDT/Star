@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 import { useLikePost, useUnlikePost } from "../../../../hooks/post";
 import { message } from "antd";
+import ModalReplyPost from "./modal-reply-post";
 
 interface IProps {
   postId: string;
+  avatarUrlOfCreator: string | null;
+  createdAt: string;
+  content: string;
+  postImageUrls: string[] | null;
+  usernameOfCreator: string;
+  idOfCreator: string | undefined;
   numberOfLikes: number;
   numberOfComments: number;
   numberOfReposts: number;
@@ -11,22 +18,29 @@ interface IProps {
 }
 const ReactButton: React.FC<IProps> = ({
   postId,
+  avatarUrlOfCreator,
+  createdAt,
+  content,
+  postImageUrls,
+  usernameOfCreator,
+  idOfCreator,
   numberOfLikes,
   numberOfComments,
   numberOfReposts,
   liked,
 }) => {
-
   const [isLiked, setIsLiked] = useState(liked);
   const [likesCount, setLikesCount] = useState(numberOfLikes);
+  const [commentCount, setCommentCount] = useState(numberOfComments);
 
   const [selectedButton, setSelectedButton] = useState<string>("");
+
+  const [isOpenModalReplyPost, setIsOpenModalReplyPost] = useState(false);
 
   const { mutate: likePost } = useLikePost();
   const { mutate: unlikePost } = useUnlikePost();
 
   const handleLikeToggle = () => {
-
     setLikesCount((prev) => (prev += isLiked ? -1 : 1));
     setIsLiked((prev) => !prev);
 
@@ -61,9 +75,14 @@ const ReactButton: React.FC<IProps> = ({
   };
 
   return (
-    <div className="flex mt-2 items-center gap-2" style={{ userSelect: "none" }}>
+    <div
+      className="flex mt-2 items-center gap-2"
+      style={{ userSelect: "none" }}
+    >
       <div
-        className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${selectedButton == "like" ? "scale-[.80]" : ""}`} // Apply scale on press
+        className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${
+          selectedButton == "like" ? "scale-[.80]" : ""
+        }`} // Apply scale on press
         onMouseDown={() => setSelectedButton("like")}
         onMouseUp={() => setSelectedButton("")}
         onMouseLeave={() => setSelectedButton("")}
@@ -83,14 +102,24 @@ const ReactButton: React.FC<IProps> = ({
             strokeWidth="1"
           />
         </svg>
-        <span style={{ color: `${isLiked ? "#ff0034" : "black"}`, fontSize: "14px" }} >{likesCount !== 0 ? likesCount : ""}</span>
+        <span
+          style={{
+            color: `${isLiked ? "#ff0034" : "black"}`,
+            fontSize: "14px",
+          }}
+        >
+          {likesCount !== 0 ? likesCount : ""}
+        </span>
       </div>
 
       <div
-        className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${selectedButton == "comment" ? "scale-[.80]" : ""}`} // Apply scale on press
+        className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${
+          selectedButton == "comment" ? "scale-[.80]" : ""
+        }`} // Apply scale on press
         onMouseDown={() => setSelectedButton("comment")}
         onMouseUp={() => setSelectedButton("")}
         onMouseLeave={() => setSelectedButton("")}
+        onClick={() => setIsOpenModalReplyPost(true)}
       >
         <svg
           width="24"
@@ -105,20 +134,26 @@ const ReactButton: React.FC<IProps> = ({
             strokeWidth="1"
           />
         </svg>
-        <span className={"text-[14px]"}>{numberOfComments !== 0 ? numberOfComments : ""}</span>
+        <span className={"text-[14px]"}>
+          {commentCount !== 0 ? commentCount : ""}
+        </span>
       </div>
       <div
-        className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${selectedButton == "repost" ? "scale-[.80]" : ""}`} // Apply scale on press
+        className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${
+          selectedButton == "repost" ? "scale-[.80]" : ""
+        }`} // Apply scale on press
         onMouseDown={() => setSelectedButton("repost")}
         onMouseUp={() => setSelectedButton("")}
         onMouseLeave={() => setSelectedButton("")}
-      >        <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
       >
+        {" "}
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M5 13.5V9C5 7.34315 6.34315 6 8 6H15.5M15.5 6L12.5 3M15.5 6L12.5 9M19 10.5V15C19 16.6569 17.6569 18 16 18L8.5 18M8.5 18L11.5 21M8.5 18L11.5 15"
             stroke="black"
@@ -127,8 +162,22 @@ const ReactButton: React.FC<IProps> = ({
             strokeLinejoin="round"
           />
         </svg>
-        <span className={"text-[14px]"}>{numberOfReposts !== 0 ? numberOfReposts : ""}</span>
+        <span className={"text-[14px]"}>
+          {numberOfReposts !== 0 ? numberOfReposts : ""}
+        </span>
       </div>
+      <ModalReplyPost
+        isModalOpen={isOpenModalReplyPost}
+        setIsModalOpen={setIsOpenModalReplyPost}
+        postId={postId}
+        avatarUrlOfCreator={avatarUrlOfCreator}
+        createdAt={createdAt}
+        content={content}
+        postImageUrls={postImageUrls}
+        usernameOfCreator={usernameOfCreator}
+        idOfCreator={idOfCreator}
+        setCommentCount={setCommentCount}
+      />
     </div>
   );
 };

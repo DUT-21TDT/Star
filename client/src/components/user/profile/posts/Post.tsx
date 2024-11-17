@@ -318,6 +318,12 @@ const Post: React.FC<IProps> = (props) => {
           >
             <ReactButton
               postId={id}
+              avatarUrlOfCreator={avatarUrlOfCreator}
+              createdAt={createdAt}
+              content={content}
+              postImageUrls={postImageUrls}
+              usernameOfCreator={usernameOfCreator}
+              idOfCreator={idOfCreator}
               numberOfLikes={numberOfLikes}
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}

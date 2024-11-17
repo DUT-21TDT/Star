@@ -85,7 +85,7 @@ const TabRequested: React.FC<IProps> = ({
     <PerfectScrollbar
       options={{ suppressScrollX: true }}
       onYReachEnd={handleScrollYReachEnd}
-      style={{ maxHeight: "500px", minHeight: "400px" }}
+      style={{ maxHeight: "500px" }}
     >
       {allRequested.map((item: IFollowerType) => (
         <FollowerItem

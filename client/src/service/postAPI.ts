@@ -116,6 +116,20 @@ const deletePost = async (postId: string) => {
   return response.data;
 };
 
+const replyPost = async (
+  parentPostId: string,
+  content: string,
+  imageFileNames: string[]
+) => {
+  const data = {
+    parentPostId,
+    content,
+    imageFileNames,
+  };
+  const response = await instance.post(`/posts`, data);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -128,4 +142,5 @@ export {
   getAllPendingPostForModerator,
   changeStatusPostByModerator,
   deletePost,
+  replyPost,
 };

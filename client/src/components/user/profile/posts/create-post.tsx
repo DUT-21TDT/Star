@@ -35,6 +35,7 @@ const CreatePost: React.FC = () => {
             fontWeight: "400",
             color: "rgb(153,153,153)",
           }}
+          readOnly
           onClick={() => setIsModalOpen(true)}
         />
         <Button

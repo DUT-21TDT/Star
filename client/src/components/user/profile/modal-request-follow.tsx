@@ -38,8 +38,10 @@ const ModalRequestFollow: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    fetchCount();
-  }, [userId]);
+    if (isOpenModalRequestFollow) {
+      fetchCount();
+    }
+  }, [userId, isOpenModalRequestFollow]);
 
   const items: TabsProps["items"] = [
     {

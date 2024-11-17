@@ -1,0 +1,8 @@
+.ps {
+  direction: ltr;
+}
+
+.ps__rail-y {
+  right: 0 !important;
+  left: auto !important;
+}

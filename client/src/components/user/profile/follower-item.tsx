@@ -1,4 +1,4 @@
-import { Button, Divider, message, Popover } from "antd";
+import { Button, Divider, message, Popover, Image } from "antd";
 import default_image from "../../../assets/images/default_image.jpg";
 import ContainerInformationUser from "./posts/container-information-user";
 import { useNavigate } from "react-router-dom";
@@ -58,6 +58,9 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
 
   const isCurrentUser =
     currentProfileId === useAppSelector((state) => state.user.id);
+
+  const isCurrentFollowerItem =
+    userId === useAppSelector((state) => state.user.id);
 
   const { mutate: removeFollower } = useDeleteFollowerByUserId();
   const { mutate: unfollowUser } = useUnfollowUser();
@@ -141,11 +144,31 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
     <div style={{ cursor: "pointer" }}>
       <div className="flex items-center justify-between w-full">
         <div className="flex items-start">
-          <img
-            src={avatarUrl || default_image}
-            alt="avatar"
-            className="w-[40px] h-[40px] rounded-full mr-3 mt-1"
-          />
+          <div
+            className="w-[40px] h-[40px]"
+            style={{
+              borderRadius: "50%",
+              position: "relative",
+              marginRight: "12px",
+              marginTop: "4px",
+            }}
+          >
+            <Image
+              src={avatarUrl || default_image}
+              width={40}
+              height={40}
+              style={{
+                borderRadius: "50%",
+                position: "absolute",
+                objectFit: "cover",
+                objectPosition: "center",
+                left: 0,
+                top: 0,
+              }}
+              preview={false}
+            />
+          </div>
+
           <div>
             <Popover
               content={popoverContent}
@@ -186,7 +209,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
         </div>
 
         <div>
-          {isCurrentUser && tab === "FOLLOWER" && (
+          {isCurrentUser && tab === "FOLLOWER" && !isCurrentFollowerItem && (
             <Button
               className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-5 "
               onClick={handleRemoveFollower}
@@ -194,7 +217,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
               Remove
             </Button>
           )}
-          {isCurrentUser && tab === "REQUEST" && (
+          {isCurrentUser && tab === "REQUEST" && !isCurrentFollowerItem && (
             <div>
               <Button
                 className="w-[90px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-2 "
@@ -211,15 +234,15 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
             </div>
           )}
 
-          {followStatus === "NOT_FOLLOWING" && (
+          {followStatus === "NOT_FOLLOWING" && !isCurrentFollowerItem && (
             <Button
-              className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-5 "
+              className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[black] text-[16px] mr-5 "
               onClick={handleFollowerUser}
             >
               Follow
             </Button>
           )}
-          {followStatus === "FOLLOWING" && (
+          {followStatus === "FOLLOWING" && !isCurrentFollowerItem && (
             <Button
               className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-5 "
               onClick={handleUnFollow}
@@ -228,7 +251,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
             </Button>
           )}
 
-          {followStatus === "REQUESTED" && (
+          {followStatus === "REQUESTED" && !isCurrentFollowerItem && (
             <Button
               className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-5"
               onClick={handleUnFollow}
