@@ -136,6 +136,20 @@ const useFetchAllUsers = (keyword: string) => {
   };
 };
 
+const useGetUserDetails = (userId: string) => {
+  return {
+    data: {
+      name: "John Doe",
+      description: "Software Engineer",
+      participantsCount: 100,
+      userCount: 50,
+    },
+    isLoading: false,
+    isError: false,
+    error: null,
+  };
+  }
+
 
 export {
   usePostNewUser,
@@ -149,4 +163,5 @@ export {
   useFollowUser,
   useUnfollowUser,
   useFetchAllUsers,
+  useGetUserDetails,
 };
