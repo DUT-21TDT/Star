@@ -7,6 +7,8 @@ import Callback from "../screens/auth/Callback";
 import LayoutUser from "../screens/layout/layout-user";
 import LayoutAdmin from "../screens/layout/layout-admin";
 import Room from "../components/admin/room/room";
+import Post from "../components/admin/post/post.tsx";
+import User from "../components/admin/user/user.tsx";
 import { ProtectedRouteAuth } from "../components/auth/protected-route-auth";
 import Profile from "../screens/profile/profile";
 import { ProtectedRoute } from "../components/auth/protected-route";
@@ -19,6 +21,8 @@ import PendingPosts from "../components/user/moderator/pending-posts";
 import ApprovedPosts from "../components/user/moderator/approved-post";
 import RejectedPosts from "../components/user/moderator/rejected-post";
 import RoomDetails from "../components/admin/room/room-details.tsx";
+import PostDetails from "../components/admin/post/post-details.tsx";
+import UserDetails from "../components/admin/user/user-details.tsx";
 
 const router = createBrowserRouter(
   [
@@ -81,11 +85,19 @@ const router = createBrowserRouter(
         },
         {
           path: "users",
-          element: <div>users</div>,
+          element: <User />,
+        },
+        {
+          path: "users/:userId",
+          element: <UserDetails />,
         },
         {
           path: "posts",
-          element: <div>posts</div>,
+          element: <Post />,
+        },
+        {
+          path: "posts/:postId",
+          element: <PostDetails />,
         },
         {
           path: "rooms",
@@ -94,7 +106,7 @@ const router = createBrowserRouter(
         {
           path: "rooms/:roomId",
           element: <RoomDetails />,
-        }
+        },
       ],
     },
     {
