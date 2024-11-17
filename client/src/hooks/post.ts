@@ -195,6 +195,41 @@ const useGetRepliesByPostId = (
   };
 };
 
+const useGetPostDetails = (postId: string) => {
+  return {
+    data: {
+      id: "1",
+      name: "test",
+      description: "test",
+      participantsCount: 5,
+      postsCount: 6
+    },
+    isLoading: false,
+    isError: false,
+  };
+};
+
+const useFetchAllPost = () => {
+  return {
+    data: {
+      content: [
+        {
+          id: "1",
+          name: "test",
+          description: "test",
+          participantsCount: 5,
+          postsCount: 6,
+          createdAt: "2021-10-10",
+        },
+      ],
+      last: true,
+      length: 1,
+    },
+    isLoading: false,
+    isError: false,
+  };
+}
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -210,4 +245,6 @@ export {
   useReplyPost,
   useGetPostDetailById,
   useGetRepliesByPostId,
+  useGetPostDetails,
+  useFetchAllPost,
 };
