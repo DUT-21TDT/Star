@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useGetRepliesByPostId } from "../../../../hooks/post";
+import { QUERY_KEY } from "../../../../utils/queriesKey";
+import Post from "./Post";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEY } from "../../../utils/queriesKey";
-import { useFetchAllPostsOnNewsFeed } from "../../../hooks/post";
-import Post from "../profile/posts/Post";
-import RemoveDuplicatePost from "../../../utils/removeDuplicatePost";
 
+interface IProps {
+  postId: string;
+}
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -22,16 +24,16 @@ interface PostType {
   nameOfRoom: string;
   isRemoved?: boolean;
 }
+const ListReplyPost: React.FC<IProps> = (props) => {
+  const { postId } = props;
 
-const PostsOnNewsFeed: React.FC = () => {
   const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
   const [allPosts, setAllPosts] = useState<PostType[]>([]);
-  const { dataPost, isLoading, hasNextPost } = useFetchAllPostsOnNewsFeed({
+  const { dataPost, isLoading, hasNextPost } = useGetRepliesByPostId(postId, {
     limit: 10,
     after: afterTime,
   });
-
   const handleScroll = () => {
     const isBottom =
       window.innerHeight + window.scrollY >=
@@ -39,22 +41,21 @@ const PostsOnNewsFeed: React.FC = () => {
 
     if (isBottom && hasNextPost) {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
+        queryKey: QUERY_KEY.fetchRepliesByPostId(postId),
       });
     }
   };
+
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
-      setAllPosts((prevPosts: PostType[]) =>
-        RemoveDuplicatePost([
-          ...prevPosts,
-          ...dataPost.map((post: PostType) => ({
-            ...post,
-            postImageUrls: post.postImageUrls || [],
-            isRemoved: false,
-          })),
-        ])
-      );
+      setAllPosts((prevPosts: PostType[]) => [
+        ...prevPosts,
+        ...dataPost.map((post: PostType) => ({
+          ...post,
+          postImageUrls: post.postImageUrls || [],
+          isRemoved: false,
+        })),
+      ]);
       const lastPost = dataPost[dataPost.length - 1];
       setAfterTime(lastPost.createdAt);
     }
@@ -82,18 +83,21 @@ const PostsOnNewsFeed: React.FC = () => {
   useEffect(() => {
     return () => {
       queryClient.resetQueries({
-        queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
+        queryKey: QUERY_KEY.fetchRepliesByPostId(postId),
       });
     };
-  }, []);
+  }, [postId]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center mt-8">
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
+      </div>
+    );
+  }
 
   return (
-    <>
-      {isLoading && (
-        <div className="flex items-center justify-center mt-8">
-          <Spin indicator={<LoadingOutlined spin />} size="large" />
-        </div>
-      )}
+    <div className="mt-4">
       {allPosts &&
         allPosts.length > 0 &&
         allPosts.map((post) => {
@@ -132,7 +136,7 @@ const PostsOnNewsFeed: React.FC = () => {
             />
           );
         })}
-    </>
+    </div>
   );
 };
-export default PostsOnNewsFeed;
+export default ListReplyPost;

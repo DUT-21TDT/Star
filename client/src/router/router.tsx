@@ -19,6 +19,7 @@ import PendingPosts from "../components/user/moderator/pending-posts";
 import ApprovedPosts from "../components/user/moderator/approved-post";
 import RejectedPosts from "../components/user/moderator/rejected-post";
 import RoomDetails from "../components/admin/room/room-details.tsx";
+import DetailPost from "../screens/detail-post/DetailPost.tsx";
 
 const router = createBrowserRouter(
   [
@@ -64,6 +65,10 @@ const router = createBrowserRouter(
             { path: "rejected", element: <RejectedPosts /> },
           ],
         },
+        {
+          path: "post/:postId",
+          element: <DetailPost />,
+        },
       ],
     },
     {
@@ -94,7 +99,7 @@ const router = createBrowserRouter(
         {
           path: "rooms/:roomId",
           element: <RoomDetails />,
-        }
+        },
       ],
     },
     {

@@ -130,6 +130,25 @@ const replyPost = async (
   return response.data;
 };
 
+const getPostDetailById = async (postId: string) => {
+  const response = await instance.get(`/posts/${postId}`);
+  return response.data;
+};
+
+const getRepliesByPostId = async (
+  postId: string,
+  config: configTypeProfileWall
+) => {
+  let url;
+  if (config.after !== null) {
+    url = `/posts/${postId}/replies?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/posts/${postId}/replies?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -143,4 +162,6 @@ export {
   changeStatusPostByModerator,
   deletePost,
   replyPost,
+  getPostDetailById,
+  getRepliesByPostId,
 };
