@@ -11,18 +11,22 @@ import ModalConfirmUnfollow from "./modal-confirm-unfollow.tsx";
 import { LoadingOutlined } from "@ant-design/icons";
 interface ContainerInformationUserProps {
   idOfCreator: string;
+  parentFollowStatus?: string;
+  updateParentFollowStatus?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
   props
 ) => {
-  const { idOfCreator } = props;
+  const { idOfCreator, parentFollowStatus, updateParentFollowStatus } = props;
   const { data, isLoading } = useGetProfileUser(idOfCreator || "");
   const navigate = useNavigate();
 
-  const [followStatus, setFollowStatus] = useState<string>(
-    data?.followStatus || ""
-  );
+  const [followStatus, setFollowStatus] = useState<string>(data?.followStatus || "");
+  
+  const _followStatus = parentFollowStatus || followStatus;
+  const _setFollowStatus = updateParentFollowStatus || setFollowStatus;
+  
   const [numberOfFollowers, setNumberOfFollowers] = useState<number>(
     data?.publicProfile?.numberOfFollowers || 0
   );
@@ -34,18 +38,18 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
 
   useEffect(() => {
     if (data && !isLoading) {
-      setFollowStatus(data.followStatus);
+      _setFollowStatus(data.followStatus);
       setNumberOfFollowers(data.publicProfile.numberOfFollowers);
     }
-  }, [data, isLoading]);
+  }, [_setFollowStatus, data, isLoading]);
 
   const handleFollowUser = () => {
     followUser(idOfCreator, {
       onSuccess: (response) => {
         if (response?.followStatus === "REQUESTED") {
-          setFollowStatus("REQUESTED");
+          _setFollowStatus("REQUESTED");
         } else if (response?.followStatus === "FOLLOWING") {
-          setFollowStatus("FOLLOWING");
+          _setFollowStatus("FOLLOWING");
           setNumberOfFollowers((prevState) => prevState + 1);
         }
       },
@@ -57,7 +61,7 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
 
   const handleUnfollowUser = () => {
     // Show the confirmation modal if the profile is private
-    if (data?.publicProfile?.privateProfile && followStatus === "FOLLOWING") {
+    if (data?.publicProfile?.privateProfile && _followStatus === "FOLLOWING") {
       setConfirmUnfollowModal(true);
     } else {
       proceedWithUnfollow();
@@ -67,11 +71,11 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
   const proceedWithUnfollow = () => {
     unfollowUser(idOfCreator, {
       onSuccess: () => {
-        if (followStatus === "FOLLOWING") {
-          setFollowStatus("NOT_FOLLOWING");
+        if (_followStatus === "FOLLOWING") {
+          _setFollowStatus("NOT_FOLLOWING");
           setNumberOfFollowers((prevState) => prevState - 1);
-        } else if (followStatus === "REQUESTED") {
-          setFollowStatus("NOT_FOLLOWING");
+        } else if (_followStatus === "REQUESTED") {
+          _setFollowStatus("NOT_FOLLOWING");
         }
       },
       onError: (error: Error) => {
@@ -135,6 +139,7 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
                 top: 0,
               }}
               id="avatar-profile"
+              preview={false}
             />
           </div>
         </div>
@@ -146,21 +151,21 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
         </div>
       </div>
       {!data?.isCurrentUser &&
-        (followStatus === "NOT_FOLLOWING" ? (
+        (_followStatus === "NOT_FOLLOWING" ? (
           <button
             className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[black] text-[white]"
             onClick={handleFollowUser}
           >
             Follow
           </button>
-        ) : followStatus === "REQUESTED" ? (
+        ) : _followStatus === "REQUESTED" ? (
           <button
             className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[white]"
             onClick={handleUnfollowUser}
           >
             Requested
           </button>
-        ) : followStatus === "FOLLOWING" ? (
+        ) : _followStatus === "FOLLOWING" ? (
           <button
             className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[white]"
             onClick={handleUnfollowUser}

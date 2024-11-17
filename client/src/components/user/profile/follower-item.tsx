@@ -2,7 +2,7 @@ import { Button, Divider, message, Popover, Image } from "antd";
 import default_image from "../../../assets/images/default_image.jpg";
 import ContainerInformationUser from "./posts/container-information-user";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useAppSelector } from "../../../redux/store/hook";
 import {
   useAcceptFollowRequest,
@@ -42,19 +42,32 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
   fetchCount,
 }) => {
   const navigate = useNavigate();
-  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
-    useState(false);
-  const [popoverContent, setPopoverContent] = useState<React.ReactNode>(
-    <div></div>
-  );
+
+  const [currentFollowStatus, setCurrentFollowStatus] = useState<string>(followStatus);
+
+  useEffect(() => {
+    setCurrentFollowStatus(followStatus);
+  }, [followStatus]);
+
+  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] = useState(false);
+  const [popoverContent, setPopoverContent] = useState<React.ReactNode>(<div></div>);
+
   const handlePopoverUsernameVisibilityChange = (visible: boolean) => {
     setIsPopoverVisibleUsername(visible);
     if (visible) {
       setPopoverContent(
-        <ContainerInformationUser idOfCreator={userId || ""} />
+        <ContainerInformationUser idOfCreator={userId || ""} parentFollowStatus={currentFollowStatus} updateParentFollowStatus={setCurrentFollowStatus} />
       );
     }
   };
+
+  useEffect(() => {
+    if (isPopoverVisibleUsername) {
+      setPopoverContent(
+        <ContainerInformationUser idOfCreator={userId || ""} parentFollowStatus={currentFollowStatus} updateParentFollowStatus={setCurrentFollowStatus} />
+      );
+    }
+  }, [currentFollowStatus, isPopoverVisibleUsername, userId]);
 
   const isCurrentUser =
     currentProfileId === useAppSelector((state) => state.user.id);
@@ -194,13 +207,13 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
               </div>
             </Popover>
 
-            <p className="text-[16px] mt-[2px] text-gray-500">
+            <p className="text-[16px] text-gray-500">
               {firstName || lastName ? (
-                <div className="text-[16px] mt-[2px] text-gray-500">
+                <div className="text-[16px] text-gray-500">
                   {`${firstName || ""} ${lastName || ""}`}
                 </div>
               ) : (
-                <div className="text-[16px] mt-[2px] text-gray-500">
+                <div className="text-[16px] text-gray-500">
                   {username}
                 </div>
               )}
@@ -234,7 +247,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
             </div>
           )}
 
-          {followStatus === "NOT_FOLLOWING" && !isCurrentFollowerItem && (
+          {currentFollowStatus === "NOT_FOLLOWING" && !isCurrentFollowerItem && (
             <Button
               className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[black] text-[16px] mr-5 "
               onClick={handleFollowerUser}
@@ -242,7 +255,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
               Follow
             </Button>
           )}
-          {followStatus === "FOLLOWING" && !isCurrentFollowerItem && (
+          {currentFollowStatus === "FOLLOWING" && !isCurrentFollowerItem && (
             <Button
               className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-5 "
               onClick={handleUnFollow}
@@ -251,7 +264,7 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
             </Button>
           )}
 
-          {followStatus === "REQUESTED" && !isCurrentFollowerItem && (
+          {currentFollowStatus === "REQUESTED" && !isCurrentFollowerItem && (
             <Button
               className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-5"
               onClick={handleUnFollow}
