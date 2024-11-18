@@ -1,10 +1,11 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useGetRepliesByPostId } from "../../../../hooks/post";
-import { QUERY_KEY } from "../../../../utils/queriesKey";
 import Post from "./Post";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import RemoveDuplicatePost from "../../../../utils/removeDuplicatePost";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEY } from "../../../../utils/queriesKey";
 
 interface IProps {
   postId: string;
@@ -24,47 +25,54 @@ interface PostType {
   nameOfRoom: string;
   isRemoved?: boolean;
 }
+
 const ListReplyPost: React.FC<IProps> = (props) => {
   const { postId } = props;
 
-  const queryClient = useQueryClient();
   const [afterTime, setAfterTime] = useState<string | null>(null);
   const [allPosts, setAllPosts] = useState<PostType[]>([]);
-  const { dataPost, isLoading, hasNextPost } = useGetRepliesByPostId(postId, {
-    limit: 10,
-    after: afterTime,
-  });
+  const { dataPost, isLoading, hasNextPost, afterTimeFinalPost } =
+    useGetRepliesByPostId(postId, {
+      limit: 10,
+      after: afterTime,
+    });
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setAfterTime(null);
+    setAllPosts([]);
+  }, [postId]);
+
+  useEffect(() => {
+    if (dataPost && dataPost.length > 0) {
+      setAllPosts((prevPosts: PostType[]) =>
+        RemoveDuplicatePost([
+          ...prevPosts,
+          ...dataPost.map((post: PostType) => ({
+            ...post,
+            postImageUrls: post.postImageUrls || [],
+            isRemoved: false,
+          })),
+        ])
+      );
+    }
+  }, [dataPost]);
+
   const handleScroll = () => {
     const isBottom =
       window.innerHeight + window.scrollY >=
       document.documentElement.scrollHeight - 1;
 
     if (isBottom && hasNextPost) {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEY.fetchRepliesByPostId(postId),
-      });
+      setAfterTime(afterTimeFinalPost);
     }
   };
 
   useEffect(() => {
-    if (dataPost && dataPost.length > 0) {
-      setAllPosts((prevPosts: PostType[]) => [
-        ...prevPosts,
-        ...dataPost.map((post: PostType) => ({
-          ...post,
-          postImageUrls: post.postImageUrls || [],
-          isRemoved: false,
-        })),
-      ]);
-      const lastPost = dataPost[dataPost.length - 1];
-      setAfterTime(lastPost.createdAt);
-    }
-  }, [dataPost]);
-
-  useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasNextPost]);
+  }, [hasNextPost, afterTimeFinalPost]);
 
   const handleDeletePostSuccess = (postId: string) => {
     setAllPosts((prevPosts) => {
@@ -78,17 +86,12 @@ const ListReplyPost: React.FC<IProps> = (props) => {
         return post;
       });
     });
+    queryClient.invalidateQueries({
+      queryKey: QUERY_KEY.fetchPostDetailById(postId),
+    });
   };
 
-  useEffect(() => {
-    return () => {
-      queryClient.resetQueries({
-        queryKey: QUERY_KEY.fetchRepliesByPostId(postId),
-      });
-    };
-  }, [postId]);
-
-  if (isLoading) {
+  if (isLoading && allPosts.length === 0) {
     return (
       <div className="flex items-center justify-center mt-8">
         <Spin indicator={<LoadingOutlined spin />} size="large" />
@@ -98,44 +101,13 @@ const ListReplyPost: React.FC<IProps> = (props) => {
 
   return (
     <div className="mt-4">
-      {allPosts &&
-        allPosts.length > 0 &&
-        allPosts.map((post) => {
-          const {
-            id,
-            usernameOfCreator,
-            avatarUrlOfCreator,
-            createdAt,
-            content,
-            postImageUrls,
-            numberOfLikes,
-            numberOfComments,
-            numberOfReposts,
-            liked,
-            idOfCreator,
-            nameOfRoom,
-            isRemoved,
-          } = post;
-          return (
-            <Post
-              key={id}
-              id={id}
-              usernameOfCreator={usernameOfCreator}
-              avatarUrlOfCreator={avatarUrlOfCreator}
-              createdAt={createdAt}
-              content={content}
-              postImageUrls={postImageUrls}
-              numberOfLikes={numberOfLikes}
-              numberOfComments={numberOfComments}
-              numberOfReposts={numberOfReposts}
-              liked={liked}
-              idOfCreator={idOfCreator}
-              nameOfRoom={nameOfRoom}
-              isRemoved={isRemoved}
-              handleDeletePostSuccess={handleDeletePostSuccess}
-            />
-          );
-        })}
+      {allPosts.map((post) => (
+        <Post
+          key={post.id}
+          {...post}
+          handleDeletePostSuccess={handleDeletePostSuccess}
+        />
+      ))}
     </div>
   );
 };
