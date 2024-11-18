@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLikePost, useUnlikePost } from "../../../../hooks/post";
 import { message } from "antd";
 import ModalReplyPost from "./modal-reply-post";
@@ -48,6 +48,7 @@ const ReactButton: React.FC<IProps> = ({
       unlikePost(
         postId, // assuming postId is needed to unlike the post
         {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onError: (error: any) => {
             if (error.response?.status !== 404) {
               setIsLiked(true);
@@ -60,6 +61,7 @@ const ReactButton: React.FC<IProps> = ({
       likePost(
         postId, // assuming postId is needed to like the post
         {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onError: (error: any) => {
             if (error.response?.status !== 409) {
               setIsLiked(false);
@@ -73,6 +75,12 @@ const ReactButton: React.FC<IProps> = ({
       );
     }
   };
+
+  useEffect(() => {
+    setLikesCount(numberOfLikes);
+    setCommentCount(numberOfComments);
+    setIsLiked(liked);
+  }, [numberOfLikes, numberOfComments, liked]);
 
   return (
     <div

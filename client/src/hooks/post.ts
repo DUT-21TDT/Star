@@ -180,7 +180,8 @@ const useGetRepliesByPostId = (
   config: configTypeProfileWall
 ) => {
   const result = useQuery({
-    queryKey: QUERY_KEY.fetchRepliesByPostId(postId),
+    // queryKey: QUERY_KEY.fetchRepliesByPostId(postId),
+    queryKey: [QUERY_KEY.fetchRepliesByPostId(postId), config.after],
     queryFn: () => getRepliesByPostId(postId, config),
     staleTime: 0,
   });

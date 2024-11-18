@@ -11,6 +11,9 @@ import ViewPostInformationReplyPost from "./view-post-information-reply-post";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import "../../../../assets/css/modal-reply-post.css";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEY } from "../../../../utils/queriesKey";
+import { getPostDetailById } from "../../../../service/postAPI";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const getBase64 = (file: FileType): Promise<string> =>
@@ -55,6 +58,8 @@ const ModalReplyPost: React.FC<IProps> = ({
   const userData = useAppSelector((state) => state.user);
   const { mutate: createReplyPost } = useReplyPost();
   const { mutate: getPostPresignedURL } = useGetAllPresignedUrl();
+
+  const queryClient = useQueryClient();
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     if (!beforeUpload(newFileList[newFileList.length - 1] as FileType)) {
@@ -110,7 +115,25 @@ const ModalReplyPost: React.FC<IProps> = ({
     content: string;
     imageFileNames: string[];
   }) => {
-    createReplyPost(postContent);
+    createReplyPost(postContent, {
+      onSuccess: async (response) => {
+        const detailPost = await getPostDetailById(response.id);
+        queryClient.setQueryData(
+          [QUERY_KEY.fetchRepliesByPostId(postId), null],
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (oldData: any) => {
+            return {
+              ...oldData,
+              content: [detailPost, ...oldData.content],
+            };
+          }
+        );
+      },
+      onError: () => {
+        message.error("Reply this post failed. Please try again later");
+        setLoading(false);
+      },
+    });
     message.success("Reply this post successfully");
     setCommentCount((prev: number) => prev + 1);
     resetModal();

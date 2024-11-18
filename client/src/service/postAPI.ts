@@ -140,7 +140,7 @@ const getRepliesByPostId = async (
   config: configTypeProfileWall
 ) => {
   let url;
-  if (config.after !== null) {
+  if (config.after !== null && config.after !== undefined) {
     url = `/posts/${postId}/replies?limit=${config.limit}&after=${config.after}`;
   } else {
     url = `/posts/${postId}/replies?limit=${config.limit}`;

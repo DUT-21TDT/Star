@@ -192,8 +192,6 @@ const Post: React.FC<IProps> = (props) => {
         gap: "10px",
       }}
       onClick={(e) => {
-        console.log(e.target as HTMLElement);
-        console.log(e.currentTarget);
         if (
           e.target === e.currentTarget ||
           (e.target as HTMLElement).nodeName === "P" ||
