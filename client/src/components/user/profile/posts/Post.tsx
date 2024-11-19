@@ -268,6 +268,7 @@ const Post: React.FC<IProps> = (props) => {
               fontSize: "15px",
               textAlign: "left",
               marginTop: "4px",
+              wordBreak: "break-word",
             }}
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           ></p>

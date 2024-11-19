@@ -118,13 +118,14 @@ const ModalReplyPost: React.FC<IProps> = ({
     createReplyPost(postContent, {
       onSuccess: async (response) => {
         const detailPost = await getPostDetailById(response.id);
+        const updatedPost = { ...detailPost, nameOfRoom: null };
         queryClient.setQueryData(
           [QUERY_KEY.fetchRepliesByPostId(postId), null],
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (oldData: any) => {
             return {
               ...oldData,
-              content: [detailPost, ...oldData.content],
+              content: [updatedPost, ...oldData.content],
             };
           }
         );
