@@ -56,9 +56,10 @@ const PostModerator: React.FC<IProps> = (props) => {
     content.replace(
       /(https?:\/\/\S+)/g,
       '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#1B75D0] hover:text-[#165ca3]">$1</a>'
-    ), {
-      ADD_ATTR: ['target'],
-      FORBID_TAGS: ['style'],
+    ),
+    {
+      ADD_ATTR: ["target"],
+      FORBID_TAGS: ["style"],
     }
   );
 
@@ -288,10 +289,10 @@ const PostModerator: React.FC<IProps> = (props) => {
               lineHeight: "20px",
               fontSize: "15px",
               textAlign: "left",
+              wordBreak: "break-word",
             }}
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-          >
-          </p>
+          ></p>
         </div>
 
         {postImageUrls && postImageUrls.length > 0 && (
