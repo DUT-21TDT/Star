@@ -37,8 +37,6 @@ const ListReplyPost: React.FC<IProps> = (props) => {
       after: afterTime,
     });
 
-  const queryClient = useQueryClient();
-
   useEffect(() => {
     setAfterTime(null);
     setAllPosts([]);
@@ -69,15 +67,20 @@ const ListReplyPost: React.FC<IProps> = (props) => {
     }
   };
 
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPost, afterTimeFinalPost]);
 
-  const handleDeletePostSuccess = (postId: string) => {
+  const handleDeletePostSuccess = (postIdRemoved: string) => {
+    queryClient.invalidateQueries({
+      queryKey: QUERY_KEY.fetchPostDetailById(postId),
+    });
     setAllPosts((prevPosts) => {
       return prevPosts.map((post) => {
-        if (post.id === postId) {
+        if (post.id === postIdRemoved) {
           return {
             ...post,
             isRemoved: true,
@@ -86,10 +89,15 @@ const ListReplyPost: React.FC<IProps> = (props) => {
         return post;
       });
     });
-    queryClient.invalidateQueries({
-      queryKey: QUERY_KEY.fetchPostDetailById(postId),
-    });
   };
+
+  useEffect(() => {
+    return () => {
+      queryClient.resetQueries({
+        queryKey: [QUERY_KEY.fetchRepliesByPostId(postId)],
+      });
+    };
+  }, []);
 
   if (isLoading && allPosts.length === 0) {
     return (
