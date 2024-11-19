@@ -129,14 +129,14 @@ const ModalReplyPost: React.FC<IProps> = ({
             };
           }
         );
+        message.success("Reply this post successfully");
+        setCommentCount((prev: number) => prev + 1);
       },
       onError: () => {
         message.error("Reply this post failed. Please try again later");
         setLoading(false);
       },
     });
-    message.success("Reply this post successfully");
-    setCommentCount((prev: number) => prev + 1);
     resetModal();
   };
 
