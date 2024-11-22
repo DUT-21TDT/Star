@@ -380,7 +380,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         String sql = "SELECT r.post_id, r.user_id, r.username, r.avatar_url, r.created_at, r.content, r.parent_post_id, " +
                 "           r.post_image_urls, r.number_of_likes, r.number_of_comments, r.number_of_reposts, r.is_liked, " +
                 "           p.post_id, p.user_id, p.username, p.avatar_url, p.created_at, p.content, p.parent_post_id," +
-                "           p.post_image_urls, p.number_of_likes, p.number_of_comments, p.number_of_reposts, p.is_liked " +
+                "           p.post_image_urls, p.number_of_likes, p.number_of_comments, p.number_of_reposts, p.is_liked, p.room_id, p.name " +
                 "FROM (" +
                 "   SELECT p0.post_id, " +
                 "           u0.user_id, " +
@@ -445,9 +445,11 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "               FROM post_like pl " +
                 "               WHERE pl.post_id = p1.post_id AND pl.user_id = :currentUserId) " +
                 "           THEN TRUE ELSE FALSE END) " +
-                "           AS is_liked " +
+                "           AS is_liked, " +
+                "           r.room_id, r.name " +
                 "   FROM post p1 " +
                 "   INNER JOIN \"user\" u1 ON p1.user_id = u1.user_id " +
+                "   INNER JOIN room r ON p1.room_id = r.room_id " +
                 "   WHERE p1.is_deleted = false " +
                 ") as p ON r.parent_post_id = p.post_id " +
                 "ORDER BY p.created_at DESC, p.post_id ";
@@ -510,6 +512,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                     .numberOfComments(((Long) row[21]).intValue())
                     .numberOfReposts(((Long) row[22]).intValue())
                     .isLiked((boolean) row[23])
+                    .idOfRoom((String) row[24])
+                    .nameOfRoom((String) row[25])
                     .build();
 
             replies.add(ReplyOnWallDTO.builder()
