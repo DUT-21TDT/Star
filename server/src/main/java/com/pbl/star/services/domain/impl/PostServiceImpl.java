@@ -3,6 +3,7 @@ package com.pbl.star.services.domain.impl;
 import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
+import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.entities.Post;
@@ -250,5 +251,16 @@ public class PostServiceImpl implements PostService {
         }
 
         return repliesPage;
+    }
+
+    @Override
+    public Slice<ReplyOnWallDTO> getRepliesOnWall(String currentUserId, String targetUserId, int limit, Instant after) {
+
+        if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
+            throw new ResourceOwnershipException("User have private profile");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit);
+        return postRepository.findExistRepliesOnWall(pageable, after, currentUserId, targetUserId);
     }
 }

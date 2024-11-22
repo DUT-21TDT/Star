@@ -2,6 +2,7 @@ package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
+import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.services.domain.PostService;
@@ -57,5 +58,11 @@ public class ManagePostUsecaseImpl implements ManagePostUsecase {
     public void deletePost(String postId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         postService.deletePostOfUser(postId, currentUserId);
+    }
+
+    @Override
+    public Slice<ReplyOnWallDTO> getRepliesOnUserWall(String userId, int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return postService.getRepliesOnWall(currentUserId, userId, limit, after);
     }
 }

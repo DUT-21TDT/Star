@@ -58,4 +58,11 @@ public class PostViewController {
                                              @RequestParam(required = false) Instant after) {
         return ResponseEntity.ok(interactPostUsecase.getRepliesOfPost(postId, limit, after));
     }
+
+    @GetMapping("/users/{userId}/replies")
+    public ResponseEntity<?> getRepliesByUser(@PathVariable String userId,
+                                            @RequestParam(defaultValue = "20") int limit,
+                                            @RequestParam(required = false) Instant after) {
+        return ResponseEntity.ok(managePostUsecase.getRepliesOnUserWall(userId, limit, after));
+    }
 }

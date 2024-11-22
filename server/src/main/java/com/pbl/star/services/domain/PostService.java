@@ -3,6 +3,7 @@ package com.pbl.star.services.domain;
 import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
+import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.enums.PostStatus;
@@ -23,4 +24,5 @@ public interface PostService {
     void deletePostOfUser(String postId, String userId);
     String createReply(String userId, CreatePostParams createReplyParams);
     CustomSlice<PostForUserDTO> getReplies(String userId, String postId, int limit, Instant after);
+    Slice<ReplyOnWallDTO> getRepliesOnWall(String currentUserId, String targetUserId, int limit, Instant after);
 }
