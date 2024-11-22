@@ -417,7 +417,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "           AND p0.parent_post_id is not null " +
                 (after == null ? "" : "AND p0.created_at < :after ") +
                 ") as r " +
-                "INNER JOIN (" +
+                "LEFT JOIN (" +
                 "   SELECT p1.post_id, " +
                 "           u1.user_id, " +
                 "           u1.username, " +
@@ -448,6 +448,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "           AS is_liked " +
                 "   FROM post p1 " +
                 "   INNER JOIN \"user\" u1 ON p1.user_id = u1.user_id " +
+                "   WHERE p1.is_deleted = false " +
                 ") as p ON r.parent_post_id = p.post_id " +
                 "ORDER BY p.created_at DESC, p.post_id ";
 
@@ -486,6 +487,15 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                     .numberOfReposts(((Long) row[10]).intValue())
                     .isLiked((boolean) row[11])
                     .build();
+
+            if (row[12] == null) {
+                replies.add(ReplyOnWallDTO.builder()
+                        .reply(reply)
+                        .parentPost(null)
+                        .build()
+                );
+                continue;
+            }
 
             PostForUserDTO parentPost = (PostForUserDTO) PostForUserDTO.builder()
                     .id((String) row[12])
