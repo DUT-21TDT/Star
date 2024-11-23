@@ -12,7 +12,7 @@ import com.pbl.star.mapper.UserSignUpMapper;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.VerificationTokenRepository;
 import com.pbl.star.services.domain.AuthService;
-import com.pbl.star.utils.SignUpValidator;
+import com.pbl.star.validators.SignUpValidator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
