@@ -1,23 +1,18 @@
 package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.query.user.GeneralInformation;
-import com.pbl.star.dtos.query.user.OnDashboardProfileDTO;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.query.user.PersonalInformation;
-import com.pbl.star.dtos.request.user.AdminGetUsersParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.entities.User;
-import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.Gender;
-import com.pbl.star.enums.SortDirection;
 import com.pbl.star.exceptions.*;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.services.domain.UserService;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -129,27 +124,5 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User not found")
         );
-    }
-
-    @Override
-    public Page<OnDashboardProfileDTO> getUsersAsAdmin(AdminGetUsersParams params) {
-        Pageable pageable = PageRequest.of(params.getPage(), params.getSize());
-
-        String keyword = null;
-        if (!StringUtils.isBlank(params.getKeyword())) {
-            keyword = params.getKeyword().trim();
-        }
-
-        AccountStatus status = null;
-        if (params.getStatus() != null) {
-            status = AccountStatus.valueOf(params.getStatus());
-        }
-
-        String sortBy = params.getSortBy();
-
-        SortDirection direction = params.getDirection().equalsIgnoreCase("asc") ?
-                SortDirection.ASC : SortDirection.DESC;
-
-        return userRepository.findUsersAsAdmin(pageable, keyword, status, sortBy, direction);
     }
 }

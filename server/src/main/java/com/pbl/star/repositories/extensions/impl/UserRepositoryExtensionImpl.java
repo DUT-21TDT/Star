@@ -1,21 +1,20 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.user.*;
+import com.pbl.star.dtos.query.user.OnSearchProfile;
+import com.pbl.star.dtos.query.user.PersonalInformation;
+import com.pbl.star.dtos.query.user.OnWallProfile;
+import com.pbl.star.dtos.query.user.UserInRoom;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
-import com.pbl.star.entities.User;
-import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.FollowStatus;
 import com.pbl.star.enums.Gender;
-import com.pbl.star.enums.SortDirection;
 import com.pbl.star.repositories.extensions.UserRepositoryExtension;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.*;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
@@ -99,8 +98,8 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
     @Override
     public OnWallProfileResponse getPublicProfile(String currentId, String targetUserId) {
 
-        String jpql;
-        TypedQuery<Object[]> query;
+        String jpql = "";
+        TypedQuery<Object[]> query = null;
         boolean isCurrentUser = currentId.equals(targetUserId);
 
         if (isCurrentUser) {
@@ -114,7 +113,9 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
 
             query = entityManager.createQuery(jpql, Object[].class);
             query.setParameter("userId", targetUserId);
-        } else {
+        }
+
+        else {
             jpql = "SELECT u.username, u.firstName, u.lastName, u.bio, u.avatarUrl, u.privateProfile, " +
                     "(select count(*) from " +
                     "   Following f " +
@@ -225,102 +226,5 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
                         .lastName((String) row[4])
                         .build())
                 .toList();
-    }
-
-    @Override
-    public Page<OnDashboardProfileDTO> findUsersAsAdmin(Pageable pageable,
-                                                        String keyword,
-                                                        AccountStatus status,
-                                                        String sortBy,
-                                                        SortDirection direction) {
-
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<OnDashboardProfileDTO> criteriaQuery = criteriaBuilder.createQuery(OnDashboardProfileDTO.class);
-        Root<User> root = criteriaQuery.from(User.class);
-
-        // List to store predicates (conditions)
-        List<Predicate> predicates = new ArrayList<>();
-
-        // Keyword search across multiple attributes
-        if (!StringUtils.isEmpty(keyword)) {
-            Predicate usernamePredicate = criteriaBuilder.like(root.get("username"), "%" + keyword + "%");
-            Predicate firstNamePredicate = criteriaBuilder.like(root.get("firstName"), "%" + keyword + "%");
-            Predicate lastNamePredicate = criteriaBuilder.like(root.get("lastName"), "%" + keyword + "%");
-            Predicate emailPredicate = criteriaBuilder.like(root.get("email"), "%" + keyword + "%");
-
-            predicates.add(criteriaBuilder.or(usernamePredicate, firstNamePredicate, lastNamePredicate, emailPredicate));
-        }
-
-        if (status != null) {
-            predicates.add(criteriaBuilder.equal(root.get("status"), status));
-        }
-
-        // Combine all predicates
-        if (!predicates.isEmpty()) {
-            criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-        }
-
-        // Apply sorting
-        if (!StringUtils.isEmpty(sortBy) && direction != null) {
-            if (direction.equals(SortDirection.ASC)) {
-                criteriaQuery.orderBy(criteriaBuilder.asc(root.get(sortBy)));
-            } else {
-                criteriaQuery.orderBy(criteriaBuilder.desc(root.get(sortBy)));
-            }
-        }
-
-        criteriaQuery.select(criteriaBuilder.construct(
-                OnDashboardProfileDTO.class,
-                root.get("id"),
-                root.get("username"),
-                root.get("avatarUrl"),
-                root.get("firstName"),
-                root.get("lastName"),
-                root.get("email"),
-                root.get("gender"),
-                root.get("registerAt")
-        ));
-
-        // Fetch the paginated results
-        List<OnDashboardProfileDTO> users = entityManager.createQuery(criteriaQuery)
-                .setFirstResult((int) pageable.getOffset()) // Starting position
-                .setMaxResults(pageable.getPageSize()) // Number of records to fetch
-                .getResultList();
-
-        // Fetch the total count
-        long total = countUsers(keyword, status);
-
-        return new PageImpl<>(users, pageable, total);
-    }
-
-    private long countUsers(String keyword, AccountStatus status) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        Root<User> countRoot = countQuery.from(User.class);
-
-        List<Predicate> countPredicates = new ArrayList<>();
-
-        if (!StringUtils.isEmpty(keyword)) {
-            Predicate countUsernamePredicate = criteriaBuilder.like(countRoot.get("username"), "%" + keyword + "%");
-            Predicate countFirstNamePredicate = criteriaBuilder.like(countRoot.get("firstName"), "%" + keyword + "%");
-            Predicate countLastNamePredicate = criteriaBuilder.like(countRoot.get("lastName"), "%" + keyword + "%");
-            Predicate countEmailPredicate = criteriaBuilder.like(countRoot.get("email"), "%" + keyword + "%");
-
-            countPredicates.add(criteriaBuilder.or(countUsernamePredicate, countFirstNamePredicate, countLastNamePredicate, countEmailPredicate));
-        }
-
-        if (status != null) {
-            countPredicates.add(criteriaBuilder.equal(countRoot.get("status"), status));
-        }
-
-        if (!countPredicates.isEmpty()) {
-            countQuery.where(criteriaBuilder.and(countPredicates.toArray(new Predicate[0])));
-        }
-
-        // Fetch the total count
-        countQuery.select(criteriaBuilder.count(countRoot));
-
-        return entityManager.createQuery(countQuery).getSingleResult();
     }
 }

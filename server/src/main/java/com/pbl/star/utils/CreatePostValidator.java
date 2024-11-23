@@ -1,4 +1,4 @@
-package com.pbl.star.validators;
+package com.pbl.star.utils;
 
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.exceptions.RequiredFieldMissingException;

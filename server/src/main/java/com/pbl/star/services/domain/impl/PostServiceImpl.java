@@ -18,7 +18,7 @@ import com.pbl.star.mapper.PostCreationMapper;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.helper.ResourceAccessControl;
-import com.pbl.star.validators.CreatePostValidator;
+import com.pbl.star.utils.CreatePostValidator;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
