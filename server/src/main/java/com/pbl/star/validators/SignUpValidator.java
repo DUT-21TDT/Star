@@ -1,4 +1,4 @@
-package com.pbl.star.utils;
+package com.pbl.star.validators;
 
 import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.exceptions.InvalidSignUpParamsException;
