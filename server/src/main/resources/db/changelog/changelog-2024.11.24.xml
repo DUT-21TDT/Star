@@ -16,4 +16,14 @@
             <column name="receiver_id"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="25_add_indexes_to_notifications" author="Quang Nguyen">
+        <createIndex tableName="notification_change" indexName="idx_notification_change_user">
+            <column name="actor_id"/>
+        </createIndex>
+
+        <createIndex tableName="notification" indexName="idx_notification_user">
+            <column name="receiver_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
