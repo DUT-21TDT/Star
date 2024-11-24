@@ -452,7 +452,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   INNER JOIN room r ON p1.room_id = r.room_id " +
                 "   WHERE p1.is_deleted = false " +
                 ") as p ON r.parent_post_id = p.post_id " +
-                "ORDER BY p.created_at DESC, p.post_id ";
+                "ORDER BY r.created_at DESC, r.post_id ";
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query
@@ -475,7 +475,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         List<ReplyOnWallDTO> replies = new ArrayList<>();
 
         for (Object[] row : resultList) {
-            PostForUserDTO reply = (PostForUserDTO) PostForUserDTO.builder()
+            PostForUserDTO reply = PostForUserDTO.builder()
                     .id((String) row[0])
                     .idOfCreator((String) row[1])
                     .usernameOfCreator((String) row[2])
@@ -499,7 +499,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 continue;
             }
 
-            PostForUserDTO parentPost = (PostForUserDTO) PostForUserDTO.builder()
+            PostForUserDTO parentPost = PostForUserDTO.builder()
                     .id((String) row[12])
                     .idOfCreator((String) row[13])
                     .usernameOfCreator((String) row[14])
