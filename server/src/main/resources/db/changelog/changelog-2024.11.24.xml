@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="24_add_indexes_to_notifications" author="Quang Nguyen">
+        <createIndex tableName="notification_change" indexName="idx_notification_change">
+            <column name="notification_object_id"/>
+            <column name="actor_id"/>
+            <column name="created_at"/>
+        </createIndex>
+
+        <createIndex tableName="notification" indexName="idx_notification">
+            <column name="notification_object_id"/>
+            <column name="receiver_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
