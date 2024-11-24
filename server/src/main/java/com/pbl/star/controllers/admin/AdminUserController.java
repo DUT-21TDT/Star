@@ -1,6 +1,7 @@
 package com.pbl.star.controllers.admin;
 
 import com.pbl.star.dtos.request.user.AdminGetUsersParams;
+import com.pbl.star.exceptions.IllegalRequestArgumentException;
 import com.pbl.star.usecase.admin.AdminManageUserUsecase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,11 @@ public class AdminUserController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> getAllUsers(@ModelAttribute @Valid AdminGetUsersParams params,
+    public ResponseEntity<?> getAllUsers(@Valid @ModelAttribute AdminGetUsersParams params,
                                          BindingResult result) {
 
         if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
+             throw new IllegalRequestArgumentException(result.getAllErrors().getFirst().getDefaultMessage());
         }
 
         return ResponseEntity.ok(manageUserUsecase.getAllUsers(params));
