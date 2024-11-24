@@ -3,6 +3,7 @@ import { Tabs } from "antd";
 import type { TabsProps } from "antd";
 import PostOnWall from "./posts/posts-on-wall";
 import PendingPostOnWall from "./posts/pending-posts-on-wall";
+import RepliesOnWall from "./posts/replies-on-wall";
 
 const onChange = (key: string) => {
   console.log(key);
@@ -23,7 +24,7 @@ const TabProfile: React.FC<IProps> = (props) => {
     {
       key: "2",
       label: <div className="text-[16px] font-semibold">Replies</div>,
-      children: "Content of Tab Pane 2",
+      children: <RepliesOnWall />,
     },
     {
       key: "3",

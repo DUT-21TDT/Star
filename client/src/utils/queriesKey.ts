@@ -42,4 +42,5 @@ export const QUERY_KEY = {
   ],
   fetchPostDetailById: (postId: string) => ["fetchPostDetailById", postId],
   fetchRepliesByPostId: (postId: string) => ["fetchRepliesByPostId", postId],
+  fetchRepliesByUserId: (userId: string) => ["fetchRepliesByUserId", userId],
 };

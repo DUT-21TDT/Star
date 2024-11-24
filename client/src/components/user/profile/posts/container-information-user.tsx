@@ -22,11 +22,13 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
   const { data, isLoading } = useGetProfileUser(idOfCreator || "");
   const navigate = useNavigate();
 
-  const [followStatus, setFollowStatus] = useState<string>(data?.followStatus || "");
-  
+  const [followStatus, setFollowStatus] = useState<string>(
+    data?.followStatus || ""
+  );
+
   const _followStatus = parentFollowStatus || followStatus;
   const _setFollowStatus = updateParentFollowStatus || setFollowStatus;
-  
+
   const [numberOfFollowers, setNumberOfFollowers] = useState<number>(
     data?.publicProfile?.numberOfFollowers || 0
   );
@@ -140,6 +142,7 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
               }}
               id="avatar-profile"
               preview={false}
+              loading="lazy"
             />
           </div>
         </div>

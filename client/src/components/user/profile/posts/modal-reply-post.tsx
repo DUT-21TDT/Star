@@ -55,6 +55,8 @@ const ModalReplyPost: React.FC<IProps> = ({
   const [loading, setLoading] = useState(false);
   const [emblaRef] = useEmblaCarousel();
 
+  const isPostDetailRoute = window.location.pathname.startsWith("/post");
+
   const userData = useAppSelector((state) => state.user);
   const { mutate: createReplyPost } = useReplyPost();
   const { mutate: getPostPresignedURL } = useGetAllPresignedUrl();
@@ -117,18 +119,20 @@ const ModalReplyPost: React.FC<IProps> = ({
   }) => {
     createReplyPost(postContent, {
       onSuccess: async (response) => {
-        const detailPost = await getPostDetailById(response.id);
-        const updatedPost = { ...detailPost, nameOfRoom: null };
-        queryClient.setQueryData(
-          [QUERY_KEY.fetchRepliesByPostId(postId), null],
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (oldData: any) => {
-            return {
-              ...oldData,
-              content: [updatedPost, ...oldData.content],
-            };
-          }
-        );
+        if (isPostDetailRoute) {
+          const detailPost = await getPostDetailById(response.id);
+          const updatedPost = { ...detailPost, nameOfRoom: null };
+          queryClient.setQueryData(
+            [QUERY_KEY.fetchRepliesByPostId(postId), null],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (oldData: any) => {
+              return {
+                ...oldData,
+                content: [updatedPost, ...oldData.content],
+              };
+            }
+          );
+        }
         message.success("Reply this post successfully");
         setCommentCount((prev: number) => prev + 1);
       },

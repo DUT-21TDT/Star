@@ -13,6 +13,7 @@ import {
   replyPost,
   getPostDetailById,
   getRepliesByPostId,
+  getRepliesOnUserWall,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -180,7 +181,6 @@ const useGetRepliesByPostId = (
   config: configTypeProfileWall
 ) => {
   const result = useQuery({
-    // queryKey: QUERY_KEY.fetchRepliesByPostId(postId),
     queryKey: [QUERY_KEY.fetchRepliesByPostId(postId), config.after],
     queryFn: () => getRepliesByPostId(postId, config),
     staleTime: 0,
@@ -192,6 +192,24 @@ const useGetRepliesByPostId = (
     hasNextPost: !result.data?.last,
     afterTimeFinalPost:
       result.data?.content[result.data?.content.length - 1]?.createdAt,
+  };
+};
+
+const useGetRepliesByUserIdOnWall = (
+  userId: string,
+  config: configTypeProfileWall
+) => {
+  const result = useQuery({
+    queryKey: [QUERY_KEY.fetchRepliesByUserId(userId), config.after],
+    queryFn: () => getRepliesOnUserWall(userId, config),
+  });
+  return {
+    dataPost: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextPost: !result.data?.last,
+    afterTimeFinalPost:
+      result.data?.content[result.data?.content.length - 1]?.reply?.createdAt,
   };
 };
 
@@ -210,4 +228,5 @@ export {
   useReplyPost,
   useGetPostDetailById,
   useGetRepliesByPostId,
+  useGetRepliesByUserIdOnWall,
 };

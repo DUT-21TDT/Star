@@ -295,7 +295,7 @@ const PostModerator: React.FC<IProps> = (props) => {
           ></p>
         </div>
 
-        {postImageUrls && postImageUrls.length > 0 && (
+        {/* {postImageUrls && postImageUrls.length > 0 && (
           <div
             className="embla"
             ref={emblaRef}
@@ -337,6 +337,60 @@ const PostModerator: React.FC<IProps> = (props) => {
                           objectPosition: "center",
                           borderRadius: "15px",
                         }}
+                        loading="lazy"
+                      />
+                    </PhotoView>
+                  </div>
+                ))}
+              </PhotoProvider>
+            </div>
+          </div>
+        )} */}
+        {postImageUrls && postImageUrls.length > 0 && (
+          <div
+            className="embla mt-2"
+            ref={emblaRef}
+            style={{ overflow: "hidden", maxHeight: "400px" }}
+          >
+            <div
+              className="embla__container"
+              style={{
+                display: "flex",
+                cursor: isDraggingImg ? "grabbing" : "grab",
+              }}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+            >
+              <PhotoProvider maskOpacity={0.7}>
+                {postImageUrls.map((url, index) => (
+                  <div
+                    className="embla__slide"
+                    key={url}
+                    style={{
+                      flex: "0 0 auto",
+                      marginRight: "15px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "white",
+                      maxHeight: "400px",
+                      maxWidth: "560px",
+                    }}
+                  >
+                    <PhotoView key={index} src={url}>
+                      <img
+                        key={url}
+                        src={url}
+                        alt="Post Image"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          objectPosition: "center",
+                          borderRadius: "15px",
+                          aspectRatio: "auto",
+                        }}
+                        loading="lazy"
                       />
                     </PhotoView>
                   </div>
@@ -345,7 +399,6 @@ const PostModerator: React.FC<IProps> = (props) => {
             </div>
           </div>
         )}
-
         {usernameOfModerator && moderatedAt && (
           <div style={{ marginTop: "8px", fontSize: "14px", color: "#999" }}>
             {status === "APPROVED"

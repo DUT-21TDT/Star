@@ -149,6 +149,20 @@ const getRepliesByPostId = async (
   return response.data;
 };
 
+const getRepliesOnUserWall = async (
+  userId: string,
+  config: configTypeProfileWall
+) => {
+  let url;
+  if (config.after !== null && config.after !== undefined) {
+    url = `/users/${userId}/replies?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/users/${userId}/replies?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -164,4 +178,5 @@ export {
   replyPost,
   getPostDetailById,
   getRepliesByPostId,
+  getRepliesOnUserWall,
 };
