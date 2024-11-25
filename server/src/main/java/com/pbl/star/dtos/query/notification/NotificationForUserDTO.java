@@ -20,5 +20,5 @@ public class NotificationForUserDTO {
     private NotificationActorDTO lastActor;
     private Integer numberOfActors;
 
-    private Instant createdAt;
+    private Instant changeAt;
 }

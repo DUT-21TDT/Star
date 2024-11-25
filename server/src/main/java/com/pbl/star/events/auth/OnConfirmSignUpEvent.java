@@ -1,4 +1,4 @@
-package com.pbl.star.events;
+package com.pbl.star.events.auth;
 
 import com.pbl.star.entities.User;
 import lombok.Builder;

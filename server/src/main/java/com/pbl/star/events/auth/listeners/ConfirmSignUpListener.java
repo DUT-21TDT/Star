@@ -1,6 +1,6 @@
-package com.pbl.star.events.listeners;
+package com.pbl.star.events.auth.listeners;
 
-import com.pbl.star.events.OnConfirmSignUpEvent;
+import com.pbl.star.events.auth.OnConfirmSignUpEvent;
 import com.pbl.star.services.domain.VerificationTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
