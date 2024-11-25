@@ -1,9 +1,8 @@
-package com.pbl.star.events.eventlisteners.impl;
+package com.pbl.star.events.listeners;
 
 import com.pbl.star.entities.User;
 import com.pbl.star.entities.VerificationToken;
 import com.pbl.star.events.OnSignUpCompleteEvent;
-import com.pbl.star.events.eventlisteners.SignUpListener;
 import com.pbl.star.services.domain.VerificationTokenService;
 import com.pbl.star.services.external.EmailService;
 import jakarta.mail.MessagingException;
@@ -15,12 +14,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class SignUpListenerImpl implements SignUpListener {
+public class SignUpListener {
 
     private final VerificationTokenService verificationTokenService;
     private final EmailService emailService;
 
-    @Override
     @Async
     @EventListener
     public void sendConfirmationEmail(OnSignUpCompleteEvent event) {
