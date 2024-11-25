@@ -21,9 +21,10 @@ public class NotificationObject {
     private String id;
 
     @Column(name = "notification_type")
+    @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
-    @Column(name = "artìact_id")
+    @Column(name = "artifact_id")
     private String artifactId;
 
     @Column(name = "is_read")

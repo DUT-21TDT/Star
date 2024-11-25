@@ -26,4 +26,10 @@
             <column name="receiver_id"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="26_add_unique_to_notification" author="Quang Nguyen">
+        <dropIndex tableName="notification" indexName="idx_notification"/>
+        <addUniqueConstraint tableName="notification"
+                             columnNames="notification_object_id, receiver_id"/>
+    </changeSet>
 </databaseChangeLog>

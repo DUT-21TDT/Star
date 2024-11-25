@@ -27,6 +27,6 @@ public class NotificationChange {
     @Column(name = "actor_id")
     private String actorId;
 
-    @Column(name = "created_at")
-    private Instant createdAt;
+    @Column(name = "change_at")
+    private Instant changeAt;
 }
