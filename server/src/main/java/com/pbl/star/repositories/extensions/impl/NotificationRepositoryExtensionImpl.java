@@ -25,24 +25,27 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
 
         String sql = "SELECT n.notification_id, " +
                 "           nob.notification_type, nob.artifact_id, nob.is_read," +
-                "           nc.actor_id, nc.created_at, " +
-                "           (SELECT COUNT(*) FROM notification_change _nc WHERE _nc.notification_object_id = nob.notification_object_id)" +
+                "           nc.actor_id, nc.change_at, " +
+                "           (SELECT COUNT(*) FROM notification_change _nc WHERE _nc.notification_object_id = nob.notification_object_id), " +
                 "           u.username, u.avatar_url " +
                 "FROM notification n " +
                 "INNER JOIN notification_object nob " +
                 "ON n.notification_object_id = nob.notification_object_id " +
                 "INNER JOIN ( " +
-                "   SELECT _nc.actor_id, _nc.created_at, _nc.notification_object_id " +
-                "   FROM notification_change _nc " +
-                "   WHERE _nc.notification_object_id = nob.notification_object_id" +
-                "   ORDER BY _nc.created_at desc " +
-                "   LIMIT 1) nc " +
+                "   SELECT _nc.actor_id, _nc.change_at, _nc.notification_object_id " +
+                "   FROM (" +
+                "       SELECT _nc.actor_id, _nc.change_at, _nc.notification_object_id, " +
+                "              ROW_NUMBER() OVER (PARTITION BY _nc.notification_object_id ORDER BY _nc.change_at desc) as rn " +
+                "       FROM notification_change _nc " +
+                "   ) _nc " +
+                "   WHERE _nc.rn = 1" +
+                ") nc " +
                 "ON nob.notification_object_id = nc.notification_object_id " +
                 "INNER JOIN \"user\" u " +
                 "ON nc.actor_id = u.user_id " +
                 "WHERE n.receiver_id = :userId " +
-                (after != null ? "AND nc.created_at < :after " : "") +
-                "ORDER BY nc.created_at desc, n.notification_id";
+                (after != null ? "AND nc.change_at < :after " : "") +
+                "ORDER BY nc.change_at desc, n.notification_id";
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query.setParameter("userId", userId)
@@ -66,14 +69,14 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
                         .type(NotificationType.valueOf((String) row[1]))
                         .artifactId((String) row[2])
                         .isRead((Boolean) row[3])
-                        .numberOfActors((Integer) row[6])
+                        .numberOfActors(((Long) row[6]).intValue())
                         .lastActor(NotificationActorDTO.builder()
                                 .id((String) row[4])
                                 .username((String) row[7])
                                 .avatarUrl((String) row[8])
                                 .build()
                         )
-                        .createdAt((Instant) row[5])
+                        .changeAt((Instant) row[5])
                         .build()
                 )
                 .toList();

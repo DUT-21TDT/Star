@@ -21,7 +21,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
 
     @Override
     @Transactional
-    public void likePost(String userId, String postId) {
+    public PostLike likePost(String userId, String postId) {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException("Post does not exist");
         }
@@ -36,7 +36,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
                 .likeAt(Instant.now())
                 .build();
 
-        postLikeRepository.save(postLike);
+        return postLikeRepository.save(postLike);
     }
 
     @Override

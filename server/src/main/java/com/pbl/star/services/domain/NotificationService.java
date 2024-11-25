@@ -7,4 +7,5 @@ import java.time.Instant;
 
 public interface NotificationService {
     Slice<NotificationForUserDTO> getNotifications(String userId, int limit, Instant after);
+    void createLikePostNotification(String postId, String actorId, Instant timestamp, String receiverId);
 }

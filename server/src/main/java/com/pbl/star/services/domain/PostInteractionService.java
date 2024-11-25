@@ -1,6 +1,8 @@
 package com.pbl.star.services.domain;
 
+import com.pbl.star.entities.PostLike;
+
 public interface PostInteractionService {
-    void likePost(String userId, String postId);
+    PostLike likePost(String userId, String postId);
     void unlikePost(String userId, String postId);
 }

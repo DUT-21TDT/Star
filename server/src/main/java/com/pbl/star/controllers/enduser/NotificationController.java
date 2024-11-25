@@ -17,7 +17,8 @@ public class NotificationController {
 
     private final ManageNotificationUsecase manageNotificationUsecase;
     @GetMapping
-    public ResponseEntity<?> getNotifications(@RequestParam int limit, @RequestParam Instant after) {
+    public ResponseEntity<?> getNotifications(@RequestParam(defaultValue = "10") int limit,
+                                              @RequestParam(required = false) Instant after) {
         return ResponseEntity.ok(manageNotificationUsecase.getNotifications(limit, after));
     }
 }
