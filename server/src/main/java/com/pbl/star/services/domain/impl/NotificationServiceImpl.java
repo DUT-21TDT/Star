@@ -42,7 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         // Upsert notification object
         Optional<NotificationObject> notificationObjOpt = notificationObjectRepository.findByNotificationTypeAndArtifactId(NotificationType.LIKE_POST, postId);
-        NotificationObject savedNotificationObj = null;
+        NotificationObject savedNotificationObj;
 
         if (notificationObjOpt.isPresent()) {
             NotificationObject notificationObj = notificationObjOpt.get();

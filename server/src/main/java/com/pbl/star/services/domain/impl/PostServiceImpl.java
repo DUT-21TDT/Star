@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -262,5 +263,12 @@ public class PostServiceImpl implements PostService {
 
         Pageable pageable = PageRequest.of(0, limit);
         return postRepository.findExistRepliesOnWall(pageable, after, currentUserId, targetUserId);
+    }
+
+
+    // Repository methods
+    @Override
+    public Optional<Post> findExistPostById(String postId) {
+        return postRepository.findExistPostById(postId);
     }
 }

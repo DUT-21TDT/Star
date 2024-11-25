@@ -1,0 +1,46 @@
+package com.pbl.star.events.notification.listeners;
+
+import com.pbl.star.configurations.RabbitMQConfig;
+import com.pbl.star.services.external.impl.NotificationProducerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Component
+public class UserActivityConsumer {
+
+    // Map of routing keys to handlers
+    private final Map<String, UserActivityHandler> handlers;
+    private static final Logger logger = LoggerFactory.getLogger(NotificationProducerImpl.class);
+
+
+    public UserActivityConsumer(List<UserActivityHandler> handlers) {
+        this.handlers = handlers.stream()
+                .collect(Collectors.toMap(UserActivityHandler::getRoutingKey, handler -> handler));
+    }
+
+    // Delegate the handling of the message to the appropriate handler
+    @RabbitListener(queues = RabbitMQConfig.USER_ACTIVITY_QUEUE)
+    public void handleUserActivity(Message message) {
+
+        String routingKey = message.getMessageProperties().getReceivedRoutingKey();
+
+        UserActivityHandler handler = handlers.get(routingKey);
+        if (handler != null) {
+            try {
+                handler.handle(message);
+            } catch (IOException e) {
+                logger.error("Failed to handle user activity message", e);
+            }
+        } else {
+            throw new IllegalArgumentException("No handler found for routing key: " + routingKey);
+        }
+    }
+}
