@@ -234,12 +234,33 @@ const getMembersInRoom = async (roomId: string, searchTerm: string) => {
     },
   });
   return response.data;
-}
+};
 
 const getAllUsers = async (keyword: string) => {
   const response = await instance.get(`/users`, {
     params: {
       keyword: keyword,
+    },
+  });
+  return response.data;
+};
+
+const fetchAllUsers = async (
+  size: number,
+  page: number,
+  sortBy: string,
+  direction: string,
+  status: string,
+  keyword: string
+) => {
+  const response = await instance.get(`/admin/users`, {
+    params: {
+      keyword: keyword,
+      page: page,
+      size: size,
+      sortBy: sortBy,
+      direction: direction,
+      status: status,
     },
   });
   return response.data;
@@ -262,5 +283,6 @@ export {
   followUser,
   unfollowUser,
   getMembersInRoom,
-  getAllUsers
+  getAllUsers,
+  fetchAllUsers,
 };

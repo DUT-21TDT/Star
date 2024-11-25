@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 
 const UserDetails: React.FC = () => {
   const { UserId } = useParams<{ UserId: string }>();
-  const { data, isLoading, isError, error } = useGetUserDetails(UserId!);
+  const { data, isLoading, isError } = useGetUserDetails(UserId!);
 
   if (isLoading) {
     return (

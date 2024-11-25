@@ -133,6 +133,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<OnDashboardProfileDTO> getUsersAsAdmin(AdminGetUsersParams params) {
+
         Pageable pageable = PageRequest.of(params.getPage(), params.getSize());
 
         String keyword = null;
