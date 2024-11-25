@@ -137,12 +137,6 @@ const Post: React.FC = () => {
             columns={columns}
             dataSource={tableData}
             title={() => <HeaderTablePost countPost={tableData.length || 0} />}
-            expandable={{
-              expandedRowRender: (record) => (
-                <p style={{ margin: 0 }}>{record.description}</p>
-              ),
-              rowExpandable: (record) => !!record.description,
-            }}
             pagination={{ position: ["bottomCenter"], pageSize: 4 }}
           />
         </div>

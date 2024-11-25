@@ -1,16 +1,26 @@
-import React, { useState } from "react";
-import { Button, Space, Spin, Table, Popconfirm, message } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Space,
+  Table,
+  Popconfirm,
+  message,
+  Tag,
+  Input,
+  Select,
+} from "antd";
 import type { TableProps } from "antd";
 import HeaderTableUser from "./header-table-user";
-import { useFetchAllUsers } from "../../../hooks/user";
-import { LoadingOutlined, LockFilled, UnlockFilled } from "@ant-design/icons";
+import { fetchAllUsers } from "../../../service/userAPI.ts";
+import { LockFilled, SearchOutlined, UnlockFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import "../../../assets/css/table-select-paginate.css";
 
 interface PeopleType {
   userId: string;
-  avatarUrl: string | null;
-  firstName: string | null;
-  lastName: string | null;
+  avatarUrl: string;
+  firstName: string;
+  lastName: string;
   numberOfFollowers: number;
   username: string;
   followStatus: string;
@@ -19,11 +29,58 @@ interface PeopleType {
 const User: React.FC = () => {
   const navigate = useNavigate();
 
-  // Fetch all users using the custom hook
-  const { data, isLoading, isError } = useFetchAllUsers(""); // assuming empty string for no search
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 4,
+  });
 
-  // State to track blocked users
+  const [totalUsers, setTotalUsers] = useState<number>(1);
+  const [userStatus, setUserStatus] = useState<string>("ACTIVE");
+  const [sortBy, setSortBy] = useState<string>("");
+  const [direction, setDirection] = useState<string>("asc");
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [resultList, setResultList] = useState<PeopleType[]>([]);
   const [blockedUsers, setBlockedUsers] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Unified API Call Function
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetchAllUsers(
+        pagination.pageSize,
+        pagination.current - 1,
+        sortBy,
+        direction,
+        userStatus,
+        searchValue
+      );
+      setResultList(res.content);
+      setTotalUsers(res.totalElements);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setResultList([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch users whenever filters, pagination, or search value changes
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchUsers();
+    }, 100); // Debounce API call by 100ms
+
+    return () => clearTimeout(timeoutId);
+  }, [searchValue, pagination, userStatus, sortBy, direction]);
+
+  const handleTableChange = (newPagination: any, sorter: any) => {
+    setPagination((prev) => ({
+      ...prev,
+      current: newPagination.current,
+    }));
+    setSortBy(sorter.field);
+  };
 
   const handleToggleBlock = (record: PeopleType) => {
     const isCurrentlyBlocked = blockedUsers[record.userId];
@@ -39,14 +96,57 @@ const User: React.FC = () => {
     }
   };
 
-  // Transform the API response into the expected Table data format
-  const tableData: PeopleType[] = data || [];
+  const handleChangeStatus = (value: string) => {
+    setUserStatus(value);
+    setPagination((prev) => ({
+      ...prev,
+      current: 1,
+    }));
+  };
+
+  const handleChangeSort = (title: string) => {
+    setSortBy(title.toLowerCase());
+    if (direction === "asc") setDirection("desc");
+    else setDirection("asc");
+  };
 
   const columns: TableProps<PeopleType>["columns"] = [
     {
-      title: "Name",
-      dataIndex: "username",
-      key: "username",
+      title: "Avatar",
+      dataIndex: "avatarUrl",
+      key: "avatarUrl",
+      render: (avatarUrl) => (
+        <div>
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt="Avatar"
+              style={{ width: 40, height: 40, borderRadius: "50%" }}
+            />
+          ) : (
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                backgroundColor: "#ccc",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "16px",
+                color: "#fff",
+              }}
+            >
+              NA
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: "Fullname",
+      dataIndex: "fullname",
+      key: "fullname",
       render: (_, record) => (
         <a
           onClick={() => {
@@ -54,24 +154,44 @@ const User: React.FC = () => {
             window.scrollTo(0, 0);
           }}
         >
-          {`${record.firstName} ${record.lastName}`}
+          {record.firstName} {record.lastName}
         </a>
       ),
-      sorter: (a, b) =>
-        `${a.firstName} ${a.lastName}`.localeCompare(
-          `${b.firstName} ${b.lastName}`
-        ),
-    },
-    {
-      title: "Followers",
-      dataIndex: "numberOfFollowers",
-      key: "numberOfFollowers",
-      sorter: (a, b) => a.numberOfFollowers - b.numberOfFollowers,
     },
     {
       title: "Username",
       dataIndex: "username",
       key: "username",
+      onHeaderCell: (column) => ({
+        onClick: () => {
+          handleChangeSort(String(column.title));
+        },
+      }),
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      render: (email) => email || "Not Provided",
+      onHeaderCell: (column) => ({
+        onClick: () => {
+          handleChangeSort(String(column.title));
+        },
+      }),
+    },
+    {
+      title: "Gender",
+      dataIndex: "gender",
+      key: "gender",
+      render: (gender) =>
+        gender ? gender.charAt(0) + gender.slice(1).toLowerCase() : "Unknown",
+    },
+    {
+      title: "Registered At",
+      dataIndex: "registerAt",
+      key: "registerAt",
+      render: (date) =>
+        date ? new Date(date).toLocaleDateString() : "Unknown",
     },
     {
       title: "Action",
@@ -104,38 +224,52 @@ const User: React.FC = () => {
               className="border-none"
             />
           </Popconfirm>
+          <Tag color="red" bordered style={{ borderRadius: "10px" }}>
+            99 reports
+          </Tag>
         </Space>
       ),
     },
   ];
 
   return (
-    <>
-      {isLoading ? (
-        <div className="flex items-center justify-center mt-8">
-          <Spin indicator={<LoadingOutlined spin />} size="large" />
-        </div>
-      ) : isError ? (
-        <div className="text-center mt-8 text-red-500">
-          Something went wrong. Please try again later.
-        </div>
-      ) : (
-        <div>
-          <Table
-            columns={columns}
-            dataSource={tableData}
-            title={() => <HeaderTableUser countUser={tableData.length || 0} />}
-            expandable={{
-              expandedRowRender: (record) => (
-                <p style={{ margin: 0 }}>{record.followStatus}</p> // Display followStatus in expandable row
-              ),
-              rowExpandable: (record) => !!record.followStatus, // You can conditionally check if followStatus exists
-            }}
-            pagination={{ position: ["bottomCenter"], pageSize: 4 }}
-          />
-        </div>
-      )}
-    </>
+    <div>
+      <div className="flex justify-between items-center gap-4">
+        <Input
+          placeholder="Search"
+          prefix={<SearchOutlined style={{ color: "#ccc" }} />}
+          className="h-[40px] border rounded-2xl bg-[#fafafa] text-[16px] pl-5"
+          value={searchValue}
+          autoFocus
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
+        <Select
+          defaultValue="ACTIVE"
+          style={{ width: 120 }}
+          onChange={handleChangeStatus}
+          options={[
+            { value: "ACTIVE", label: "ACTIVE" },
+            { value: "INACTIVE", label: "INACTIVE" },
+          ]}
+        />
+      </div>
+      <div className="custom-table">
+        <Table
+          columns={columns}
+          dataSource={resultList}
+          loading={isLoading} // Show spinner in table instead
+          title={() => <HeaderTableUser countUser={totalUsers || 0} />}
+          rowKey={(record) => record.userId}
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            position: ["bottomCenter"],
+            total: totalUsers,
+          }}
+          onChange={handleTableChange}
+        />
+      </div>
+    </div>
   );
 };
 
