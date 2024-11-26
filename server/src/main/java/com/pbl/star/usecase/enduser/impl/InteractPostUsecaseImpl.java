@@ -5,6 +5,7 @@ import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostLike;
+import com.pbl.star.entities.PostRepost;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.external.NotificationProducer;
@@ -58,12 +59,18 @@ public class InteractPostUsecaseImpl implements InteractPostUsecase {
 
     @Override
     public void repostPost(String postId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        PostRepost postRepost = postInteractionService.repostPost(currentUserId, postId);
 
+        notificationProducer.pushRepostPostMessage(postRepost);
     }
 
     @Override
-    public void unRepostPost(String postId) {
+    public void deleteRepostPost(String postId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        postInteractionService.deleteRepostPost(currentUserId, postId);
 
+        notificationProducer.pushDeleteRepostPostMessage(postId, currentUserId);
     }
 
     @Override

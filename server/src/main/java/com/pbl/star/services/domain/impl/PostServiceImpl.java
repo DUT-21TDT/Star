@@ -108,7 +108,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistPostsOfUserByStatus(pageable, after, PostStatus.APPROVED, targetUserId);
+        return postRepository.findExistPostsOfUserByStatusAsUser(pageable, after, PostStatus.APPROVED, targetUserId);
     }
 
     @Override
@@ -262,7 +262,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistRepliesOnWall(pageable, after, currentUserId, targetUserId);
+        return postRepository.findExistRepliesOnWallAsUser(pageable, after, currentUserId, targetUserId);
     }
 
 

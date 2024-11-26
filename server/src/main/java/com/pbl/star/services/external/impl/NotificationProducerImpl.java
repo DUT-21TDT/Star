@@ -3,6 +3,7 @@ package com.pbl.star.services.external.impl;
 import com.pbl.star.entities.Following;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostLike;
+import com.pbl.star.entities.PostRepost;
 import com.pbl.star.events.notification.FollowUserEvent;
 import com.pbl.star.events.notification.InteractPostEvent;
 import com.pbl.star.events.notification.ModeratePostEvent;
@@ -72,6 +73,33 @@ public class NotificationProducerImpl implements NotificationProducer {
             rabbitTemplate.convertAndSend("notification_exchange", "notification.UNDO_reply_post", event);
         } catch (Exception e) {
             logger.error("Failed to push delete reply post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushRepostPostMessage(PostRepost postRepost) {
+        InteractPostEvent event = new InteractPostEvent();
+        event.setTimestamp(postRepost.getRepostAt());
+        event.setPostId(postRepost.getPostId());
+        event.setActorId(postRepost.getUserId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.repost_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push repost post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushDeleteRepostPostMessage(String postId, String actorId) {
+        InteractPostEvent event = new InteractPostEvent();
+        event.setActorId(actorId);
+        event.setPostId(postId);
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.UNDO_repost_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push undo repost post event to notification service", e);
         }
     }
 
