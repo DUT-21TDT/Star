@@ -1,7 +1,12 @@
 package com.pbl.star.services.external.impl;
 
+import com.pbl.star.entities.Following;
+import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostLike;
-import com.pbl.star.events.notification.LikePostEvent;
+import com.pbl.star.events.notification.FollowUserEvent;
+import com.pbl.star.events.notification.InteractPostEvent;
+import com.pbl.star.events.notification.ModeratePostEvent;
+import com.pbl.star.events.notification.NewPendingPostEvent;
 import com.pbl.star.services.external.NotificationProducer;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,8 +22,8 @@ public class NotificationProducerImpl implements NotificationProducer {
     private static final Logger logger = LoggerFactory.getLogger(NotificationProducerImpl.class);
 
     @Override
-    public void pushLikePostEvent(PostLike postLike) {
-        LikePostEvent event = new LikePostEvent();
+    public void pushLikePostMessage(PostLike postLike) {
+        InteractPostEvent event = new InteractPostEvent();
         event.setTimestamp(postLike.getLikeAt());
         event.setPostId(postLike.getPostId());
         event.setActorId(postLike.getUserId());
@@ -27,6 +32,168 @@ public class NotificationProducerImpl implements NotificationProducer {
             rabbitTemplate.convertAndSend("notification_exchange", "notification.like_post", event);
         } catch (Exception e) {
             logger.error("Failed to push like post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushUnlikePostMessage(String postId, String actorId) {
+        InteractPostEvent event = new InteractPostEvent();
+        event.setActorId(actorId);
+        event.setPostId(postId);
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.UNDO_like_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push unlike post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushReplyPostMessage(Post reply) {
+        InteractPostEvent event = new InteractPostEvent();
+        event.setTimestamp(reply.getCreatedAt());
+        event.setPostId(reply.getParentPostId());
+        event.setActorId(reply.getUserId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.reply_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push reply post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushDeleteReplyMessage(String parentPostId, String actorId) {
+        InteractPostEvent event = new InteractPostEvent();
+        event.setActorId(actorId);
+        event.setPostId(parentPostId);
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.UNDO_reply_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push delete reply post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushFollowMessage(Following following) {
+        FollowUserEvent event = new FollowUserEvent();
+        event.setTimestamp(following.getFollowAt());
+        event.setFollowerId(following.getFollowerId());
+        event.setFolloweeId(following.getFolloweeId());
+        event.setFollowingId(following.getId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.follow", event);
+        } catch (Exception e) {
+            logger.error("Failed to push follow user event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushUnfollowMessage(Following following) {
+        FollowUserEvent event = new FollowUserEvent();
+        event.setFollowingId(following.getId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.UNDO_follow", event);
+        } catch (Exception e) {
+            logger.error("Failed to push unfollow user event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushRequestFollowMessage(Following following) {
+        FollowUserEvent event = new FollowUserEvent();
+        event.setTimestamp(following.getFollowAt());
+        event.setFollowerId(following.getFollowerId());
+        event.setFolloweeId(following.getFolloweeId());
+        event.setFollowingId(following.getId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.request_follow", event);
+        } catch (Exception e) {
+            logger.error("Failed to push request follow event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushRevokeRequestFollowMessage(Following following) {
+        FollowUserEvent event = new FollowUserEvent();
+        event.setFollowingId(following.getId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.UNDO_request_follow", event);
+        } catch (Exception e) {
+            logger.error("Failed to push unfollow user event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushAcceptFollowMessage(Following following) {
+        FollowUserEvent event = new FollowUserEvent();
+        event.setTimestamp(following.getFollowAt());
+        event.setFollowerId(following.getFollowerId());
+        event.setFolloweeId(following.getFolloweeId());
+        event.setFollowingId(following.getId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.accept_follow", event);
+        } catch (Exception e) {
+            logger.error("Failed to push accept follow event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushApprovePostMessage(Post post) {
+        ModeratePostEvent event = new ModeratePostEvent();
+        event.setPostId(post.getId());
+        event.setTimestamp(post.getCreatedAt());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.approve_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push approve post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushRejectPostMessage(Post post) {
+        ModeratePostEvent event = new ModeratePostEvent();
+        event.setPostId(post.getId());
+        event.setTimestamp(post.getCreatedAt());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.reject_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push reject post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushNewPendingPostMessage(Post post) {
+        NewPendingPostEvent event = new NewPendingPostEvent();
+        event.setActorId(post.getUserId());
+        event.setRoomId(post.getRoomId());
+        event.setTimestamp(post.getCreatedAt());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.new_pending_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push new pending post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushRemovePendingPostMessage(Post post) {
+        NewPendingPostEvent event = new NewPendingPostEvent();
+        event.setActorId(post.getUserId());
+        event.setRoomId(post.getRoomId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.UNDO_new_pending_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push remove pending post event to notification service", e);
         }
     }
 }
