@@ -8,6 +8,7 @@ import { PhotoProvider, PhotoView } from "react-photo-view";
 import { useGetAllRoomForUser } from "../../../../hooks/room";
 import { useCreateAPost, useGetAllPresignedUrl } from "../../../../hooks/post";
 import "../../../../assets/css/modal-create-post.css";
+import EmojiPicker from "emoji-picker-react";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type RoomType = {
   id: number;
@@ -34,6 +35,12 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
   const [optionSelected, setOptionSelected] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [emblaRef] = useEmblaCarousel();
+
+  // handle add emoji
+  const [showPicker, setShowPicker] = useState(false);
+  const handleEmojiClick = (emojiObject: { emoji: string }) => {
+    setTextValue((prevText) => prevText + emojiObject.emoji);
+  };
 
   const userData = useAppSelector((state) => state.user);
   const { listRoomJoined } = useGetAllRoomForUser();
@@ -105,8 +112,16 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
     content: string;
     imageFileNames: string[];
   }) => {
-    createAPost(postContent);
-    message.success("Create post successfully");
+    createAPost(postContent, {
+      onError: () => {
+        message.error("Create post failed. Please try again later");
+        setLoading(false);
+      },
+      onSuccess: () => {
+        message.success("Create post successfully");
+        resetModal();
+      },
+    });
     resetModal();
   };
 
@@ -117,6 +132,7 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
     setOptionSelected("");
     setIsModalOpen(false);
     setLoading(false);
+    setShowPicker(false);
   };
 
   const handleCancel = () => resetModal();
@@ -218,6 +234,8 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
               maxWidth: "500px",
               paddingLeft: "0px",
             }}
+            showCount
+            maxLength={3000}
           />
           <div
             className="embla mt-3 mb-4"
@@ -228,7 +246,7 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
               <ImageUpload />
             </div>
           </div>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3">
             <Upload
               fileList={fileList}
               onChange={handleChange}
@@ -243,6 +261,26 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                 Upload
               </Button>
             </Upload>
+            <div>
+              <Button
+                type="text"
+                style={{
+                  color: "gray",
+                  backgroundColor: "#f0f0f0",
+                  position: "relative",
+                }}
+                onClick={() => setShowPicker(!showPicker)}
+              >
+                Emoji
+              </Button>
+              {showPicker && (
+                <EmojiPicker
+                  onEmojiClick={handleEmojiClick}
+                  style={{ position: "absolute" }}
+                />
+              )}
+            </div>
+
             <Select
               placeholder="Choose your room"
               onChange={(value) => setOptionSelected(value)}
@@ -267,6 +305,7 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
           </div>
         </div>
       </div>
+
       <div className="flex justify-end">
         <Button
           type="default"

@@ -1,5 +1,5 @@
 import { ConfigProvider, Tabs } from "antd";
-import { useParams, useNavigate, Outlet } from "react-router-dom";
+import { useParams, useNavigate, Outlet, useLocation } from "react-router-dom";
 import { moderatorTheme } from "../../utils/theme";
 
 const { TabPane } = Tabs;
@@ -8,9 +8,13 @@ const ModeratorContainer = () => {
   const url = window.location.href.split("/");
   const status = url[url.length - 1];
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const { roomName } = state;
 
   const onTabChange = (key: string) => {
-    navigate(`/moderator/${roomId}/${key}`);
+    navigate(`/moderator/${roomId}/${key}`, {
+      state: { roomName: roomName },
+    });
     window.scrollTo(0, 0);
   };
 
@@ -21,6 +25,16 @@ const ModeratorContainer = () => {
           className="h-full pt-2"
           style={{ width: "100%", maxWidth: "650px" }}
         >
+          <div
+            style={{
+              width: "100%",
+              textAlign: "center",
+              fontWeight: "500",
+              fontSize: "18px",
+            }}
+          >
+            {roomName}
+          </div>
           <div
             style={{
               border: "1px solid #ccc",

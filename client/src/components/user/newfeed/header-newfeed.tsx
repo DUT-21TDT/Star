@@ -26,7 +26,7 @@ const HeaderNewFeed: React.FC<IProps> = ({ itemActive, menuItems }) => {
             placement="bottom"
             trigger={["click"]}
           >
-            <DownOutlined style={{ fontSize: "14px" }} />
+            <DownOutlined style={{ fontSize: "11px" }} />
           </Dropdown>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Avatar, Button, message, Popover } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { PhotoProvider, PhotoView } from "react-photo-view";
@@ -33,6 +33,65 @@ interface IProps {
   handleChangeStatusPostState: (postId: string, status: string) => void;
 }
 
+const ContentWithSeeMore: React.FC<{ sanitizedContent: string }> = ({
+  sanitizedContent,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isLongContent, setIsLongContent] = useState(false);
+  const contentRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      const previousMaxHeight = contentRef.current.style.maxHeight;
+      const previousOverflow = contentRef.current.style.overflow;
+
+      contentRef.current.style.maxHeight = "none";
+      contentRef.current.style.overflow = "visible";
+
+      const lineHeight = 22;
+      const totalHeight = contentRef.current.offsetHeight;
+      const maxHeight = lineHeight * 10;
+
+      setIsLongContent(totalHeight > maxHeight);
+
+      contentRef.current.style.maxHeight = previousMaxHeight;
+      contentRef.current.style.overflow = previousOverflow;
+    }
+  }, [sanitizedContent]);
+
+  return (
+    <div>
+      <p
+        ref={contentRef}
+        style={{
+          lineHeight: "22px",
+          fontSize: "15px",
+          textAlign: "left",
+          marginTop: "4px",
+          wordBreak: "break-word",
+          maxHeight: isExpanded ? "none" : "220px",
+          overflow: isExpanded ? "visible" : "hidden",
+        }}
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+      ></p>
+      {isLongContent && !isExpanded && (
+        <span
+          onClick={() => setIsExpanded(true)}
+          style={{
+            display: "block",
+            color: "#1B75D0",
+            marginTop: "8px",
+            cursor: "pointer",
+            fontSize: "15px",
+          }}
+        >
+          See more
+        </span>
+      )}
+    </div>
+  );
+};
+
 const PostModerator: React.FC<IProps> = (props) => {
   const { postData, handleChangeStatusPostState } = props;
   const { roomId = "" } = useParams<{ roomId: string }>();
@@ -53,10 +112,12 @@ const PostModerator: React.FC<IProps> = (props) => {
   } = postData;
 
   const sanitizedContent = DOMPurify.sanitize(
-    content.replace(
-      /(https?:\/\/\S+)/g,
-      '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#1B75D0] hover:text-[#165ca3]">$1</a>'
-    ),
+    content
+      .replace(
+        /(https?:\/\/\S+)/g,
+        '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#1B75D0] hover:text-[#165ca3]">$1</a>'
+      )
+      .replace(/\n/g, "<br />"),
     {
       ADD_ATTR: ["target"],
       FORBID_TAGS: ["style"],
@@ -283,7 +344,7 @@ const PostModerator: React.FC<IProps> = (props) => {
           </div>
         )}
 
-        <div className="py-2">
+        {/* <div className="py-2">
           <p
             style={{
               lineHeight: "20px",
@@ -293,7 +354,8 @@ const PostModerator: React.FC<IProps> = (props) => {
             }}
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           ></p>
-        </div>
+        </div> */}
+        <ContentWithSeeMore sanitizedContent={sanitizedContent} />
 
         {/* {postImageUrls && postImageUrls.length > 0 && (
           <div

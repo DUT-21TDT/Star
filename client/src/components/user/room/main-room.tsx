@@ -75,7 +75,11 @@ const MainRoomContent: React.FC = () => {
                 style={{
                   cursor: "pointer",
                 }}
-                onClick={() => navigate(`/moderator/${item.id}/pending`)}
+                onClick={() =>
+                  navigate(`/moderator/${item.id}/pending`, {
+                    state: { roomName: item.name },
+                  })
+                }
               >
                 <div className="flex items-center justify-between w-full">
                   <div>
