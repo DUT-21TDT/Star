@@ -1,5 +1,4 @@
 import { Tag } from "antd";
-import { useState } from "react";
 
 interface IProps {
   countPost: number;

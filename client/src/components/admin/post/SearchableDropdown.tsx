@@ -3,8 +3,6 @@ import { FiSearch, FiX } from "react-icons/fi";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { getAllPostInRoom } from "../../../service/postAPI.ts";
 import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { message } from "antd";
 
 interface PostType {
   id: string;
@@ -30,7 +28,7 @@ interface IProps {
 }
 
 const SearchableDropdown: React.FC<IProps> = (props: IProps) => {
-  const { roomId, posts, refetchPosts } = props;
+  const { roomId } = props;
 
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
