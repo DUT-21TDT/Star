@@ -6,12 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class UserActivityConsumer {
@@ -21,9 +23,11 @@ public class UserActivityConsumer {
     private static final Logger logger = LoggerFactory.getLogger(NotificationProducerImpl.class);
 
 
-    public UserActivityConsumer(List<UserActivityHandler> handlers) {
+    public UserActivityConsumer(@Autowired List<UserActivityHandler> handlers) {
         this.handlers = handlers.stream()
-                .collect(Collectors.toMap(UserActivityHandler::getRoutingKey, handler -> handler));
+                .flatMap(handler -> Stream.of(handler.getRoutingKey())
+                        .map(routingKey -> Map.entry(routingKey, handler)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     // Delegate the handling of the message to the appropriate handler
@@ -35,8 +39,12 @@ public class UserActivityConsumer {
         UserActivityHandler handler = handlers.get(routingKey);
         if (handler != null) {
             try {
-                handler.handle(message);
-            } catch (IOException e) {
+                if (routingKey.startsWith("notification.UNDO_")) {
+                    handler.undo(message);
+                } else {
+                    handler.handle(message);
+                }
+            } catch(IOException e){
                 logger.error("Failed to handle user activity message", e);
             }
         } else {

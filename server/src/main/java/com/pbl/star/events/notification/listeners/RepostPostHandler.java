@@ -14,22 +14,21 @@ import java.io.IOException;
 import java.time.Instant;
 
 @Component
-public class LikePostHandler implements UserActivityHandler {
+public class RepostPostHandler implements UserActivityHandler {
 
     private final ObjectMapper objectMapper;
     private final PostService postService;
     private final NotificationService notificationService;
 
-    public LikePostHandler(PostService postService, NotificationService notificationService) {
+    public RepostPostHandler(PostService postService, NotificationService notificationService) {
         this.objectMapper = new JacksonConfig().queueObjectMapper();
         this.postService = postService;
         this.notificationService = notificationService;
     }
 
-
     @Override
     public String[] getRoutingKey() {
-        return new String[]{"notification.like_post", "notification.UNDO_like_post"};
+        return new String[]{"notification.repost_post", "notification.UNDO_repost_post"};
     }
 
     @Override
@@ -48,18 +47,17 @@ public class LikePostHandler implements UserActivityHandler {
         String receiverId = post.getUserId();
 
         if (!actorId.equals(receiverId)) {
-            notificationService.createLikePostNotification(postId, actorId, timestamp, receiverId);
+            notificationService.createRepostPostNotification(postId, actorId, timestamp, receiverId);
         }
     }
 
     @Override
     public void undo(Message message) throws IOException {
-
         InteractPostEvent event = objectMapper.readValue(message.getBody(), InteractPostEvent.class);
 
         String postId = event.getPostId();
         String actorId = event.getActorId();
 
-        notificationService.undoLikePostNotification(postId, actorId);
+        notificationService.undoRepostPostNotification(postId, actorId);
     }
 }

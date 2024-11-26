@@ -3,10 +3,9 @@ package com.pbl.star.events.notification.listeners;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
 import com.pbl.star.entities.Post;
-import com.pbl.star.events.notification.InteractPostEvent;
+import com.pbl.star.events.notification.ModeratePostEvent;
 import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.services.domain.PostService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 
@@ -14,52 +13,37 @@ import java.io.IOException;
 import java.time.Instant;
 
 @Component
-public class LikePostHandler implements UserActivityHandler {
+public class RejectPostHandler implements UserActivityHandler {
 
     private final ObjectMapper objectMapper;
     private final PostService postService;
     private final NotificationService notificationService;
 
-    public LikePostHandler(PostService postService, NotificationService notificationService) {
+    public RejectPostHandler(PostService postService, NotificationService notificationService) {
         this.objectMapper = new JacksonConfig().queueObjectMapper();
         this.postService = postService;
         this.notificationService = notificationService;
     }
-
-
     @Override
     public String[] getRoutingKey() {
-        return new String[]{"notification.like_post", "notification.UNDO_like_post"};
+        return new String[]{"notification.reject_post"};
     }
 
     @Override
     public void handle(Message message) throws IOException {
-
-        InteractPostEvent event = objectMapper.readValue(message.getBody(), InteractPostEvent.class);
-
+        ModeratePostEvent event = objectMapper.readValue(message.getBody(), ModeratePostEvent.class);
         String postId = event.getPostId();
-        String actorId = event.getActorId();
         Instant timestamp = event.getTimestamp();
 
         Post post = postService.findExistPostById(postId).orElse(null);
 
         if (post == null) return;
 
-        String receiverId = post.getUserId();
-
-        if (!actorId.equals(receiverId)) {
-            notificationService.createLikePostNotification(postId, actorId, timestamp, receiverId);
-        }
+        notificationService.createRejectPostNotification(postId, timestamp, post.getUserId());
     }
 
     @Override
     public void undo(Message message) throws IOException {
 
-        InteractPostEvent event = objectMapper.readValue(message.getBody(), InteractPostEvent.class);
-
-        String postId = event.getPostId();
-        String actorId = event.getActorId();
-
-        notificationService.undoLikePostNotification(postId, actorId);
     }
 }
