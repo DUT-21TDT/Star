@@ -7,9 +7,13 @@ import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.user.FollowResponse;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
+import com.pbl.star.entities.Following;
 import com.pbl.star.enums.FollowRequestAction;
+import com.pbl.star.enums.FollowRequestStatus;
+import com.pbl.star.enums.FollowStatus;
 import com.pbl.star.services.domain.FollowService;
 import com.pbl.star.services.domain.UserService;
+import com.pbl.star.services.external.NotificationProducer;
 import com.pbl.star.usecase.enduser.InteractUserUsecase;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,8 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
 
     private final UserService userService;
     private final FollowService followService;
+
+    private final NotificationProducer notificationProducer;
 
     @Override
     public Slice<OnSearchProfile> searchUsers(String keyword, int limit, String afterId) {
@@ -58,13 +64,34 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     @Override
     public FollowResponse followUser(String followeeId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return followService.sendFollowRequest(currentUserId, followeeId);
+        Following savedFollowing = followService.sendFollowRequest(currentUserId, followeeId);
+
+        FollowResponse response = FollowResponse.builder()
+                .id(savedFollowing.getId())
+                .followStatus(savedFollowing.getStatus() == FollowRequestStatus.ACCEPTED ?
+                        FollowStatus.FOLLOWING : FollowStatus.REQUESTED
+                )
+                .build();
+
+        if (response.getFollowStatus() == FollowStatus.FOLLOWING) {
+            notificationProducer.pushFollowMessage(savedFollowing);
+        } else {
+            notificationProducer.pushRequestFollowMessage(savedFollowing);
+        }
+
+        return response;
     }
 
     @Override
     public void unfollowUser(String followeeId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        followService.removeFollowing(currentUserId, followeeId);
+        Following deletedFollowing = followService.removeFollowing(currentUserId, followeeId);
+
+        if (deletedFollowing.getStatus().equals(FollowRequestStatus.ACCEPTED)) {
+            notificationProducer.pushUnfollowMessage(deletedFollowing);
+        } else {
+            notificationProducer.pushRevokeRequestFollowMessage(deletedFollowing);
+        }
     }
 
     @Override
@@ -76,7 +103,9 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     @Override
     public void acceptFollowRequest(String followingId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        followService.updateFollowRequestStatus(currentUserId, followingId, FollowRequestAction.ACCEPT);
+        Following savedFollowing = followService.updateFollowRequestStatus(currentUserId, followingId, FollowRequestAction.ACCEPT);
+
+        notificationProducer.pushAcceptFollowMessage(savedFollowing);
     }
 
     @Override

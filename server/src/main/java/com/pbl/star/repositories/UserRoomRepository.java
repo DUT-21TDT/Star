@@ -17,4 +17,7 @@ public interface UserRoomRepository extends JpaRepository<UserRoom, String> {
 
     @Query("SELECT DISTINCT ur.roomId FROM UserRoom ur WHERE ur.userId = :userId")
     List<String> findRoomIdsByUserId(String userId);
+
+    @Query("SELECT ur.userId FROM UserRoom ur WHERE ur.roomId = :roomId AND ur.role = 'MODERATOR'")
+    List<String> findModeratorIdsByRoomId(String roomId);
 }

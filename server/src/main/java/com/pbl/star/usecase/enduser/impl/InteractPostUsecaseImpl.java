@@ -3,6 +3,7 @@ package com.pbl.star.usecase.enduser.impl;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.response.CustomSlice;
+import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostLike;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
@@ -28,19 +29,25 @@ public class InteractPostUsecaseImpl implements InteractPostUsecase {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         PostLike like = postInteractionService.likePost(currentUserId, postId);
 
-        notificationProducer.pushLikePostEvent(like);
+        notificationProducer.pushLikePostMessage(like);
     }
 
     @Override
     public void unlikePost(String postId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         postInteractionService.unlikePost(currentUserId, postId);
+
+        notificationProducer.pushUnlikePostMessage(postId, currentUserId);
     }
 
     @Override
     public String replyPost(CreatePostParams createReplyParams) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return postService.createReply(currentUserId, createReplyParams);
+        Post savedReply = postService.createReply(currentUserId, createReplyParams);
+
+        notificationProducer.pushReplyPostMessage(savedReply);
+
+        return savedReply.getId();
     }
 
     @Override

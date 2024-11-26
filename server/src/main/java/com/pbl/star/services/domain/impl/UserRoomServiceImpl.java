@@ -123,4 +123,9 @@ public class UserRoomServiceImpl implements UserRoomService {
     public List<UserInRoom> getMembers(@NonNull String roomId, String keyword) {
         return userRepository.findUsersInRoom(roomId, keyword);
     }
+
+    @Override
+    public List<String> getModeratorIds(@NonNull String roomId) {
+        return userRoomRepository.findModeratorIdsByRoomId(roomId);
+    }
 }

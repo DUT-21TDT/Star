@@ -4,6 +4,7 @@ import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
+import com.pbl.star.entities.Post;
 import org.springframework.data.domain.Slice;
 
 import java.time.Instant;
