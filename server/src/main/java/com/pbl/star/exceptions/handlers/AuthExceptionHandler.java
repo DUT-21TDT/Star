@@ -22,7 +22,7 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler({ModeratorAccessException.class, AuthorizationDeniedException.class, ResourceOwnershipException.class })
+    @ExceptionHandler({ AuthorizationDeniedException.class })
     public ResponseEntity<?> handleModeratorAccessException(final Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
