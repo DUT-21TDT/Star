@@ -1,7 +1,6 @@
 package com.pbl.star.services.domain;
 
 import com.pbl.star.dtos.query.notification.NotificationForUserDTO;
-import com.pbl.star.enums.NotificationType;
 import org.springframework.data.domain.Slice;
 
 import java.time.Instant;

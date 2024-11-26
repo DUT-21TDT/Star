@@ -6,7 +6,6 @@ import com.pbl.star.entities.Post;
 import com.pbl.star.events.notification.InteractPostEvent;
 import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.services.domain.PostService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 

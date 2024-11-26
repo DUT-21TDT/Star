@@ -2,8 +2,6 @@ package com.pbl.star.exceptions.handlers;
 
 import com.pbl.star.exceptions.InvalidVerificationTokenException;
 import com.pbl.star.exceptions.InvalidSignUpParamsException;
-import com.pbl.star.exceptions.ModeratorAccessException;
-import com.pbl.star.exceptions.ResourceOwnershipException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
