@@ -5,6 +5,7 @@ import org.springframework.amqp.core.Message;
 import java.io.IOException;
 
 public interface UserActivityHandler {
-    String getRoutingKey();
+    String[] getRoutingKey();
     void handle(Message message) throws IOException;
+    void undo(Message message) throws IOException;
 }
