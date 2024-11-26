@@ -1,5 +1,6 @@
 package com.pbl.star.entities;
 
+import com.pbl.star.enums.ArtifactType;
 import com.pbl.star.enums.NotificationType;
 import com.pbl.star.utils.IdGenerator;
 import jakarta.persistence.*;
@@ -24,8 +25,15 @@ public class NotificationObject {
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
+    @Column(name = "ref")
+    private String ref;
+
     @Column(name = "artifact_id")
     private String artifactId;
+
+    @Column(name = "artifact_type")
+    @Enumerated(EnumType.STRING)
+    private ArtifactType artifactType;
 
     @Column(name = "is_read")
     private boolean isRead;

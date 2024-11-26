@@ -1,7 +1,7 @@
 package com.pbl.star.enums;
 
 public enum NotificationType {
-    CREATE_POST,
+    NEW_PENDING_POST,
     APPROVE_POST,
     REJECT_POST,
     LIKE_POST,
