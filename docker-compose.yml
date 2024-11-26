@@ -24,3 +24,7 @@ services:
       - AWS_REGION=ap-southeast-1
     networks:
       - "${BRANCH}_app-network"
+
+networks:
+  "${BRANCH}_app-network":
+    external: true
