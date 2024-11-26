@@ -196,6 +196,7 @@ const useGetRepliesByPostId = (
 };
 
 const useGetPostDetails = (postId: string) => {
+  console.log(postId)
   return {
     data: {
       id: "1",

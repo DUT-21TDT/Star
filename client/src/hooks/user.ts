@@ -137,6 +137,7 @@ const useFetchAllUsers = (keyword: string) => {
 };
 
 const useGetUserDetails = (userId: string) => {
+  console.log(userId)
   return {
     data: {
       name: "John Doe",
