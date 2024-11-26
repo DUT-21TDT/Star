@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
 import com.pbl.star.events.notification.FollowUserEvent;
 import com.pbl.star.services.domain.NotificationService;
-import com.pbl.star.services.domain.PostService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 
