@@ -9,5 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface NotificationObjectRepository extends JpaRepository<NotificationObject, String> {
-    Optional<NotificationObject> findByNotificationTypeAndArtifactId(NotificationType notificationType, String artifactId);
+    Optional<NotificationObject> findByNotificationTypeAndRef(NotificationType notificationType, String refId);
+
+    void deleteByNotificationTypeAndRef(NotificationType notificationType, String refId);
 }

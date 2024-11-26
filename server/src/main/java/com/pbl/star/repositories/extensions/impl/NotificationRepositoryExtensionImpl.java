@@ -2,6 +2,7 @@ package com.pbl.star.repositories.extensions.impl;
 
 import com.pbl.star.dtos.query.notification.NotificationActorDTO;
 import com.pbl.star.dtos.query.notification.NotificationForUserDTO;
+import com.pbl.star.enums.ArtifactType;
 import com.pbl.star.enums.NotificationType;
 import com.pbl.star.repositories.extensions.NotificationRepositoryExtension;
 import jakarta.persistence.EntityManager;
@@ -24,9 +25,9 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
     public Slice<NotificationForUserDTO> getNotifications(Pageable pageable, Instant after, String userId) {
 
         String sql = "SELECT n.notification_id, " +
-                "           nob.notification_type, nob.artifact_id, nob.is_read," +
+                "           nob.notification_type, nob.artifact_id, nob.artifact_type, nob.is_read," +
                 "           nc.actor_id, nc.change_at, " +
-                "           (SELECT COUNT(*) FROM notification_change _nc WHERE _nc.notification_object_id = nob.notification_object_id), " +
+                "           (SELECT COUNT(distinct _nc.actor_id) FROM notification_change _nc WHERE _nc.notification_object_id = nob.notification_object_id), " +
                 "           u.username, u.avatar_url " +
                 "FROM notification n " +
                 "INNER JOIN notification_object nob " +
@@ -68,15 +69,16 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
                         .id((String) row[0])
                         .type(NotificationType.valueOf((String) row[1]))
                         .artifactId((String) row[2])
-                        .isRead((Boolean) row[3])
-                        .numberOfActors(((Long) row[6]).intValue())
+                        .artifactType(ArtifactType.valueOf((String) row[3]))
+                        .isRead((Boolean) row[4])
+                        .numberOfActors(((Long) row[7]).intValue())
                         .lastActor(NotificationActorDTO.builder()
-                                .id((String) row[4])
-                                .username((String) row[7])
-                                .avatarUrl((String) row[8])
+                                .id((String) row[5])
+                                .username((String) row[8])
+                                .avatarUrl((String) row[9])
                                 .build()
                         )
-                        .changeAt((Instant) row[5])
+                        .changeAt((Instant) row[6])
                         .build()
                 )
                 .toList();

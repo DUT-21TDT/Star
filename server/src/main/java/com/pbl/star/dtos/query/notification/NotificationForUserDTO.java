@@ -1,5 +1,6 @@
 package com.pbl.star.dtos.query.notification;
 
+import com.pbl.star.enums.ArtifactType;
 import com.pbl.star.enums.NotificationType;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class NotificationForUserDTO {
 
     private NotificationType type;
     private String artifactId;
+    private ArtifactType artifactType;
     private boolean isRead;
 
     private NotificationActorDTO lastActor;
