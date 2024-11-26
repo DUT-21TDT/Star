@@ -37,7 +37,7 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
-    public FollowResponse sendFollowRequest(String followerId, String followeeId) {
+    public Following sendFollowRequest(String followerId, String followeeId) {
 
         if (followerId.equals(followeeId)) {
             throw new IllegalRequestArgumentException("Cannot follow self");
@@ -57,18 +57,12 @@ public class FollowServiceImpl implements FollowService {
                 .followAt(Instant.now())
                 .build();
 
-        Following savedFollowing = followingRepository.save(following);
-        return FollowResponse.builder()
-                .id(savedFollowing.getId())
-                .followStatus(savedFollowing.getStatus() == FollowRequestStatus.ACCEPTED ?
-                        FollowStatus.FOLLOWING : FollowStatus.REQUESTED
-                )
-                .build();
+        return followingRepository.save(following);
     }
 
     @Override
     @Transactional
-    public void updateFollowRequestStatus(String followeeId, String followingId, FollowRequestAction action) {
+    public Following updateFollowRequestStatus(String followeeId, String followingId, FollowRequestAction action) {
         Following following = followingRepository.findById(followingId)
                 .orElseThrow(() -> new EntityNotFoundException("Following not found"));
 
@@ -80,26 +74,34 @@ public class FollowServiceImpl implements FollowService {
             throw new IllegalRequestArgumentException("Cannot update status of non-pending request");
         }
 
+        Following savedFollowing;
+
         switch (action) {
             case ACCEPT -> {
                 following.setStatus(FollowRequestStatus.ACCEPTED);
                 following.setFollowAt(Instant.now());
-                followingRepository.save(following);
+                savedFollowing = followingRepository.save(following);
             }
 
-            case REJECT -> followingRepository.delete(following);
+            case REJECT -> {
+                followingRepository.delete(following);
+                savedFollowing = null;
+            }
 
             default -> throw new IllegalRequestArgumentException("Invalid action");
         }
+
+        return savedFollowing;
     }
 
     @Override
     @Transactional
-    public void removeFollowing(String followerId, String followeeId) {
+    public Following removeFollowing(String followerId, String followeeId) {
         Following following = followingRepository.findByFollowerIdAndFolloweeId(followerId, followeeId)
                 .orElseThrow(() -> new EntityNotFoundException("Following not found"));
 
         followingRepository.delete(following);
+        return following;
     }
 
     @Override

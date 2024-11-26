@@ -48,7 +48,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public String createPost(String userId, CreatePostParams createPostParams) {
+    public Post createPost(String userId, CreatePostParams createPostParams) {
 
         CreatePostValidator.validateCreatePostRequiredFields(createPostParams);
 
@@ -76,7 +76,7 @@ public class PostServiceImpl implements PostService {
             saveImagesInPost(savedPost.getId(), imageFileNames);
         }
 
-        return savedPost.getId();
+        return savedPost;
     }
 
     private void saveImagesInPost(String postId, @NonNull List<String> imageFileNames) {
@@ -150,7 +150,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void moderatePostStatus(String postId, PostStatus status, String moderatorId) {
+    public Post moderatePostStatus(String postId, PostStatus status, String moderatorId) {
         Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
 
@@ -165,7 +165,7 @@ public class PostServiceImpl implements PostService {
         post.setStatus(status);
         post.setModeratedBy(moderatorId);
         post.setModeratedAt(Instant.now());
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     @Override
@@ -189,7 +189,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePostOfUser(String postId, String userId) {
+    public Post deletePostOfUser(String postId, String userId) {
         Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
 
@@ -199,12 +199,12 @@ public class PostServiceImpl implements PostService {
 
         post.setDeleted(true);
         post.setDeletedAt(Instant.now());
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     @Override
     @Transactional
-    public String createReply(String userId, CreatePostParams createReplyParams) {
+    public Post createReply(String userId, CreatePostParams createReplyParams) {
 
         CreatePostValidator.validateCreateReplyRequiredFields(createReplyParams);
 
@@ -237,7 +237,7 @@ public class PostServiceImpl implements PostService {
             saveImagesInPost(savedReply.getId(), imageFileNames);
         }
 
-        return savedReply.getId();
+        return savedReply;
     }
 
     @Override
