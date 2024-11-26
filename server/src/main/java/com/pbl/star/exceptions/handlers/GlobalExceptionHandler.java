@@ -1,9 +1,6 @@
 package com.pbl.star.exceptions.handlers;
 
-import com.pbl.star.exceptions.EntityConflictException;
-import com.pbl.star.exceptions.EntityNotFoundException;
-import com.pbl.star.exceptions.IllegalRequestArgumentException;
-import com.pbl.star.exceptions.RequiredFieldMissingException;
+import com.pbl.star.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +26,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({ IllegalRequestArgumentException.class })
     public ResponseEntity<?> handleIllegalRequestArgumentException(final Exception e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
+    }
+
+    @ExceptionHandler({ ModeratorAccessException.class })
+    public ResponseEntity<?> handleModeratorAccessException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
+
+    @ExceptionHandler({ ResourceOwnershipException.class })
+    public ResponseEntity<?> handleResourceOwnershipException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
     @ExceptionHandler({ RuntimeException.class })
