@@ -26,7 +26,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public Slice<PostForUserDTO> findExistPostsOfUserByStatus(Pageable pageable, Instant after, PostStatus status, String userId) {
+    public Slice<PostForUserDTO> findExistPostsOfUserByStatusAsUser(Pageable pageable, Instant after, PostStatus status, String userId) {
 
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
@@ -45,6 +45,370 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         }
 
         return getSlicePostForUserDTOS(pageable, query);
+    }
+
+    @Override
+    public Slice<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus
+            status, String... roomIds) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+
+        String sql = getPostForUserQuery(ConditionType.ROOM, after, status);
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+        query
+                .setParameter("roomIds", List.of(roomIds))
+                .setParameter("currentUserId", currentUserId)
+                .setParameter("status", status.name())
+                .setFirstResult(0)
+                .setMaxResults(pageable.getPageSize() + 1);
+
+        if (after != null) {
+            query.setParameter("after", after);
+        }
+
+        return getSlicePostForUserDTOS(pageable, query);
+    }
+
+    private static String getPostForUserQuery(ConditionType type, Instant after, PostStatus status) {
+
+        String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
+                "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
+                "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
+                "   (SELECT COUNT(*) FROM post_repost pr WHERE pr.post_id = p.post_id) AS number_of_reposts, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
+                "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
+                "p.room_id, r.name " +
+                "FROM post p " +
+                "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
+                "INNER JOIN room r ON p.room_id = r.room_id " +
+                "WHERE p.is_deleted = FALSE " +
+                "AND p.parent_post_id is null ";
+
+
+        if (type == ConditionType.USER) {
+            sql += "AND p.user_id = :userId ";
+        } else if (type == ConditionType.ROOM) {
+            sql += "AND p.room_id IN :roomIds ";
+        }
+
+        if (status != null) {
+            sql += "AND p.status = :status ";
+        }
+
+        if (after != null) {
+            sql += "AND p.created_at < :after ";
+        }
+
+        return sql + "ORDER BY p.created_at DESC, p.post_id DESC ";
+    }
+
+    @NonNull
+    private Slice<PostForUserDTO> getSlicePostForUserDTOS(Pageable pageable, Query query) {
+
+        List<Object[]> resultList = query.getResultList();
+        boolean hasNext = resultList.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            resultList.removeLast();
+        }
+
+        List<PostForUserDTO> postList = resultList.stream()
+                .map(this::toPostForUserDTO)
+                .toList();
+
+        return new SliceImpl<>(postList, pageable, hasNext);
+    }
+
+    private PostForUserDTO toPostForUserDTO(Object[] source) {
+        return PostForUserDTO.builder()
+                .id((String) source[0])
+                .idOfCreator((String) source[1])
+                .usernameOfCreator((String) source[2])
+                .avatarUrlOfCreator((String) source[3])
+                .createdAt((Instant) source[4])
+                .content((String) source[5])
+                .numberOfLikes(((Long) source[6]).intValue())
+                .numberOfComments(((Long) source[7]).intValue())
+                .numberOfReposts(((Long) source[8]).intValue())
+                .isLiked((boolean) source[9])
+                .isReposted((boolean) source[10])
+                .postImageUrls(source[11] == null ? null : List.of(((String) source[11]).split(",")))
+                .idOfRoom((String) source[12])
+                .nameOfRoom((String) source[13])
+                .build();
+    }
+
+    @Override
+    public Optional<PostForUserDTO> findExistPostByIdAsUser(String currentUserId, String postId) {
+
+        String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
+                "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
+                "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
+                "   (SELECT COUNT(*) FROM post_repost pr WHERE pr.post_id = p.post_id) AS number_of_reposts, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
+                "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
+                "p.room_id, r.name, p.parent_post_id " +
+                "FROM post p " +
+                "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
+                "INNER JOIN room r ON p.room_id = r.room_id " +
+                "WHERE p.is_deleted = false " +
+                "AND p.post_id = :postId ";
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+        query
+                .setParameter("currentUserId", currentUserId)
+                .setParameter("postId", postId);
+
+        Object[] result = (Object[]) query.getResultStream().findFirst().orElse(null);
+
+        return result == null ? Optional.empty() : Optional.of(
+                PostForUserDTO.builder()
+                        .id((String) result[0])
+                        .idOfCreator((String) result[1])
+                        .usernameOfCreator((String) result[2])
+                        .avatarUrlOfCreator((String) result[3])
+                        .createdAt((Instant) result[4])
+                        .content((String) result[5])
+                        .numberOfLikes(((Long) result[6]).intValue())
+                        .numberOfComments(((Long) result[7]).intValue())
+                        .numberOfReposts(((Long) result[8]).intValue())
+                        .isLiked((boolean) result[9])
+                        .isReposted((boolean) result[10])
+                        .postImageUrls(result[11] == null ? null : List.of(((String) result[11]).split(",")))
+                        .idOfRoom((String) result[12])
+                        .nameOfRoom((String) result[13])
+                        .idOfParentPost((String) result[14])
+                        .build()
+        );
+    }
+
+    @Override
+    public Slice<PostForUserDTO> findExistRepliesOfPostAsUser(Pageable pageable, Instant after, String currentUserId, String postId) {
+
+        String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
+                "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
+                "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
+                "   (SELECT COUNT(*) FROM post_repost pr WHERE pr.post_id = p.post_id) AS number_of_reposts, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
+                "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls," +
+                "p.parent_post_id " +
+                "FROM post p " +
+                "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
+                "WHERE p.is_deleted = false " +
+                "AND p.parent_post_id = :postId " +
+                "AND p.status = 'APPROVED' " +
+                (after == null ? "" : "AND p.created_at < :after ") +
+                "ORDER BY p.created_at DESC, p.post_id DESC ";
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+        query
+                .setParameter("currentUserId", currentUserId)
+                .setParameter("postId", postId)
+                .setMaxResults(pageable.getPageSize() + 1);
+
+        if (after != null) {
+            query.setParameter("after", after);
+        }
+
+        List<Object[]> resultList = query.getResultList();
+
+        boolean hasNext = resultList.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            resultList.removeLast();
+        }
+
+        List<PostForUserDTO> postList = resultList.stream()
+                .map(row -> (PostForUserDTO) PostForUserDTO.builder()
+                        .id((String) row[0])
+                        .idOfCreator((String) row[1])
+                        .usernameOfCreator((String) row[2])
+                        .avatarUrlOfCreator((String) row[3])
+                        .createdAt((Instant) row[4])
+                        .content((String) row[5])
+                        .numberOfLikes(((Long) row[6]).intValue())
+                        .numberOfComments(((Long) row[7]).intValue())
+                        .numberOfReposts(((Long) row[8]).intValue())
+                        .isLiked((boolean) row[9])
+                        .isReposted((boolean) row[10])
+                        .postImageUrls(row[11] == null ? null :
+                                List.of(((String) row[11]).split(","))
+                        )
+                        .idOfParentPost((String) row[12])
+                        .build()
+
+                )
+                .toList();
+
+        return new SliceImpl<>(postList, pageable, hasNext);
+    }
+
+    @Override
+    public Slice<ReplyOnWallDTO> findExistRepliesOnWallAsUser(Pageable pageable, Instant after, String currentUserId, String targetUserId) {
+        String sql = "SELECT r.post_id, r.user_id, r.username, r.avatar_url, r.created_at, r.content, r.parent_post_id, " +
+                "           r.post_image_urls, r.number_of_likes, r.number_of_comments, r.number_of_reposts, r.is_liked, r.is_reposted, " +
+                "           p.post_id, p.user_id, p.username, p.avatar_url, p.created_at, p.content, p.parent_post_id," +
+                "           p.post_image_urls, p.number_of_likes, p.number_of_comments, p.number_of_reposts, p.is_liked, p.is_reposted, p.room_id, p.name " +
+                "FROM (" +
+                "   SELECT p0.post_id, " +
+                "           u0.user_id, " +
+                "           u0.username, " +
+                "           u0.avatar_url, " +
+                "           p0.created_at, " +
+                "           p0.content, " +
+                "           p0.parent_post_id, " +
+                "       (SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) " +
+                "           FROM post_image pi " +
+                "           WHERE pi.post_id = p0.post_id) AS post_image_urls, " +
+                "       (SELECT COUNT(*) " +
+                "           FROM post_like pl " +
+                "           WHERE pl.post_id = p0.post_id) " +
+                "           AS number_of_likes, " +
+                "       (SELECT COUNT(*) " +
+                "           FROM post p01 " +
+                "           WHERE p01.parent_post_id = p0.post_id and p01.is_deleted = FALSE) " +
+                "           AS number_of_comments, " +
+                "       (SELECT COUNT(*) " +
+                "           FROM post_repost pr " +
+                "           WHERE pr.post_id = p0.post_id) " +
+                "           AS number_of_reposts, " +
+                "       (CASE WHEN EXISTS " +
+                "           (SELECT 1 " +
+                "               FROM post_like pl " +
+                "               WHERE pl.post_id = p0.post_id AND pl.user_id = :currentUserId) " +
+                "           THEN TRUE ELSE FALSE END) " +
+                "           AS is_liked, " +
+                "       (CASE WHEN EXISTS " +
+                "           (SELECT 1 " +
+                "               FROM post_repost pr " +
+                "               WHERE pr.post_id = p0.post_id AND pr.user_id = :currentUserId) " +
+                "           THEN TRUE ELSE FALSE END) " +
+                "           AS is_reposted " +
+                "   FROM post p0 " +
+                "   INNER JOIN \"user\" u0 ON p0.user_id = u0.user_id " +
+                "   WHERE p0.user_id = :targetUserId " +
+                "           AND p0.is_deleted = false " +
+                "           AND p0.parent_post_id is not null " +
+                (after == null ? "" : "AND p0.created_at < :after ") +
+                ") as r " +
+                "LEFT JOIN (" +
+                "   SELECT p1.post_id, " +
+                "           u1.user_id, " +
+                "           u1.username, " +
+                "           u1.avatar_url, " +
+                "           p1.created_at, " +
+                "           p1.content, " +
+                "           p1.parent_post_id, " +
+                "       (SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) " +
+                "           FROM post_image pi " +
+                "           WHERE pi.post_id = p1.post_id) AS post_image_urls, " +
+                "       (SELECT COUNT(*) " +
+                "           FROM post_like pl " +
+                "           WHERE pl.post_id = p1.post_id) " +
+                "           AS number_of_likes, " +
+                "       (SELECT COUNT(*) " +
+                "           FROM post p11 " +
+                "           WHERE p11.parent_post_id = p1.post_id and p11.is_deleted = FALSE) " +
+                "           AS number_of_comments, " +
+                "       (SELECT COUNT(*) " +
+                "           FROM post_repost pr " +
+                "           WHERE pr.post_id = p1.post_id) " +
+                "           AS number_of_reposts, " +
+                "       (CASE WHEN EXISTS " +
+                "           (SELECT 1 " +
+                "               FROM post_like pl " +
+                "               WHERE pl.post_id = p1.post_id AND pl.user_id = :currentUserId) " +
+                "           THEN TRUE ELSE FALSE END) " +
+                "           AS is_liked, " +
+                "       (CASE WHEN EXISTS " +
+                "           (SELECT 1 " +
+                "               FROM post_repost pr " +
+                "               WHERE pr.post_id = p1.post_id AND pr.user_id = :currentUserId) " +
+                "           THEN TRUE ELSE FALSE END) " +
+                "           AS is_reposted, " +
+                "           r.room_id, r.name " +
+                "   FROM post p1 " +
+                "   INNER JOIN \"user\" u1 ON p1.user_id = u1.user_id " +
+                "   INNER JOIN room r ON p1.room_id = r.room_id " +
+                "   WHERE p1.is_deleted = false " +
+                ") as p ON r.parent_post_id = p.post_id " +
+                "ORDER BY r.created_at DESC, r.post_id ";
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+        query
+                .setParameter("currentUserId", currentUserId)
+                .setParameter("targetUserId", targetUserId)
+                .setMaxResults(pageable.getPageSize() + 1);
+
+        if (after != null) {
+            query.setParameter("after", after);
+        }
+
+        List<Object[]> resultList = query.getResultList();
+
+        boolean hasNext = resultList.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            resultList.removeLast();
+        }
+
+        List<ReplyOnWallDTO> replies = new ArrayList<>();
+
+        for (Object[] row : resultList) {
+            PostForUserDTO reply = PostForUserDTO.builder()
+                    .id((String) row[0])
+                    .idOfCreator((String) row[1])
+                    .usernameOfCreator((String) row[2])
+                    .avatarUrlOfCreator((String) row[3])
+                    .createdAt((Instant) row[4])
+                    .content((String) row[5])
+                    .idOfParentPost((String) row[6])
+                    .postImageUrls(row[7] == null ? null : List.of(((String) row[7]).split(",")))
+                    .numberOfLikes(((Long) row[8]).intValue())
+                    .numberOfComments(((Long) row[9]).intValue())
+                    .numberOfReposts(((Long) row[10]).intValue())
+                    .isLiked((boolean) row[11])
+                    .isReposted((boolean) row[12])
+                    .build();
+
+            if (row[12] == null) {
+                replies.add(ReplyOnWallDTO.builder()
+                        .reply(reply)
+                        .parentPost(null)
+                        .build()
+                );
+                continue;
+            }
+
+            PostForUserDTO parentPost = PostForUserDTO.builder()
+                    .id((String) row[13])
+                    .idOfCreator((String) row[14])
+                    .usernameOfCreator((String) row[15])
+                    .avatarUrlOfCreator((String) row[16])
+                    .createdAt((Instant) row[17])
+                    .content((String) row[18])
+                    .idOfParentPost((String) row[19])
+                    .postImageUrls(row[20] == null ? null : List.of(((String) row[20]).split(",")))
+                    .numberOfLikes(((Long) row[21]).intValue())
+                    .numberOfComments(((Long) row[22]).intValue())
+                    .numberOfReposts(((Long) row[23]).intValue())
+                    .isLiked((boolean) row[24])
+                    .isReposted((boolean) row[25])
+                    .idOfRoom((String) row[26])
+                    .nameOfRoom((String) row[27])
+                    .build();
+
+            replies.add(ReplyOnWallDTO.builder()
+                    .reply(reply)
+                    .parentPost(parentPost)
+                    .build()
+            );
+        }
+
+        return new SliceImpl<>(replies, pageable, hasNext);
     }
 
     @Override
@@ -100,78 +464,6 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .nameOfRoom((String) row[9])
                         .build()
                 )
-                .toList();
-
-        return new SliceImpl<>(postList, pageable, hasNext);
-    }
-
-    @Override
-    public Slice<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus
-            status, String... roomIds) {
-        String currentUserId = AuthUtil.getCurrentUser().getId();
-
-        String sql = getPostForUserQuery(ConditionType.ROOM, after, status);
-
-        Query query = entityManager.createNativeQuery(sql, Object[].class);
-        query
-                .setParameter("roomIds", List.of(roomIds))
-                .setParameter("currentUserId", currentUserId)
-                .setParameter("status", status.name())
-                .setFirstResult(0)
-                .setMaxResults(pageable.getPageSize() + 1);
-
-        if (after != null) {
-            query.setParameter("after", after);
-        }
-
-        return getSlicePostForUserDTOS(pageable, query);
-    }
-
-    private static String getPostForUserQuery(ConditionType type, Instant after, PostStatus status) {
-
-        String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
-                "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
-                "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
-                "   (SELECT COUNT(*) FROM post_repost pr WHERE pr.post_id = p.post_id) AS number_of_reposts, " +
-                "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
-                "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.room_id, r.name " +
-                "FROM post p " +
-                "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
-                "INNER JOIN room r ON p.room_id = r.room_id " +
-                "WHERE p.is_deleted = FALSE " +
-                "AND p.parent_post_id is null ";
-
-
-        if (type == ConditionType.USER) {
-            sql += "AND p.user_id = :userId ";
-        } else if (type == ConditionType.ROOM) {
-            sql += "AND p.room_id IN :roomIds ";
-        }
-
-        if (status != null) {
-            sql += "AND p.status = :status ";
-        }
-
-        if (after != null) {
-            sql += "AND p.created_at < :after ";
-        }
-
-        return sql + "ORDER BY p.created_at DESC, p.post_id DESC ";
-    }
-
-    @NonNull
-    private Slice<PostForUserDTO> getSlicePostForUserDTOS(Pageable pageable, Query query) {
-
-        List<Object[]> resultList = query.getResultList();
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<PostForUserDTO> postList = resultList.stream()
-                .map(this::toPostForUserDTO)
                 .toList();
 
         return new SliceImpl<>(postList, pageable, hasNext);
@@ -251,279 +543,6 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 .toList();
 
         return new SliceImpl<>(postList, pageable, hasNext);
-    }
-
-
-    @Override
-    public Optional<PostForUserDTO> findExistPostByIdAsUser(String currentUserId, String postId) {
-
-        String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
-                "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
-                "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
-                "   (SELECT COUNT(*) FROM post_repost pr WHERE pr.post_id = p.post_id) AS number_of_reposts, " +
-                "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
-                "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.room_id, r.name, p.parent_post_id " +
-                "FROM post p " +
-                "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
-                "INNER JOIN room r ON p.room_id = r.room_id " +
-                "WHERE p.is_deleted = false " +
-                "AND p.post_id = :postId ";
-
-        Query query = entityManager.createNativeQuery(sql, Object[].class);
-        query
-                .setParameter("currentUserId", currentUserId)
-                .setParameter("postId", postId);
-
-        Object[] result = (Object[]) query.getResultStream().findFirst().orElse(null);
-
-        return result == null ? Optional.empty() : Optional.of(
-                PostForUserDTO.builder()
-                        .id((String) result[0])
-                        .idOfCreator((String) result[1])
-                        .usernameOfCreator((String) result[2])
-                        .avatarUrlOfCreator((String) result[3])
-                        .createdAt((Instant) result[4])
-                        .content((String) result[5])
-                        .numberOfLikes(((Long) result[6]).intValue())
-                        .numberOfComments(((Long) result[7]).intValue())
-                        .numberOfReposts(((Long) result[8]).intValue())
-                        .isLiked((boolean) result[9])
-                        .postImageUrls(result[10] == null ? null : List.of(((String) result[10]).split(",")))
-                        .idOfRoom((String) result[11])
-                        .nameOfRoom((String) result[12])
-                        .idOfParentPost((String) result[13])
-                        .build()
-        );
-    }
-
-    private PostForUserDTO toPostForUserDTO(Object[] source) {
-        return PostForUserDTO.builder()
-                .id((String) source[0])
-                .idOfCreator((String) source[1])
-                .usernameOfCreator((String) source[2])
-                .avatarUrlOfCreator((String) source[3])
-                .createdAt((Instant) source[4])
-                .content((String) source[5])
-                .numberOfLikes(((Long) source[6]).intValue())
-                .numberOfComments(((Long) source[7]).intValue())
-                .numberOfReposts(((Long) source[8]).intValue())
-                .isLiked((boolean) source[9])
-                .postImageUrls(source[10] == null ? null : List.of(((String) source[10]).split(",")))
-                .idOfRoom((String) source[11])
-                .nameOfRoom((String) source[12])
-                .build();
-    }
-
-    @Override
-    public Slice<PostForUserDTO> findExistRepliesOfPostAsUser(Pageable pageable, Instant after, String currentUserId, String postId) {
-
-        String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
-                "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
-                "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
-                "   (SELECT COUNT(*) FROM post_repost pr WHERE pr.post_id = p.post_id) AS number_of_reposts, " +
-                "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
-                "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls," +
-                "p.parent_post_id " +
-                "FROM post p " +
-                "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
-                "WHERE p.is_deleted = false " +
-                "AND p.parent_post_id = :postId " +
-                "AND p.status = 'APPROVED' " +
-                (after == null ? "" : "AND p.created_at < :after ") +
-                "ORDER BY p.created_at DESC, p.post_id DESC ";
-
-        Query query = entityManager.createNativeQuery(sql, Object[].class);
-        query
-                .setParameter("currentUserId", currentUserId)
-                .setParameter("postId", postId)
-                .setMaxResults(pageable.getPageSize() + 1);
-
-        if (after != null) {
-            query.setParameter("after", after);
-        }
-
-        List<Object[]> resultList = query.getResultList();
-
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<PostForUserDTO> postList = resultList.stream()
-                .map(row -> (PostForUserDTO) PostForUserDTO.builder()
-                        .id((String) row[0])
-                        .idOfCreator((String) row[1])
-                        .usernameOfCreator((String) row[2])
-                        .avatarUrlOfCreator((String) row[3])
-                        .createdAt((Instant) row[4])
-                        .content((String) row[5])
-                        .numberOfLikes(((Long) row[6]).intValue())
-                        .numberOfComments(((Long) row[7]).intValue())
-                        .numberOfReposts(((Long) row[8]).intValue())
-                        .isLiked((boolean) row[9])
-                        .postImageUrls(row[10] == null ? null :
-                                List.of(((String) row[10]).split(","))
-                        )
-                        .idOfParentPost((String) row[11])
-                        .build()
-
-                )
-                .toList();
-
-        return new SliceImpl<>(postList, pageable, hasNext);
-    }
-
-    @Override
-    public Slice<ReplyOnWallDTO> findExistRepliesOnWall(Pageable pageable, Instant after, String currentUserId, String targetUserId) {
-        String sql = "SELECT r.post_id, r.user_id, r.username, r.avatar_url, r.created_at, r.content, r.parent_post_id, " +
-                "           r.post_image_urls, r.number_of_likes, r.number_of_comments, r.number_of_reposts, r.is_liked, " +
-                "           p.post_id, p.user_id, p.username, p.avatar_url, p.created_at, p.content, p.parent_post_id," +
-                "           p.post_image_urls, p.number_of_likes, p.number_of_comments, p.number_of_reposts, p.is_liked, p.room_id, p.name " +
-                "FROM (" +
-                "   SELECT p0.post_id, " +
-                "           u0.user_id, " +
-                "           u0.username, " +
-                "           u0.avatar_url, " +
-                "           p0.created_at, " +
-                "           p0.content, " +
-                "           p0.parent_post_id, " +
-                "       (SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) " +
-                "           FROM post_image pi " +
-                "           WHERE pi.post_id = p0.post_id) AS post_image_urls, " +
-                "       (SELECT COUNT(*) " +
-                "           FROM post_like pl " +
-                "           WHERE pl.post_id = p0.post_id) " +
-                "           AS number_of_likes, " +
-                "       (SELECT COUNT(*) " +
-                "           FROM post p01 " +
-                "           WHERE p01.parent_post_id = p0.post_id and p01.is_deleted = FALSE) " +
-                "           AS number_of_comments, " +
-                "       (SELECT COUNT(*) " +
-                "           FROM post_repost pr " +
-                "           WHERE pr.post_id = p0.post_id) " +
-                "           AS number_of_reposts, " +
-                "       (CASE WHEN EXISTS " +
-                "           (SELECT 1 " +
-                "               FROM post_like pl " +
-                "               WHERE pl.post_id = p0.post_id AND pl.user_id = :currentUserId) " +
-                "           THEN TRUE ELSE FALSE END) " +
-                "           AS is_liked " +
-                "   FROM post p0 " +
-                "   INNER JOIN \"user\" u0 ON p0.user_id = u0.user_id " +
-                "   WHERE p0.user_id = :targetUserId " +
-                "           AND p0.is_deleted = false " +
-                "           AND p0.parent_post_id is not null " +
-                (after == null ? "" : "AND p0.created_at < :after ") +
-                ") as r " +
-                "LEFT JOIN (" +
-                "   SELECT p1.post_id, " +
-                "           u1.user_id, " +
-                "           u1.username, " +
-                "           u1.avatar_url, " +
-                "           p1.created_at, " +
-                "           p1.content, " +
-                "           p1.parent_post_id, " +
-                "       (SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) " +
-                "           FROM post_image pi " +
-                "           WHERE pi.post_id = p1.post_id) AS post_image_urls, " +
-                "       (SELECT COUNT(*) " +
-                "           FROM post_like pl " +
-                "           WHERE pl.post_id = p1.post_id) " +
-                "           AS number_of_likes, " +
-                "       (SELECT COUNT(*) " +
-                "           FROM post p11 " +
-                "           WHERE p11.parent_post_id = p1.post_id and p11.is_deleted = FALSE) " +
-                "           AS number_of_comments, " +
-                "       (SELECT COUNT(*) " +
-                "           FROM post_repost pr " +
-                "           WHERE pr.post_id = p1.post_id) " +
-                "           AS number_of_reposts, " +
-                "       (CASE WHEN EXISTS " +
-                "           (SELECT 1 " +
-                "               FROM post_like pl " +
-                "               WHERE pl.post_id = p1.post_id AND pl.user_id = :currentUserId) " +
-                "           THEN TRUE ELSE FALSE END) " +
-                "           AS is_liked, " +
-                "           r.room_id, r.name " +
-                "   FROM post p1 " +
-                "   INNER JOIN \"user\" u1 ON p1.user_id = u1.user_id " +
-                "   INNER JOIN room r ON p1.room_id = r.room_id " +
-                "   WHERE p1.is_deleted = false " +
-                ") as p ON r.parent_post_id = p.post_id " +
-                "ORDER BY p.created_at DESC, p.post_id ";
-
-        Query query = entityManager.createNativeQuery(sql, Object[].class);
-        query
-                .setParameter("currentUserId", currentUserId)
-                .setParameter("targetUserId", targetUserId)
-                .setMaxResults(pageable.getPageSize() + 1);
-
-        if (after != null) {
-            query.setParameter("after", after);
-        }
-
-        List<Object[]> resultList = query.getResultList();
-
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<ReplyOnWallDTO> replies = new ArrayList<>();
-
-        for (Object[] row : resultList) {
-            PostForUserDTO reply = (PostForUserDTO) PostForUserDTO.builder()
-                    .id((String) row[0])
-                    .idOfCreator((String) row[1])
-                    .usernameOfCreator((String) row[2])
-                    .avatarUrlOfCreator((String) row[3])
-                    .createdAt((Instant) row[4])
-                    .content((String) row[5])
-                    .idOfParentPost((String) row[6])
-                    .postImageUrls(row[7] == null ? null : List.of(((String) row[7]).split(",")))
-                    .numberOfLikes(((Long) row[8]).intValue())
-                    .numberOfComments(((Long) row[9]).intValue())
-                    .numberOfReposts(((Long) row[10]).intValue())
-                    .isLiked((boolean) row[11])
-                    .build();
-
-            if (row[12] == null) {
-                replies.add(ReplyOnWallDTO.builder()
-                        .reply(reply)
-                        .parentPost(null)
-                        .build()
-                );
-                continue;
-            }
-
-            PostForUserDTO parentPost = (PostForUserDTO) PostForUserDTO.builder()
-                    .id((String) row[12])
-                    .idOfCreator((String) row[13])
-                    .usernameOfCreator((String) row[14])
-                    .avatarUrlOfCreator((String) row[15])
-                    .createdAt((Instant) row[16])
-                    .content((String) row[17])
-                    .idOfParentPost((String) row[18])
-                    .postImageUrls(row[19] == null ? null : List.of(((String) row[19]).split(",")))
-                    .numberOfLikes(((Long) row[20]).intValue())
-                    .numberOfComments(((Long) row[21]).intValue())
-                    .numberOfReposts(((Long) row[22]).intValue())
-                    .isLiked((boolean) row[23])
-                    .idOfRoom((String) row[24])
-                    .nameOfRoom((String) row[25])
-                    .build();
-
-            replies.add(ReplyOnWallDTO.builder()
-                    .reply(reply)
-                    .parentPost(parentPost)
-                    .build()
-            );
-        }
-
-        return new SliceImpl<>(replies, pageable, hasNext);
     }
 
 

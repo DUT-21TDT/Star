@@ -55,4 +55,18 @@ public class PostController {
         postInteractUsecase.unlikePost(postId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{postId}/reposts")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> repostPost(@PathVariable String postId) {
+        postInteractUsecase.repostPost(postId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{postId}/reposts")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> deleteRepost(@PathVariable String postId) {
+        postInteractUsecase.deleteRepostPost(postId);
+        return ResponseEntity.ok().build();
+    }
 }

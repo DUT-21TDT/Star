@@ -18,4 +18,8 @@
     <include file="db/changelog/changelog-2024.11.10.xml" />
     <include file="db/changelog/changelog-2024.11.12.xml" />
     <include file="db/changelog/changelog-2024.11.16.xml" />
+    <include file="db/changelog/changelog-2024.11.22.xml" />
+    <include file="db/changelog/changelog-2024.11.24.xml" />
+    <include file="db/changelog/changelog-2024.11.25.xml" />
+    <include file="db/changelog/changelog-2024.11.27.xml" />
 </databaseChangeLog>

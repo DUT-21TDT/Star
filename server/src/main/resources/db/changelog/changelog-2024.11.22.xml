@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="21_notification_object_table" author="Quang Nguyen">
+        <createTable tableName="notification_object">
+            <column name="notification_object_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="notification_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="artifact_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_read" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="notification_object"
+                             columnNames="notification_type, artifact_id"/>
+    </changeSet>
+
+    <changeSet id="22_create_notification_change_table" author="Quang Nguyen">
+        <createTable tableName="notification_change">
+            <column name="notification_change_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="notification_object_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actor_id" type="CHAR(26)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="notification_change"
+                                 baseColumnNames="notification_object_id"
+                                 constraintName="fk_notification_change_notification_object"
+                                 referencedTableName="notification_object"
+                                 referencedColumnNames="notification_object_id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="notification_change"
+                                    baseColumnNames="actor_id"
+                                    constraintName="fk_notification_change_actor"
+                                    referencedTableName="user"
+                                    referencedColumnNames="user_id"
+                                    onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="23_create_notification_table" author="Quang Nguyen">
+        <createTable tableName="notification">
+            <column name="notification_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="notification_object_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receiver_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="notification"
+                                 baseColumnNames="notification_object_id"
+                                 constraintName="fk_notification_notification_object"
+                                 referencedTableName="notification_object"
+                                 referencedColumnNames="notification_object_id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="notification"
+                                    baseColumnNames="receiver_id"
+                                    constraintName="fk_notification_receiver"
+                                    referencedTableName="user"
+                                    referencedColumnNames="user_id"
+                                    onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

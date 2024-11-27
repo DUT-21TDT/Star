@@ -3,9 +3,12 @@ package com.pbl.star.usecase.enduser.impl;
 import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
+import com.pbl.star.dtos.query.post.RepostOnWallDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
+import com.pbl.star.entities.Post;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.services.domain.PostService;
+import com.pbl.star.services.external.NotificationProducer;
 import com.pbl.star.usecase.enduser.ManagePostUsecase;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +22,16 @@ import java.time.Instant;
 public class ManagePostUsecaseImpl implements ManagePostUsecase {
     private final PostService postService;
 
+    private final NotificationProducer notificationProducer;
+
     @Override
     public String createPost(CreatePostParams createPostParams) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return postService.createPost(currentUserId, createPostParams);
+        Post savedPost = postService.createPost(currentUserId, createPostParams);
+
+        notificationProducer.pushNewPendingPostMessage(savedPost);
+
+        return savedPost.getId();
     }
 
     @Override
@@ -57,12 +66,24 @@ public class ManagePostUsecaseImpl implements ManagePostUsecase {
     @Override
     public void deletePost(String postId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        postService.deletePostOfUser(postId, currentUserId);
+        Post deletedPost = postService.deletePostOfUser(postId, currentUserId);
+
+        if (deletedPost.getParentPostId() != null) {
+            notificationProducer.pushDeleteReplyMessage(deletedPost.getParentPostId(), currentUserId);
+        } else if (deletedPost.getStatus() == PostStatus.PENDING) {
+            notificationProducer.pushRemovePendingPostMessage(deletedPost);
+        }
     }
 
     @Override
     public Slice<ReplyOnWallDTO> getRepliesOnUserWall(String userId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.getRepliesOnWall(currentUserId, userId, limit, after);
+    }
+
+    @Override
+    public Slice<RepostOnWallDTO> getRepostsOnUserWall(String userId, int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return postService.getRepostsOnWall(currentUserId, userId, limit, after);
     }
 }

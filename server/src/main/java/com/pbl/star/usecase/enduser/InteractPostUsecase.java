@@ -12,6 +12,6 @@ public interface InteractPostUsecase {
     String replyPost(CreatePostParams createReplyParams);
     CustomSlice<PostForUserDTO> getRepliesOfPost(String postId, int limit, Instant after);
     void repostPost(String postId);
-    void unRepostPost(String postId);
+    void deleteRepostPost(String postId);
     void reportPost(String postId);
 }

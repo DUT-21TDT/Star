@@ -1,7 +1,6 @@
-package com.pbl.star.events.eventlisteners.impl;
+package com.pbl.star.events.auth.listeners;
 
-import com.pbl.star.events.OnConfirmSignUpEvent;
-import com.pbl.star.events.eventlisteners.ConfirmSignUpListener;
+import com.pbl.star.events.auth.OnConfirmSignUpEvent;
 import com.pbl.star.services.domain.VerificationTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -10,11 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ConfirmSignUpListenerImpl implements ConfirmSignUpListener {
+public class ConfirmSignUpListener {
 
     private final VerificationTokenService verificationTokenService;
 
-    @Override
     @Async
     @EventListener
     public void removeVerificationToken(OnConfirmSignUpEvent event) {

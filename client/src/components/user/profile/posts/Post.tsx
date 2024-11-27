@@ -38,6 +38,7 @@ interface IProps {
   nameOfRoom?: string;
   handleDeletePostSuccess?: (id: string) => void;
   isRemoved?: boolean;
+  isShowReplies?: boolean;
 }
 
 const Post: React.FC<IProps> = (props) => {
@@ -57,6 +58,7 @@ const Post: React.FC<IProps> = (props) => {
     nameOfRoom,
     isRemoved,
     handleDeletePostSuccess,
+    isShowReplies,
   } = props;
 
   const sanitizedContent = DOMPurify.sanitize(
@@ -187,9 +189,10 @@ const Post: React.FC<IProps> = (props) => {
     <div
       className="p-3 hover:cursor-pointer"
       style={{
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: !isShowReplies ? "1px solid #f0f0f0" : "none",
         display: "flex",
         gap: "10px",
+        padding: !isShowReplies ? "12px" : "12px 12px 4px 12px",
       }}
       onClick={(e) => {
         if (
@@ -206,15 +209,46 @@ const Post: React.FC<IProps> = (props) => {
         }
       }}
     >
-      <Avatar
-        style={{
-          width: "45px",
-          height: "45px",
-          cursor: "pointer",
-        }}
-        src={avatarUrlOfCreator || default_image}
-        onClick={handleNavigateProfileUser(idOfCreator || "")}
-      />
+      {!isShowReplies ? (
+        <Avatar
+          style={{
+            width: "45px",
+            height: "45px",
+            cursor: "pointer",
+          }}
+          src={avatarUrlOfCreator || default_image}
+          onClick={handleNavigateProfileUser(idOfCreator || "")}
+        />
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            minHeight: "80px",
+          }}
+        >
+          <Avatar
+            style={{
+              width: "45px",
+              height: "45px",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+            src={avatarUrlOfCreator || default_image}
+            onClick={handleNavigateProfileUser(idOfCreator || "")}
+          />
+          <div
+            style={{
+              width: "3px",
+              height: "calc(100% - 45px)",
+              backgroundColor: "#e0e0e0",
+              margin: "10px 0px 0px 0px",
+            }}
+          ></div>
+        </div>
+      )}
+
       <div style={{ width: "calc(100% - 65px)" }}>
         <div className="flex justify-between w-full">
           <Popover
@@ -273,7 +307,7 @@ const Post: React.FC<IProps> = (props) => {
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           ></p>
         </div>
-        {postImageUrls && postImageUrls.length > 0 && (
+        {/* {postImageUrls && postImageUrls.length > 0 && (
           <div
             className="embla mt-2"
             ref={emblaRef}
@@ -314,7 +348,63 @@ const Post: React.FC<IProps> = (props) => {
                           objectFit: "cover",
                           objectPosition: "center",
                           borderRadius: "15px",
+                          aspectRatio: "auto",
                         }}
+                        loading="lazy"
+                      />
+                    </PhotoView>
+                  </div>
+                ))}
+              </PhotoProvider>
+            </div>
+          </div>
+        )} */}
+
+        {postImageUrls && postImageUrls.length > 0 && (
+          <div
+            className="embla mt-2"
+            ref={emblaRef}
+            style={{ overflow: "hidden", maxHeight: "400px" }}
+          >
+            <div
+              className="embla__container"
+              style={{
+                display: "flex",
+                cursor: isDraggingImg ? "grabbing" : "grab",
+              }}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+            >
+              <PhotoProvider maskOpacity={0.7}>
+                {postImageUrls.map((url, index) => (
+                  <div
+                    className="embla__slide"
+                    key={url}
+                    style={{
+                      flex: "0 0 auto",
+                      marginRight: "15px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "white",
+                      maxHeight: "400px",
+                      maxWidth: "560px",
+                    }}
+                  >
+                    <PhotoView key={index} src={url}>
+                      <img
+                        key={url}
+                        src={url}
+                        alt="Post Image"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          objectPosition: "center",
+                          borderRadius: "15px",
+                          aspectRatio: "auto",
+                        }}
+                        loading="lazy"
                       />
                     </PhotoView>
                   </div>

@@ -15,4 +15,7 @@ public interface PostRepository extends JpaRepository<Post, String>, PostReposit
 
     @Query("SELECT COUNT(*) FROM Post p WHERE p.parentPostId = :postId AND p.isDeleted = false")
     int countExistRepliesOfPost(String postId);
+
+    @Query(value = "SELECT EXISTS (SELECT 1 FROM post p WHERE p.post_id=?1 AND p.is_deleted=?2)", nativeQuery = true)
+    boolean existsByIdAndDeleted(String postId, boolean isDeleted);
 }

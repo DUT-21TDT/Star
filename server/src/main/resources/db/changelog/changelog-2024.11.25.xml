@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="27_rename_notification_change_column" author="Quang Nguyen">
+        <renameColumn tableName="notification_change"
+                      oldColumnName="created_at"
+                      newColumnName="change_at"/>
+    </changeSet>
+
+    <changeSet id="28_add_artifact_type_to_notification_object" author="Quang Nguyen">
+        <addColumn tableName="notification_object">
+            <column name="artifact_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="29_add_ref_to_notification_object" author="Quang Nguyen">
+        <addColumn tableName="notification_object">
+            <column name="ref" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropUniqueConstraint tableName="notification_object"
+                                constraintName="notification_object_notification_type_artifact_id_key"/>
+        <addUniqueConstraint tableName="notification_object" columnNames="notification_type, ref"/>
+    </changeSet>
+</databaseChangeLog>

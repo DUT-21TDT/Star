@@ -14,4 +14,6 @@ public interface UserRoomService {
     void removeModeratorFromRoom(@NonNull String userId, @NonNull String roomId);
     boolean isModeratorOfRoom(@NonNull String userId, @NonNull String roomId);
     List<UserInRoom> getMembers(@NonNull String roomId, String keyword);
+
+    List<String> getModeratorIds(@NonNull String roomId);
 }

@@ -1,89 +1,22 @@
 services:
   frontend:
-    image: $ECR_CLIENT_URL:$BRANCH-$SHA
-    container_name: frontend_$BRANCH
+    image: "${ECR_CLIENT_URL}:${BRANCH}-${SHA}"
+    container_name: frontend_${BRANCH}
     working_dir: /app
     ports:
-      - $FRONTEND_PORT:80
-    depends_on:
-      backend:
-        condition: service_healthy
+      - "${FRONTEND_PORT}:80"
     env_file:
       - .env
-    networks:
-      - app-network
 
   backend:
-    image: $ECR_SERVER_URL:$BRANCH-$SHA
-    container_name: backend_$BRANCH
+    image: "${ECR_SERVER_URL}:${BRANCH}-${SHA}"
+    container_name: backend_${BRANCH}
     working_dir: /run
     ports:
-      - $BACKEND_PORT:8080
-    depends_on:
-      postgres:
-        condition: service_healthy
-      auth-server:
-        condition: service_healthy
+      - "${BACKEND_PORT}:8080"
     env_file:
       - .env
-    healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
-      interval: 1m30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
     environment:
-      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=ap-southeast-1
-    networks:
-      - app-network
-
-  auth-server:
-    image: penguindevops/auth:$BRANCH
-    container_name: auth-server_$BRANCH
-    working_dir: /run
-    ports:
-      - $AUTH_PORT:8081
-    depends_on:
-      postgres:
-        condition: service_healthy
-    env_file:
-      - .env
-    healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 8081 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 10s
-    networks:
-      - app-network
-
-  postgres:
-    container_name: postgres_$BRANCH
-    image: postgres:16.3
-    ports:
-      - $DATABASE_PORT:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: star
-    env_file:
-      - .env
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    volumes:
-      - postgres_data:$VOLUME_PATH
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  postgres_data:
-    driver: local

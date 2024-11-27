@@ -1,9 +1,6 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
-import com.pbl.star.dtos.query.post.PostForModDTO;
-import com.pbl.star.dtos.query.post.PostForUserDTO;
-import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
+import com.pbl.star.dtos.query.post.*;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.entities.Post;
@@ -32,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +37,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final PostRepostRepository postRepostRepository;
     private final UserRoomRepository userRoomRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
@@ -47,7 +46,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public String createPost(String userId, CreatePostParams createPostParams) {
+    public Post createPost(String userId, CreatePostParams createPostParams) {
 
         CreatePostValidator.validateCreatePostRequiredFields(createPostParams);
 
@@ -75,7 +74,7 @@ public class PostServiceImpl implements PostService {
             saveImagesInPost(savedPost.getId(), imageFileNames);
         }
 
-        return savedPost.getId();
+        return savedPost;
     }
 
     private void saveImagesInPost(String postId, @NonNull List<String> imageFileNames) {
@@ -107,7 +106,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistPostsOfUserByStatus(pageable, after, PostStatus.APPROVED, targetUserId);
+        return postRepository.findExistPostsOfUserByStatusAsUser(pageable, after, PostStatus.APPROVED, targetUserId);
     }
 
     @Override
@@ -149,7 +148,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void moderatePostStatus(String postId, PostStatus status, String moderatorId) {
+    public Post moderatePostStatus(String postId, PostStatus status, String moderatorId) {
         Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
 
@@ -164,7 +163,7 @@ public class PostServiceImpl implements PostService {
         post.setStatus(status);
         post.setModeratedBy(moderatorId);
         post.setModeratedAt(Instant.now());
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     @Override
@@ -188,7 +187,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePostOfUser(String postId, String userId) {
+    public Post deletePostOfUser(String postId, String userId) {
         Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
 
@@ -198,12 +197,12 @@ public class PostServiceImpl implements PostService {
 
         post.setDeleted(true);
         post.setDeletedAt(Instant.now());
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     @Override
     @Transactional
-    public String createReply(String userId, CreatePostParams createReplyParams) {
+    public Post createReply(String userId, CreatePostParams createReplyParams) {
 
         CreatePostValidator.validateCreateReplyRequiredFields(createReplyParams);
 
@@ -236,7 +235,7 @@ public class PostServiceImpl implements PostService {
             saveImagesInPost(savedReply.getId(), imageFileNames);
         }
 
-        return savedReply.getId();
+        return savedReply;
     }
 
     @Override
@@ -261,6 +260,24 @@ public class PostServiceImpl implements PostService {
         }
 
         Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistRepliesOnWall(pageable, after, currentUserId, targetUserId);
+        return postRepository.findExistRepliesOnWallAsUser(pageable, after, currentUserId, targetUserId);
+    }
+
+    @Override
+    public Slice<RepostOnWallDTO> getRepostsOnWall(String currentUserId, String targetUserId, int limit, Instant after) {
+
+        if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
+            throw new ResourceOwnershipException("User have private profile");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit);
+        return postRepostRepository.findRepostsOnWallAsUser(pageable, after, currentUserId, targetUserId);
+    }
+
+
+    // Repository methods
+    @Override
+    public Optional<Post> findExistPostById(String postId) {
+        return postRepository.findExistPostById(postId);
     }
 }
