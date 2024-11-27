@@ -1,7 +1,7 @@
 services:
   frontend:
     image: "${ECR_CLIENT_URL}:${BRANCH}-${SHA}"
-    container_name: frontend
+    container_name: frontend_${BRANCH}
     working_dir: /app
     ports:
       - "${FRONTEND_PORT}:80"
@@ -10,7 +10,7 @@ services:
 
   backend:
     image: "${ECR_SERVER_URL}:${BRANCH}-${SHA}"
-    container_name: backend
+    container_name: backend_${BRANCH}
     working_dir: /run
     ports:
       - "${BACKEND_PORT}:8080"
