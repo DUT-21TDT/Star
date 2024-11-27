@@ -163,6 +163,16 @@ const getRepliesOnUserWall = async (
   return response.data;
 };
 
+const repostPost = async (postId: string) => {
+  const response = await instance.post(`/posts/${postId}/reposts`);
+  return response.data;
+}
+
+const deleteRepost = async (postId: string) => {
+  const response = await instance.delete(`/posts/${postId}/reposts`);
+  return response.data;
+}
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -179,4 +189,6 @@ export {
   getPostDetailById,
   getRepliesByPostId,
   getRepliesOnUserWall,
+  repostPost,
+  deleteRepost,
 };
