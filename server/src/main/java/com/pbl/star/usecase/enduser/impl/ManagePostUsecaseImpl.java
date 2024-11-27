@@ -3,6 +3,7 @@ package com.pbl.star.usecase.enduser.impl;
 import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
+import com.pbl.star.dtos.query.post.RepostOnWallDTO;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.entities.Post;
 import com.pbl.star.enums.PostStatus;
@@ -78,5 +79,11 @@ public class ManagePostUsecaseImpl implements ManagePostUsecase {
     public Slice<ReplyOnWallDTO> getRepliesOnUserWall(String userId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.getRepliesOnWall(currentUserId, userId, limit, after);
+    }
+
+    @Override
+    public Slice<RepostOnWallDTO> getRepostsOnUserWall(String userId, int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return postService.getRepostsOnWall(currentUserId, userId, limit, after);
     }
 }

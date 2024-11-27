@@ -1,9 +1,6 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
-import com.pbl.star.dtos.query.post.PostForModDTO;
-import com.pbl.star.dtos.query.post.PostForUserDTO;
-import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
+import com.pbl.star.dtos.query.post.*;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.entities.Post;
@@ -40,6 +37,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final PostRepostRepository postRepostRepository;
     private final UserRoomRepository userRoomRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
@@ -263,6 +261,17 @@ public class PostServiceImpl implements PostService {
 
         Pageable pageable = PageRequest.of(0, limit);
         return postRepository.findExistRepliesOnWallAsUser(pageable, after, currentUserId, targetUserId);
+    }
+
+    @Override
+    public Slice<RepostOnWallDTO> getRepostsOnWall(String currentUserId, String targetUserId, int limit, Instant after) {
+
+        if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
+            throw new ResourceOwnershipException("User have private profile");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit);
+        return postRepostRepository.findRepostsOnWallAsUser(pageable, after, currentUserId, targetUserId);
     }
 
 

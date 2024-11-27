@@ -12,4 +12,5 @@ public final class PostForUserDTO extends PostGeneral {
     private int numberOfComments;
     private int numberOfReposts;
     private boolean isLiked;
+    private boolean isReposted;
 }
