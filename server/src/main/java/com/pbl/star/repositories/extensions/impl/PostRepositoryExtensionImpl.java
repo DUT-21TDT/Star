@@ -374,7 +374,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                     .isReposted((boolean) row[12])
                     .build();
 
-            if (row[12] == null) {
+            if (row[13] == null) {
                 replies.add(ReplyOnWallDTO.builder()
                         .reply(reply)
                         .parentPost(null)
