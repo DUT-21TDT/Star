@@ -1,13 +1,15 @@
-import { RouterProvider } from "react-router-dom";
+import {RouterProvider} from "react-router-dom";
 import router from "./router/router";
-import { ConfigProvider } from "antd";
-import { globalTheme } from "./utils/theme";
+import {ConfigProvider} from "antd";
+import {globalTheme} from "./utils/theme";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
-import { useAppDispatch } from "./redux/store/hook";
-import { getCurrentUser, handleRefreshToken } from "./service/userAPI";
-import { storeInformationUser } from "./redux/slice/user-slice";
+import {useEffect, useState} from "react";
+import {useAppDispatch} from "./redux/store/hook";
+import {getCurrentUser, handleRefreshToken} from "./service/userAPI";
+import {storeInformationUser} from "./redux/slice/user-slice";
 import "react-photo-view/dist/react-photo-view.css";
+import {Helmet, HelmetProvider} from "react-helmet-async";
+
 function App() {
   const dispatch = useAppDispatch();
   const access_token = Cookies.get("access_token") || null;
@@ -62,9 +64,14 @@ function App() {
   return (
     <>
       {
-        <ConfigProvider theme={globalTheme}>
-          <RouterProvider router={router} />
-        </ConfigProvider>
+        <HelmetProvider>
+          <Helmet>
+            <title>Star</title>
+          </Helmet>
+          <ConfigProvider theme={globalTheme}>
+            <RouterProvider router={router}/>
+          </ConfigProvider>
+        </HelmetProvider>
       }
     </>
   );

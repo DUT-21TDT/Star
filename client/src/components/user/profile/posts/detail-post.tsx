@@ -1,16 +1,40 @@
 import { useParams } from "react-router-dom";
-import { useGetPostDetailById } from "../../../../hooks/post";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Post from "./Post";
 import ListReplyPost from "./list-reply-post";
-const MainContentDetailPost = () => {
+import React from "react";
+
+interface PostDetail {
+  id: string;
+  usernameOfCreator: string;
+  avatarUrlOfCreator: string;
+  createdAt: string;
+  content: string;
+  postImageUrls: string[];
+  numberOfLikes: number;
+  numberOfComments: number;
+  numberOfReposts: number;
+  liked: boolean;
+  nameOfRoom: string;
+  idOfCreator: string;
+}
+
+interface IProps {
+  dataPostDetail: PostDetail;
+  isLoading: boolean;
+  isError: boolean;
+}
+
+const MainContentDetailPost : React.FC<IProps> = (props) => {
   const postId = useParams<{ postId: string }>().postId || "";
+
   const {
-    data: dataPostDetail,
+    dataPostDetail,
     isLoading,
     isError,
-  } = useGetPostDetailById(postId);
+  } = props;
+
   const {
     id,
     usernameOfCreator,
@@ -25,6 +49,7 @@ const MainContentDetailPost = () => {
     nameOfRoom,
     idOfCreator,
   } = dataPostDetail;
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center mt-8">
@@ -32,9 +57,11 @@ const MainContentDetailPost = () => {
       </div>
     );
   }
+
   if (isError) {
     return <div>Something went wrong</div>;
   }
+
   return (
     <>
       <div className="px-[20px]">
