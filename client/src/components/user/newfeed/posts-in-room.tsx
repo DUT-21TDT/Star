@@ -16,6 +16,7 @@ interface PostType {
   numberOfComments: number;
   numberOfReposts: number;
   liked: boolean;
+  reposted: boolean;
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;
@@ -113,6 +114,7 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
             numberOfComments,
             numberOfReposts,
             liked,
+            reposted,
             idOfCreator,
             nameOfRoom,
             isRemoved,
@@ -130,6 +132,7 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
+              reposted={reposted}
               idOfCreator={idOfCreator}
               nameOfRoom={nameOfRoom}
               isRemoved={isRemoved}

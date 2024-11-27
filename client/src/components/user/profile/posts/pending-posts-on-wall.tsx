@@ -18,6 +18,7 @@ interface PostType {
   numberOfComments: number;
   numberOfReposts: number;
   liked: boolean;
+  reposted: boolean;
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;
@@ -152,6 +153,7 @@ const PendingPostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
+              reposted={false}
               disableReactButton={true}
               nameOfRoom={nameOfRoom}
               handleDeletePostSuccess={handleDeletePostSuccess}

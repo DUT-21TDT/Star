@@ -21,6 +21,7 @@ interface PostType {
   numberOfComments: number;
   numberOfReposts: number;
   liked: boolean;
+  reposted: boolean;
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;

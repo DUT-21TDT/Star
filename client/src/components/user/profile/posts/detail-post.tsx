@@ -16,6 +16,7 @@ interface PostDetail {
   numberOfComments: number;
   numberOfReposts: number;
   liked: boolean;
+  reposted: boolean;
   nameOfRoom: string;
   idOfCreator: string;
 }
@@ -46,6 +47,7 @@ const MainContentDetailPost : React.FC<IProps> = (props) => {
     numberOfComments,
     numberOfReposts,
     liked,
+    reposted,
     nameOfRoom,
     idOfCreator,
   } = dataPostDetail;
@@ -76,6 +78,7 @@ const MainContentDetailPost : React.FC<IProps> = (props) => {
           numberOfComments={numberOfComments}
           numberOfReposts={numberOfReposts}
           liked={liked}
+          reposted={reposted}
           nameOfRoom={nameOfRoom}
           idOfCreator={idOfCreator}
         />

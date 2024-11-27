@@ -18,6 +18,7 @@ interface PostType {
   numberOfComments: number;
   numberOfReposts: number;
   liked: boolean;
+  reposted: boolean;
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;
@@ -108,6 +109,7 @@ const PostsOnNewsFeed: React.FC = () => {
             numberOfComments,
             numberOfReposts,
             liked,
+            reposted,
             idOfCreator,
             nameOfRoom,
             isRemoved,
@@ -125,6 +127,7 @@ const PostsOnNewsFeed: React.FC = () => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
+              reposted={reposted}
               idOfCreator={idOfCreator}
               nameOfRoom={nameOfRoom}
               isRemoved={isRemoved}

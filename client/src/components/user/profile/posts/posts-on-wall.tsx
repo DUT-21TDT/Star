@@ -20,6 +20,7 @@ interface PostType {
   numberOfComments: number;
   numberOfReposts: number;
   liked: boolean;
+  reposted: boolean;
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;
@@ -130,6 +131,7 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
             numberOfComments,
             numberOfReposts,
             liked,
+            reposted,
             idOfCreator,
             nameOfRoom,
             isRemoved,
@@ -149,6 +151,7 @@ const PostOnWall: React.FC<IProps> = ({ isCurrentUser }) => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
+              reposted={reposted}
               nameOfRoom={nameOfRoom}
               handleDeletePostSuccess={handleDeletePostSuccess}
               isRemoved={isRemoved}

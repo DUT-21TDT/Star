@@ -13,7 +13,7 @@ import {
   replyPost,
   getPostDetailById,
   getRepliesByPostId,
-  getRepliesOnUserWall,
+  getRepliesOnUserWall, repostPost, deleteRepost,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -249,6 +249,18 @@ const useFetchAllPost = () => {
   };
 }
 
+const useRepostPost = () => {
+  return useMutation({
+    mutationFn: repostPost,
+  });
+};
+
+const useDeleteRepost = () => {
+  return useMutation({
+    mutationFn: deleteRepost,
+  });
+}
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -267,4 +279,6 @@ export {
   useGetRepliesByUserIdOnWall,
   useGetPostDetails,
   useFetchAllPost,
+  useRepostPost,
+  useDeleteRepost,
 };

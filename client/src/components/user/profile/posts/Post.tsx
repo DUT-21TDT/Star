@@ -29,6 +29,7 @@ interface IProps {
   numberOfComments: number;
   numberOfReposts: number;
   liked: boolean;
+  reposted: boolean;
   idOfCreator?: string;
   firstName?: string;
   lastName?: string;
@@ -53,6 +54,7 @@ const Post: React.FC<IProps> = (props) => {
     numberOfComments,
     numberOfReposts,
     liked,
+    reposted,
     idOfCreator,
     disableReactButton,
     nameOfRoom,
@@ -427,6 +429,7 @@ const Post: React.FC<IProps> = (props) => {
               numberOfComments={numberOfComments}
               numberOfReposts={numberOfReposts}
               liked={liked}
+              reposted={reposted}
             />
             {nameOfRoom && (
               <div

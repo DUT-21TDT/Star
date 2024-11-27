@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useLikePost, useUnlikePost } from "../../../../hooks/post";
-import { message } from "antd";
+import React, {useEffect, useState} from "react";
+import {useDeleteRepost, useLikePost, useRepostPost, useUnlikePost} from "../../../../hooks/post";
+import {message} from "antd";
 import ModalReplyPost from "./modal-reply-post";
 
 interface IProps {
@@ -15,30 +15,39 @@ interface IProps {
   numberOfComments: number;
   numberOfReposts: number;
   liked: boolean;
+  reposted: boolean;
 }
+
 const ReactButton: React.FC<IProps> = ({
-  postId,
-  avatarUrlOfCreator,
-  createdAt,
-  content,
-  postImageUrls,
-  usernameOfCreator,
-  idOfCreator,
-  numberOfLikes,
-  numberOfComments,
-  numberOfReposts,
-  liked,
-}) => {
+                                         postId,
+                                         avatarUrlOfCreator,
+                                         createdAt,
+                                         content,
+                                         postImageUrls,
+                                         usernameOfCreator,
+                                         idOfCreator,
+                                         numberOfLikes,
+                                         numberOfComments,
+                                         numberOfReposts,
+                                         liked,
+                                         reposted,
+                                       }) => {
   const [isLiked, setIsLiked] = useState(liked);
+  const [isReposted, setIsReposted] = useState(reposted);
+
   const [likesCount, setLikesCount] = useState(numberOfLikes);
   const [commentCount, setCommentCount] = useState(numberOfComments);
+  const [repostCount, setRepostCount] = useState(numberOfReposts);
 
   const [selectedButton, setSelectedButton] = useState<string>("");
 
   const [isOpenModalReplyPost, setIsOpenModalReplyPost] = useState(false);
 
-  const { mutate: likePost } = useLikePost();
-  const { mutate: unlikePost } = useUnlikePost();
+  const {mutate: likePost} = useLikePost();
+  const {mutate: unlikePost} = useUnlikePost();
+
+  const {mutate: repostPost} = useRepostPost();
+  const {mutate: deleteRepost} = useDeleteRepost();
 
   const handleLikeToggle = () => {
     setLikesCount((prev) => (prev += isLiked ? -1 : 1));
@@ -76,16 +85,54 @@ const ReactButton: React.FC<IProps> = ({
     }
   };
 
+  const handleRepostToggle = () => {
+    setRepostCount((prev) => (prev += isReposted ? -1 : 1));
+    setIsReposted((prev) => !prev);
+
+    if (isReposted) {
+      deleteRepost(
+        postId, // assuming postId is needed to delete the repost
+        {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onError: (error: any) => {
+            if (error.response?.status !== 404) {
+              setIsReposted(true);
+              setRepostCount((prev) => prev + 1); // Decrease repost count
+            }
+          },
+        }
+      );
+    } else {
+      repostPost(
+        postId, // assuming postId is needed to repost the post
+        {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onError: (error: any) => {
+            if (error.response?.status !== 409) {
+              setIsReposted(false);
+              setRepostCount((prev) => prev - 1); // Increase repost count
+              if (error.response?.status === 404) {
+                message.error("The post you are trying to repost does not exist");
+              }
+            }
+          },
+        }
+      );
+    }
+  }
+
   useEffect(() => {
     setLikesCount(numberOfLikes);
     setCommentCount(numberOfComments);
+    setRepostCount(numberOfReposts);
     setIsLiked(liked);
-  }, [numberOfLikes, numberOfComments, liked]);
+    setIsReposted(reposted);
+  }, [numberOfLikes, numberOfComments, liked, numberOfReposts, reposted]);
 
   return (
     <div
       className="flex mt-2 items-center gap-2"
-      style={{ userSelect: "none" }}
+      style={{userSelect: "none"}}
     >
       <div
         className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${
@@ -153,6 +200,7 @@ const ReactButton: React.FC<IProps> = ({
         onMouseDown={() => setSelectedButton("repost")}
         onMouseUp={() => setSelectedButton("")}
         onMouseLeave={() => setSelectedButton("")}
+        onClick={handleRepostToggle}
       >
         {" "}
         <svg
@@ -169,9 +217,16 @@ const ReactButton: React.FC<IProps> = ({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
+          {isReposted && (
+            <path d="M10 11.728L11.5281 13L15 10"
+                  stroke="black"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+            />
+          )}
         </svg>
         <span className={"text-[14px]"}>
-          {numberOfReposts !== 0 ? numberOfReposts : ""}
+          {repostCount !== 0 ? repostCount : ""}
         </span>
       </div>
       <ModalReplyPost
