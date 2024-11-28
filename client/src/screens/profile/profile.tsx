@@ -5,18 +5,23 @@ import {profileTheme} from "../../utils/theme";
 import UserProfile from "../../components/user/profile/user-profile";
 import HeaderProfile from "../../components/user/profile/header-profile";
 import TabProfile from "../../components/user/profile/tab-profile";
-import {useGetProfileUser} from "../../hooks/user";
-import {useParams} from "react-router-dom";
-import {Spin} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
-import {useEffect, useState} from "react";
+import { useGetProfileUser } from "../../hooks/user";
+import { useParams } from "react-router-dom";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import React, { useEffect, useRef, useState } from "react";
+import { useAppSelector } from "../../redux/store/hook";
 import {Helmet} from "react-helmet-async";
 
-const Profile = () => {
-  const {id} = useParams();
-  const {data, isLoading} = useGetProfileUser(id || "");
+const Profile: React.FC<{ isPinned: boolean }> = ({ isPinned }) => {
+  const { id: userId } = useParams<{ id: string }>();
+  const userIdFromRedux = useAppSelector((state) => state.user.id);
+  const id = isPinned ? userIdFromRedux : userId;
+  const { data, isLoading } = useGetProfileUser(id || "");
 
   const [followStatus, setFollowStatus] = useState("");
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (data && !isLoading) {
@@ -34,53 +39,63 @@ const Profile = () => {
 
   return (
     data && (
-      <>
-        <Helmet>
-          <title>@{data.publicProfile.username} • Star</title>
-        </Helmet>
-        <ConfigProvider theme={profileTheme}>
-          <div className="w-full flex justify-center bg-white">
+          <>
+              <Helmet>
+                  <title>@{data.publicProfile.username} • Star</title>
+              </Helmet>
+      <ConfigProvider theme={profileTheme}>
+        <div className={!isPinned ? "w-full flex justify-center bg-white" : ""}>
+          <div
+            className=" h-full pt-2 "
+            style={{ width: "100%", maxWidth: "650px" }}
+          >
+            <HeaderProfile />
             <div
-              className=" h-full pt-2 "
-              style={{width: "100%", maxWidth: "650px"}}
+              style={{
+                border: "1px solid #ccc",
+                marginTop: "20px",
+                height: "100%",
+                borderRadius: "30px",
+                overflowY: "auto",
+                maxHeight: "calc(100vh - 30px)",
+                scrollbarWidth: "thin",
+                scrollbarColor: "#b9b7b7 white",
+              }}
+              ref={scrollContainerRef}
             >
-              <HeaderProfile/>
-              <div
-                style={{
-                  border: "1px solid #ccc",
-                  marginTop: "20px",
-                  height: "100%",
-                  borderRadius: "30px",
-                }}
-              >
-                <UserProfile
+              <UserProfile
+                isCurrentUser={data?.isCurrentUser}
+                followStatus={followStatus}
+                setFollowStatus={setFollowStatus}
+                publicProfile={data?.publicProfile}
+                userId={id || ""}
+              />
+              {followStatus === "FOLLOWING" ||
+              data?.publicProfile.privateProfile === false ||
+              data?.isCurrentUser ? (
+                <TabProfile
                   isCurrentUser={data?.isCurrentUser}
-                  followStatus={followStatus}
-                  setFollowStatus={setFollowStatus}
-                  publicProfile={data?.publicProfile}
-                  userId={id || ""}/>
-                {followStatus === "FOLLOWING" ||
-                data?.publicProfile.privateProfile === false ||
-                data?.isCurrentUser ? (
-                  <TabProfile isCurrentUser={data?.isCurrentUser}/>
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "50vh",
-                      color: "#999999",
-                    }}
-                  >
-                    This profile is private
-                  </div>
-                )}
-              </div>
+                  userId={id || ""}
+                  scrollRef={scrollContainerRef}
+                />
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50vh",
+                    color: "#999999",
+                  }}
+                >
+                  This profile is private
+                </div>
+              )}
             </div>
           </div>
-        </ConfigProvider>
-      </>
+        </div>
+      </ConfigProvider>
+          </>
     )
   );
 };

@@ -17,11 +17,11 @@
 }
 
 .three-items .ant-tabs-tab {
-  min-width: 190px;
+  min-width: 180px;
 }
 
 .four-items .ant-tabs-tab {
-  min-width: 135px;
+  min-width: 125px;
 }
 
 .numberFollowers:hover {

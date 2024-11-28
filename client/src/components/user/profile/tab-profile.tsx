@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef, Ref } from "react";
 import { Tabs } from "antd";
 import type { TabsProps } from "antd";
 import PostOnWall from "./posts/posts-on-wall";
@@ -12,20 +12,28 @@ const onChange = (key: string) => {
 
 interface IProps {
   isCurrentUser: boolean;
+  userId: string;
+  scrollRef: Ref<HTMLDivElement>;
 }
 
-const TabProfile: React.FC<IProps> = (props) => {
-  const { isCurrentUser } = props;
+const TabProfile: React.FC<IProps> = forwardRef((props) => {
+  const { isCurrentUser, userId, scrollRef } = props;
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: <div className="text-[16px] font-semibold">Posts</div>,
-      children: <PostOnWall isCurrentUser={isCurrentUser} />,
+      children: (
+        <PostOnWall
+          isCurrentUser={isCurrentUser}
+          userId={userId}
+          scrollRef={scrollRef}
+        />
+      ),
     },
     {
       key: "2",
       label: <div className="text-[16px] font-semibold">Replies</div>,
-      children: <RepliesOnWall />,
+      children: <RepliesOnWall userId={userId} scrollRef={scrollRef} />,
     },
     {
       key: "3",
@@ -37,7 +45,12 @@ const TabProfile: React.FC<IProps> = (props) => {
     items.push({
       key: "4",
       label: <div className="text-[16px] font-semibold">Pending</div>,
-      children: <PendingPostOnWall isCurrentUser={isCurrentUser} />,
+      children: (
+        <PendingPostOnWall
+          isCurrentUser={isCurrentUser}
+          scrollRef={scrollRef}
+        />
+      ),
     });
   }
 
@@ -57,6 +70,6 @@ const TabProfile: React.FC<IProps> = (props) => {
       destroyInactiveTabPane={true}
     />
   );
-};
+});
 
 export default TabProfile;

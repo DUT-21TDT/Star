@@ -1,13 +1,18 @@
-import {ConfigProvider} from "antd";
-import {newFeedsTheme} from "../../utils/theme";
+import { ConfigProvider } from "antd";
+import { newFeedsTheme, roomUserTheme } from "../../utils/theme";
 import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
-import CreatePost from "../../components/user/profile/posts/create-post";
 import PostsOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed";
-import {useState} from "react";
-import {useGetAllRoomForUser} from "../../hooks/room";
-import {useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { useGetAllRoomForUser } from "../../hooks/room";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../redux/store/hook";
+import optionPin from "../../utils/optionPin";
+import HeaderRoom from "../../components/user/room/header-room";
+import MainRoomContent from "../../components/user/room/main-room";
+import HeaderPeople from "../../components/user/people/header-people";
+import MainPeopleContent from "../../components/user/people/main-people";
+import Profile from "../profile/profile";
 import {Helmet} from "react-helmet-async";
-
 interface RoomType {
   id: number;
   key: number;
@@ -70,38 +75,190 @@ const NewFeed = () => {
       }))
       : null,
   }));
+
+  const pinnedPage = useAppSelector((state) => state.user.pin);
+  const isPinnedRoom = pinnedPage?.includes(optionPin.ROOM);
+  const isPinnedProfile = pinnedPage?.includes(optionPin.PROFILE);
+  const isPinnedPeople = pinnedPage?.includes(optionPin.PEOPLE);
+  const isPinnedActivity = pinnedPage?.includes(optionPin.ACTIVITY);
+
+  const pinnedCount = [
+    isPinnedRoom,
+    isPinnedProfile,
+    isPinnedPeople,
+    isPinnedActivity,
+  ].filter(Boolean).length;
+
+  const renderContentPinned = () => {
+    return pinnedPage?.map((pin) => {
+      if (pin === optionPin.ROOM) {
+        return (
+          <ConfigProvider key="room" theme={roomUserTheme}>
+            <div
+              className="h-full pt-2"
+              style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+            >
+              <HeaderRoom />
+              <div
+                style={{
+                  border: "1px solid #bdbdbd",
+                  marginTop: "20px",
+                  borderRadius: "30px",
+                  padding: "20px",
+                  backgroundColor: "white",
+                  overflowY: "auto",
+                  maxHeight: "calc(100vh - 30px)",
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "#b9b7b7 white",
+                }}
+              >
+                <MainRoomContent />
+              </div>
+            </div>
+          </ConfigProvider>
+        );
+      }
+
+      if (pin === optionPin.PEOPLE) {
+        return (
+          <ConfigProvider key="people" theme={roomUserTheme}>
+            <div
+              className="h-full pt-2"
+              style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+            >
+              <HeaderPeople />
+              <div
+                style={{
+                  border: "1px solid #bdbdbd",
+                  marginTop: "20px",
+                  borderRadius: "30px",
+                  padding: "20px",
+                  backgroundColor: "white",
+                  overflowY: "auto",
+                  maxHeight: "calc(100vh - 30px)",
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "#b9b7b7 white",
+                }}
+              >
+                <MainPeopleContent />
+              </div>
+            </div>
+          </ConfigProvider>
+        );
+      }
+      if (pin === optionPin.PROFILE) {
+        return <Profile isPinned={true} />;
+      }
+    });
+  };
+
   return (
     <>
       <Helmet>
         <title>Star</title>
       </Helmet>
-      <ConfigProvider theme={newFeedsTheme}>
-        <div className="w-full flex justify-center bg-white">
-          <div
-            className=" h-full pt-2 "
-            style={{width: "100%", maxWidth: "650px"}}
-          >
-            <HeaderNewFeed itemActive={itemActive.label} menuItems={menuItems}/>
+        <ConfigProvider theme={newFeedsTheme}>
             <div
-              style={{
-                border: "1px solid #ccc",
-                marginTop: "20px",
-                height: "100%",
-                borderRadius: "30px",
-                paddingTop: "10px",
-              }}
+                className="w-full flex justify-center bg-white gap-5"
+                style={{
+                    minWidth: `${
+                        pinnedCount < 2
+                            ? ""
+                            : pinnedCount === 2
+                                ? "140vw"
+                                : pinnedCount === 3
+                                    ? "180vw"
+                                    : "220vw"
+                    }`,
+                }}
             >
-              <CreatePost/>
-              {/* NewFeed Content */}
-              {itemActive.label === "For you" && (
-                <>
-                  <PostsOnNewsFeed/>
-                </>
-              )}
+                <div
+                    className=" h-full pt-2"
+                    style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+                >
+                    <HeaderNewFeed itemActive={itemActive.label} menuItems={menuItems} />
+                    {/* <div
+            style={{
+              border: "1px solid #ccc",
+              marginTop: "20px",
+              height: "100%",
+              borderRadius: "30px",
+              paddingTop: "10px",
+              overflowY: "auto",
+              maxHeight: "calc(100vh - 30px)",
+            }}
+          >
+            <CreatePost />
+            {itemActive.label === "For you" && (
+              <>
+                <PostsOnNewsFeed />
+              </>
+            )}
+          </div> */}
+                    {itemActive.label === "For you" && (
+                        <>
+                            <PostsOnNewsFeed />
+                        </>
+                    )}
+                </div>
+                {/* {isPinnedRoom && (
+          <>
+            <ConfigProvider theme={roomUserTheme}>
+              <div
+                className="h-full pt-2"
+                style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+              >
+                <HeaderRoom />
+                <div
+                  style={{
+                    border: "1px solid #bdbdbd",
+                    marginTop: "20px",
+                    borderRadius: "30px",
+                    padding: "20px",
+                    backgroundColor: "white",
+                    overflowY: "auto",
+                    maxHeight: "calc(100vh - 30px)",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#b9b7b7 white",
+                  }}
+                >
+                  <MainRoomContent />
+                </div>
+              </div>
+            </ConfigProvider>
+          </>
+        )}
+
+        {isPinnedPeople && (
+          <>
+            <ConfigProvider theme={roomUserTheme}>
+              <div
+                className=" h-full pt-2 "
+                style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+              >
+                <HeaderPeople />
+                <div
+                  style={{
+                    border: "1px solid #bdbdbd",
+                    marginTop: "20px",
+                    borderRadius: "30px",
+                    padding: "20px",
+                    backgroundColor: "white",
+                    overflowY: "auto",
+                    maxHeight: "calc(100vh - 30px)",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#b9b7b7 white",
+                  }}
+                >
+                  <MainPeopleContent />
+                </div>
+              </div>
+            </ConfigProvider>
+          </>
+        )} */}
+                {renderContentPinned()}
             </div>
-          </div>
-        </div>
-      </ConfigProvider>
+        </ConfigProvider>
     </>
   );
 };

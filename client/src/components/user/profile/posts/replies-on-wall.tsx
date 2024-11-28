@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { forwardRef, Ref, useEffect, useState } from "react";
 import { useGetRepliesByUserIdOnWall } from "../../../../hooks/post";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../../utils/queriesKey";
@@ -29,8 +28,11 @@ interface PostReplyType {
   parentPost: PostType | null;
   reply: PostType;
 }
-const RepliesOnWall = () => {
-  const { id: userId } = useParams<{ id: string }>();
+interface IProps {
+  userId: string;
+  scrollRef: Ref<HTMLDivElement>;
+}
+const RepliesOnWall: React.FC<IProps> = forwardRef(({ userId, scrollRef }) => {
   const [afterTime, setAfterTime] = useState<string | null>(null);
   const [allPosts, setAllPosts] = useState<PostReplyType[]>([]);
   const { dataPost, isLoading, hasNextPost, afterTimeFinalPost } =
@@ -69,21 +71,44 @@ const RepliesOnWall = () => {
     }
   }, [dataPost]);
 
+  // const handleScroll = debounce(() => {
+  //   const isBottom =
+  //     window.innerHeight + window.scrollY >=
+  //     document.documentElement.scrollHeight - 1;
+  //   if (isBottom && hasNextPost) {
+  //     setAfterTime(afterTimeFinalPost);
+  //   }
+  // }, 300);
+
   const handleScroll = debounce(() => {
-    const isBottom =
-      window.innerHeight + window.scrollY >=
-      document.documentElement.scrollHeight - 1;
-    if (isBottom && hasNextPost) {
-      setAfterTime(afterTimeFinalPost);
+    if (scrollRef && "current" in scrollRef && scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const isBottom = scrollTop + clientHeight >= scrollHeight - 1;
+      console.log("check isBottom", isBottom);
+      console.log("check hasNextPost", hasNextPost);
+      if (isBottom && hasNextPost) {
+        setAfterTime(afterTimeFinalPost);
+      }
     }
   }, 300);
 
+  useEffect(() => {
+    if (scrollRef && "current" in scrollRef && scrollRef.current) {
+      const currentScrollRef = scrollRef.current;
+      if (currentScrollRef) {
+        currentScrollRef.addEventListener("scroll", handleScroll);
+        return () =>
+          currentScrollRef.removeEventListener("scroll", handleScroll);
+      }
+    }
+  }, [hasNextPost, afterTimeFinalPost]);
+
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasNextPost, afterTimeFinalPost]);
+  // useEffect(() => {
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [hasNextPost, afterTimeFinalPost]);
 
   const handleDeletePostSuccess = (postIdRemoved: string) => {
     queryClient.invalidateQueries({
@@ -183,5 +208,5 @@ const RepliesOnWall = () => {
         })}
     </div>
   );
-};
+});
 export default RepliesOnWall;

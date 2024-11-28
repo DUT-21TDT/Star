@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
@@ -6,7 +6,8 @@ import { QUERY_KEY } from "../../../utils/queriesKey";
 import { useFetchAllPostsOnNewsFeed } from "../../../hooks/post";
 import Post from "../profile/posts/Post";
 import RemoveDuplicatePost from "../../../utils/removeDuplicatePost";
-
+import CreatePost from "../profile/posts/create-post";
+import "../../../assets/css/newfeed.css";
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -26,6 +27,7 @@ interface PostType {
 
 const PostsOnNewsFeed: React.FC = () => {
   const queryClient = useQueryClient();
+  const divRef = useRef(null);
   const [afterTime, setAfterTime] = useState<string | null>(null);
   const [allPosts, setAllPosts] = useState<PostType[]>([]);
   const { dataPost, isLoading, hasNextPost } = useFetchAllPostsOnNewsFeed({
@@ -33,15 +35,29 @@ const PostsOnNewsFeed: React.FC = () => {
     after: afterTime,
   });
 
-  const handleScroll = () => {
-    const isBottom =
-      window.innerHeight + window.scrollY >=
-      document.documentElement.scrollHeight - 1;
+  // const handleScroll = () => {
+  //   const isBottom =
+  //     window.innerHeight + window.scrollY >=
+  //     document.documentElement.scrollHeight - 1;
 
-    if (isBottom && hasNextPost) {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
-      });
+  //   if (isBottom && hasNextPost) {
+  //     queryClient.invalidateQueries({
+  //       queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
+  //     });
+  //   }
+  // };
+
+  const handleScroll = () => {
+    if (divRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = divRef.current;
+
+      const isBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+      if (isBottom && hasNextPost) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
+        });
+      }
     }
   };
   useEffect(() => {
@@ -61,10 +77,10 @@ const PostsOnNewsFeed: React.FC = () => {
     }
   }, [dataPost]);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasNextPost]);
+  // useEffect(() => {
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [hasNextPost]);
 
   const handleDeletePostSuccess = (postId: string) => {
     setAllPosts((prevPosts) => {
@@ -90,51 +106,67 @@ const PostsOnNewsFeed: React.FC = () => {
 
   return (
     <>
-      {isLoading && (
-        <div className="flex items-center justify-center mt-8">
-          <Spin indicator={<LoadingOutlined spin />} size="large" />
-        </div>
-      )}
-      {allPosts &&
-        allPosts.length > 0 &&
-        allPosts.map((post) => {
-          const {
-            id,
-            usernameOfCreator,
-            avatarUrlOfCreator,
-            createdAt,
-            content,
-            postImageUrls,
-            numberOfLikes,
-            numberOfComments,
-            numberOfReposts,
-            liked,
-            reposted,
-            idOfCreator,
-            nameOfRoom,
-            isRemoved,
-          } = post;
-          return (
-            <Post
-              key={id}
-              id={id}
-              usernameOfCreator={usernameOfCreator}
-              avatarUrlOfCreator={avatarUrlOfCreator}
-              createdAt={createdAt}
-              content={content}
-              postImageUrls={postImageUrls}
-              numberOfLikes={numberOfLikes}
-              numberOfComments={numberOfComments}
-              numberOfReposts={numberOfReposts}
-              liked={liked}
-              reposted={reposted}
-              idOfCreator={idOfCreator}
-              nameOfRoom={nameOfRoom}
-              isRemoved={isRemoved}
-              handleDeletePostSuccess={handleDeletePostSuccess}
-            />
-          );
-        })}
+      <div
+        className="custom-scrollbar"
+        style={{
+          border: "1px solid #ccc",
+          marginTop: "20px",
+          height: "100%",
+          borderRadius: "30px",
+          paddingTop: "10px",
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 30px)",
+        }}
+        ref={divRef}
+        onScroll={handleScroll}
+      >
+        <CreatePost />
+        {isLoading && (
+          <div className="flex items-center justify-center mt-8">
+            <Spin indicator={<LoadingOutlined spin />} size="large" />
+          </div>
+        )}
+        {allPosts &&
+          allPosts.length > 0 &&
+          allPosts.map((post) => {
+            const {
+              id,
+              usernameOfCreator,
+              avatarUrlOfCreator,
+              createdAt,
+              content,
+              postImageUrls,
+              numberOfLikes,
+              numberOfComments,
+              numberOfReposts,
+              liked,
+              idOfCreator,
+              nameOfRoom,
+              isRemoved,
+                reposted,
+            } = post;
+            return (
+              <Post
+                key={id}
+                id={id}
+                usernameOfCreator={usernameOfCreator}
+                avatarUrlOfCreator={avatarUrlOfCreator}
+                createdAt={createdAt}
+                content={content}
+                postImageUrls={postImageUrls}
+                numberOfLikes={numberOfLikes}
+                numberOfComments={numberOfComments}
+                numberOfReposts={numberOfReposts}
+                liked={liked}
+                idOfCreator={idOfCreator}
+                nameOfRoom={nameOfRoom}
+                isRemoved={isRemoved}
+                reposted={reposted}
+                handleDeletePostSuccess={handleDeletePostSuccess}
+              />
+            );
+          })}
+      </div>
     </>
   );
 };

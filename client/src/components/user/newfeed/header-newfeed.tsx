@@ -1,5 +1,5 @@
-import { Dropdown, Button, Menu } from "antd";
-import { DownOutlined, EllipsisOutlined } from "@ant-design/icons";
+import { Dropdown, Menu } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 
 import "../../../assets/css/header-newfeed.css";
 
@@ -30,12 +30,7 @@ const HeaderNewFeed: React.FC<IProps> = ({ itemActive, menuItems }) => {
           </Dropdown>
         </div>
       </div>
-      <div style={{ flexGrow: 1 }}>
-        <Button
-          icon={<EllipsisOutlined />}
-          style={{ borderRadius: "50%", width: "25px", height: "25px" }}
-        />
-      </div>
+      <div style={{ flexGrow: 1 }}></div>
     </div>
   );
 };

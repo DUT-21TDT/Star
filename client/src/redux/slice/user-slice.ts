@@ -6,6 +6,7 @@ interface IUser {
   role?: string;
   status?: string;
   avatarUrl?: string;
+  pin?: string[];
 }
 
 // Create an initial state
@@ -15,6 +16,7 @@ const initialState: IUser = {
   role: "",
   status: "",
   avatarUrl: "",
+  pin: [],
 };
 export const userSlice = createSlice({
   name: "users",
@@ -30,11 +32,22 @@ export const userSlice = createSlice({
       state.id = "";
       state.role = "";
     },
+    addPinPageToRedux: (state, action: PayloadAction<string>) => {
+      if (state.pin?.includes(action.payload)) return;
+      state.pin?.push(action.payload);
+    },
+    removePinPageToRedux: (state, action: PayloadAction<string>) => {
+      state.pin = state.pin?.filter((item) => item !== action.payload);
+    },
   },
   extraReducers: () => {},
 });
 
-export const { storeInformationUser, removeInformationUser } =
-  userSlice.actions;
+export const {
+  storeInformationUser,
+  removeInformationUser,
+  addPinPageToRedux,
+  removePinPageToRedux,
+} = userSlice.actions;
 // Export the reducer
 export default userSlice.reducer;
