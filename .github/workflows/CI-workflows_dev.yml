@@ -32,7 +32,7 @@ jobs:
       RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
       RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
       RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
-      RABBITMQ_VHOST: ${{ secrets.RABBITMQ_VHOST }}
+      RABBITMQ_VHOST: ${{ secrets.RABBITMQ_VHOST_DEV }}
 
     steps:
       - uses: actions/checkout@v4
