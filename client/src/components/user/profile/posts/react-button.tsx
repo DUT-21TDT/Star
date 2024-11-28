@@ -134,6 +134,8 @@ const ReactButton: React.FC<IProps> = ({
       className="flex mt-2 items-center gap-2"
       style={{userSelect: "none"}}
     >
+
+      {/*Like button*/}
       <div
         className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${
           selectedButton == "like" ? "scale-[.80]" : ""
@@ -167,6 +169,7 @@ const ReactButton: React.FC<IProps> = ({
         </span>
       </div>
 
+      {/*Reply button*/}
       <div
         className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${
           selectedButton == "comment" ? "scale-[.80]" : ""
@@ -193,6 +196,8 @@ const ReactButton: React.FC<IProps> = ({
           {commentCount !== 0 ? commentCount : ""}
         </span>
       </div>
+
+      {/*Repost button*/}
       <div
         className={`min-w-9 w-fit h-[35px] cursor-pointer rounded-[40%] flex items-center justify-center hover:bg-[#efefef] p-2 gap-1 transition-all ease-in-out duration-[180] ${
           selectedButton == "repost" ? "scale-[.80]" : ""

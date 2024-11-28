@@ -26,10 +26,12 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.room_id, r.name, pr.repost_at " +
+                "p.room_id, r.name, pr.repost_at, o.username, pr.caption " +
                 "FROM post_repost pr " +
                 "LEFT JOIN post p " +
                 "ON pr.post_id = p.post_id " +
+                "INNER JOIN \"user\" o " +
+                "ON pr.user_id = o.user_id " +
                 "INNER JOIN \"user\" u " +
                 "ON p.user_id = u.user_id " +
                 "INNER JOIN room r " +
@@ -78,6 +80,8 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
                     return RepostOnWallDTO.builder()
                             .repostedPost(post)
                             .repostedAt((Instant) row[14])
+                            .repostedByUsername((String) row[15])
+                            .caption((String) row[16])
                             .build();
                 }
         ).toList();

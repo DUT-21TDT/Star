@@ -173,6 +173,17 @@ const deleteRepost = async (postId: string) => {
   return response.data;
 }
 
+const getRepostsOnWall = async (userId: string, config: configTypeProfileWall) => {
+  let url;
+  if (config.after !== null) {
+    url = `/users/${userId}/reposts?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/users/${userId}/reposts?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+}
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -191,4 +202,5 @@ export {
   getRepliesOnUserWall,
   repostPost,
   deleteRepost,
+  getRepostsOnWall,
 };

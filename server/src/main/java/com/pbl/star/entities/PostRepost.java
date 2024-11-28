@@ -27,6 +27,9 @@ public class PostRepost {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "caption")
+    private String caption;
+
     @Column(name = "repost_at")
     private Instant repostAt;
 }

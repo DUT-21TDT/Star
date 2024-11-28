@@ -11,5 +11,7 @@ import java.time.Instant;
 @Builder
 public class RepostOnWallDTO {
     private PostForUserDTO repostedPost;
+    private String repostedByUsername;
+    private String caption;
     private Instant repostedAt;
 }

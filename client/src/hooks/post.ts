@@ -13,7 +13,7 @@ import {
   replyPost,
   getPostDetailById,
   getRepliesByPostId,
-  getRepliesOnUserWall, repostPost, deleteRepost,
+  getRepliesOnUserWall, repostPost, deleteRepost, getRepostsOnWall,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -261,6 +261,24 @@ const useDeleteRepost = () => {
   });
 }
 
+const useGetRepostsOnWall = (
+  userId: string,
+  config: configTypeProfileWall
+) => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchRepostsByUserId(userId),
+    queryFn: () => getRepostsOnWall(userId, config),
+  });
+  return {
+    dataPost: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextPost: !result.data?.last,
+    afterTimeFinalPost:
+      result.data?.content[result.data?.content.length - 1]?.repostedAt,
+  };
+}
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -281,4 +299,5 @@ export {
   useFetchAllPost,
   useRepostPost,
   useDeleteRepost,
+  useGetRepostsOnWall,
 };

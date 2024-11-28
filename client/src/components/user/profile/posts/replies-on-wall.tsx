@@ -137,6 +137,12 @@ const RepliesOnWall = () => {
         <Spin indicator={<LoadingOutlined spin />} size="large" />
       </div>
     );
+  } else if (allPosts && allPosts.length === 0) {
+      return (
+        <div className="flex items-center justify-center mt-8">
+          <p className="text-gray-500">No replies yet</p>
+        </div>
+      );
   }
 
   return (
