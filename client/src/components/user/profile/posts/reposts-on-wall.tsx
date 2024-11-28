@@ -49,6 +49,11 @@ const RepostsOnWall = () => {
 
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
+
+      if (!afterTime) {
+        setAllPosts([]);
+      }
+
       setAllPosts((prevPosts: RepostType[]) => [
         ...prevPosts,
         ...dataPost.map((post: RepostType) => {
@@ -119,7 +124,7 @@ const RepostsOnWall = () => {
           if (repostedPost) {
             return (
               <div>
-                <div className="flex items-center text-gray-400 pl-10 gap-1">
+                <div className="flex items-center text-gray-400 pl-10 gap-1 mt-2">
                   <svg
                     width="24"
                     height="24"

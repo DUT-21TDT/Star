@@ -139,8 +139,11 @@ const RepliesOnWall = () => {
     );
   } else if (allPosts && allPosts.length === 0) {
       return (
-        <div className="flex items-center justify-center mt-8">
-          <p className="text-gray-500">No replies yet</p>
+        <div
+          className="flex items-center justify-center text-xl"
+          style={{fontWeight: 450, marginTop: "25vh", color: "#999999"}}
+        >
+          No replies yet
         </div>
       );
   }
@@ -149,7 +152,7 @@ const RepliesOnWall = () => {
     <div>
       {allPosts &&
         allPosts.map((post) => {
-          const { parentPost, reply } = post;
+          const {parentPost, reply} = post;
           if (parentPost) {
             return (
               <div>
