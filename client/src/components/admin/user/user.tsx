@@ -15,6 +15,7 @@ import { fetchAllUsers } from "../../../service/userAPI.ts";
 import { LockFilled, SearchOutlined, UnlockFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "../../../assets/css/table-select-paginate.css";
+import dayjs from "dayjs";
 
 interface PeopleType {
   userId: string;
@@ -105,7 +106,10 @@ const User: React.FC = () => {
   };
 
   const handleChangeSort = (title: string) => {
-    setSortBy(title.toLowerCase());
+    if (title.toLowerCase() === "registered at") setSortBy("registerAt");
+    else if (title.toLowerCase() === "firstname") setSortBy("firstName");
+    else if (title.toLowerCase() === "lastname") setSortBy("lastName");
+    else setSortBy(title.toLowerCase());
     if (direction === "asc") setDirection("desc");
     else setDirection("asc");
   };
@@ -144,9 +148,9 @@ const User: React.FC = () => {
       ),
     },
     {
-      title: "Fullname",
-      dataIndex: "fullname",
-      key: "fullname",
+      title: "Firstname",
+      dataIndex: "firstname",
+      key: "firstname",
       render: (_, record) => (
         <a
           onClick={() => {
@@ -154,9 +158,34 @@ const User: React.FC = () => {
             window.scrollTo(0, 0);
           }}
         >
-          {record.firstName} {record.lastName}
+          {record.firstName}
         </a>
       ),
+      onHeaderCell: (column) => ({
+        onClick: () => {
+          handleChangeSort(String(column.title));
+        },
+      }),
+    },
+    {
+      title: "Lastname",
+      dataIndex: "lastname",
+      key: "lastname",
+      render: (_, record) => (
+        <a
+          onClick={() => {
+            navigate(`/admin/users/${record.userId}`);
+            window.scrollTo(0, 0);
+          }}
+        >
+          {record.lastName}
+        </a>
+      ),
+      onHeaderCell: (column) => ({
+        onClick: () => {
+          handleChangeSort(String(column.title));
+        },
+      }),
     },
     {
       title: "Username",
@@ -185,13 +214,23 @@ const User: React.FC = () => {
       key: "gender",
       render: (gender) =>
         gender ? gender.charAt(0) + gender.slice(1).toLowerCase() : "Unknown",
+      onHeaderCell: (column) => ({
+        onClick: () => {
+          handleChangeSort(String(column.title));
+        },
+      }),
     },
     {
       title: "Registered At",
       dataIndex: "registerAt",
       key: "registerAt",
       render: (date) =>
-        date ? new Date(date).toLocaleDateString() : "Unknown",
+        date ? dayjs(date).format("HH:mm DD-MM-YYYY") : "Unknown",
+      onHeaderCell: (column) => ({
+        onClick: () => {
+          handleChangeSort(String(column.title));
+        },
+      }),
     },
     {
       title: "Action",
@@ -241,7 +280,13 @@ const User: React.FC = () => {
           className="h-[40px] border rounded-2xl bg-[#fafafa] text-[16px] pl-5"
           value={searchValue}
           autoFocus
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+            setPagination((prev) => ({
+              ...prev,
+              current: 1,
+            }));
+          }}
         />
         <Select
           defaultValue="ACTIVE"
