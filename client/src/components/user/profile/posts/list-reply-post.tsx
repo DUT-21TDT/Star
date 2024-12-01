@@ -6,6 +6,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import RemoveDuplicatePost from "../../../../utils/removeDuplicatePost";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../../utils/queriesKey";
+import { debounce } from "../../../../utils/debounce";
 
 interface IProps {
   postId: string;
@@ -58,7 +59,7 @@ const ListReplyPost: React.FC<IProps> = (props) => {
     }
   }, [dataPost]);
 
-  const handleScroll = () => {
+  const handleScroll = debounce(() => {
     const isBottom =
       window.innerHeight + window.scrollY >=
       document.documentElement.scrollHeight - 1;
@@ -66,7 +67,7 @@ const ListReplyPost: React.FC<IProps> = (props) => {
     if (isBottom && hasNextPost) {
       setAfterTime(afterTimeFinalPost);
     }
-  };
+  }, 300);
 
   const queryClient = useQueryClient();
 

@@ -102,6 +102,7 @@ const PostInRoomContainer = () => {
                 height: "100%",
                 borderRadius: "30px",
                 paddingTop: "10px",
+                  backgroundColor: "white",
               }}
             >
               <CreatePost/>

@@ -6,6 +6,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../../utils/queriesKey";
 import RemoveDuplicatePost from "../../../../utils/removeDuplicatePost";
+import { debounce } from "../../../../utils/debounce";
 
 interface PostType {
   id: string;
@@ -51,7 +52,7 @@ const PendingPostOnWall: React.FC<IProps> = forwardRef(
     //   }
     // };
 
-    const handleScroll = () => {
+    const handleScroll = debounce(() => {
       if (scrollRef && "current" in scrollRef && scrollRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
         const isBottom = scrollTop + clientHeight >= scrollHeight - 1;
@@ -62,7 +63,7 @@ const PendingPostOnWall: React.FC<IProps> = forwardRef(
           });
         }
       }
-    };
+    }, 300);
 
     useEffect(() => {
       if (scrollRef && "current" in scrollRef && scrollRef.current) {

@@ -20,9 +20,9 @@ const ModeratorContainer = () => {
 
   return (
     <ConfigProvider theme={moderatorTheme}>
-      <div className="w-full flex justify-center bg-white">
+      <div className="w-full flex justify-center">
         <div
-          className="h-full pt-2"
+          className="h-full pt-2 "
           style={{ width: "100%", maxWidth: "650px" }}
         >
           <div
@@ -42,6 +42,7 @@ const ModeratorContainer = () => {
               height: "100%",
               borderRadius: "30px",
               paddingTop: "10px",
+              backgroundColor: "white",
             }}
           >
             <Tabs

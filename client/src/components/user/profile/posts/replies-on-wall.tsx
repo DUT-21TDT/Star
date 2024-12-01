@@ -84,8 +84,6 @@ const RepliesOnWall: React.FC<IProps> = forwardRef(({ userId, scrollRef }) => {
     if (scrollRef && "current" in scrollRef && scrollRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
       const isBottom = scrollTop + clientHeight >= scrollHeight - 1;
-      console.log("check isBottom", isBottom);
-      console.log("check hasNextPost", hasNextPost);
       if (isBottom && hasNextPost) {
         setAfterTime(afterTimeFinalPost);
       }

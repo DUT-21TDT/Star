@@ -6,6 +6,7 @@ import { QUERY_KEY } from "../../../utils/queriesKey";
 import { useGetAllPendingPostForModerator } from "../../../hooks/post";
 import { useParams } from "react-router-dom";
 import PostModerator from "./post-moderator";
+import { debounce } from "../../../utils/debounce";
 
 interface PostType {
   id: string;
@@ -51,7 +52,7 @@ const PendingPosts = () => {
     "PENDING"
   );
 
-  const handleScroll = () => {
+  const handleScroll = debounce(() => {
     const isBottom =
       window.innerHeight + window.scrollY >=
       document.documentElement.scrollHeight - 1;
@@ -61,7 +62,7 @@ const PendingPosts = () => {
         queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, "PENDING"),
       });
     }
-  };
+  }, 300);
 
   useEffect(() => {
     setAllPosts([]);

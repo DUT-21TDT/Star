@@ -24,6 +24,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
 import { storeInformationUser } from "../../../redux/slice/user-slice";
 
+import type { GetProp, UploadProps } from "antd";
+
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
 dayjs.extend(customParseFormat);
 
 interface IProps {
@@ -67,6 +71,19 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       registerDate: dayjs(data.registerAt, "YYYY/MM/DD"),
     };
   }, [data]);
+
+  const beforeUpload = (file: FileType) => {
+    const fileType = ["image/jpeg", "image/png", "image/jpg"];
+    const isJpgOrPng = fileType.includes(file.type);
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG/JPEG file!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error("Image must smaller than 2MB!");
+    }
+    return isJpgOrPng && isLt2M;
+  };
 
   // Convert file to Base64
   const convertFileToBase64 = useCallback((file: File) => {
@@ -240,7 +257,11 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
               }
             />
 
-            <Upload showUploadList={false} onChange={handleUploadChange}>
+            <Upload
+              showUploadList={false}
+              onChange={handleUploadChange}
+              beforeUpload={beforeUpload}
+            >
               <Button
                 icon={<PlusOutlined />}
                 style={{

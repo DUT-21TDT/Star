@@ -22,7 +22,9 @@ const PeopleUser = () => {
               style={{
                 border: "1px solid #bdbdbd",
                 marginTop: "20px",
-                borderRadius: "30px",
+                  borderBottom: "none",
+                  borderTopLeftRadius: "30px",
+                  borderTopRightRadius: "30px",
                 padding: "20px",
                 backgroundColor: "white",
               }}

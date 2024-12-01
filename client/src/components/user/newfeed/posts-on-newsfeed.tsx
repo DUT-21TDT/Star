@@ -8,6 +8,7 @@ import Post from "../profile/posts/Post";
 import RemoveDuplicatePost from "../../../utils/removeDuplicatePost";
 import CreatePost from "../profile/posts/create-post";
 import "../../../assets/css/newfeed.css";
+import { debounce } from "../../../utils/debounce";
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -47,19 +48,17 @@ const PostsOnNewsFeed: React.FC = () => {
   //   }
   // };
 
-  const handleScroll = () => {
+  const handleScroll = debounce(() => {
     if (divRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = divRef.current;
-
-      const isBottom = scrollTop + clientHeight >= scrollHeight - 1;
-
+      const isBottom = scrollTop + clientHeight >= scrollHeight - 2;
       if (isBottom && hasNextPost) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEY.fetchAllPostsOnNewsFeed(),
         });
       }
     }
-  };
+  }, 300);
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
       setAllPosts((prevPosts: PostType[]) =>
@@ -112,10 +111,13 @@ const PostsOnNewsFeed: React.FC = () => {
           border: "1px solid #ccc",
           marginTop: "20px",
           height: "100%",
-          borderRadius: "30px",
+          borderBottom: "none",
+          borderTopLeftRadius: "30px",
+          borderTopRightRadius: "30px",
           paddingTop: "10px",
           overflowY: "auto",
-          maxHeight: "calc(100vh - 30px)",
+          maxHeight: "calc(100vh - 60px)",
+          backgroundColor: "white",
         }}
         ref={divRef}
         onScroll={handleScroll}

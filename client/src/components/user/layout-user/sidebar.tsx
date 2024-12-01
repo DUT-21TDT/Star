@@ -86,8 +86,12 @@ const SideBar: React.FC = () => {
 
   return (
     <div
-      className=" w-[70px] h-[calc(100vh-50px)] flex flex-col justify-between items-center pt-5 "
-      style={{ position: "fixed" }}
+      className=" w-[70px] h-[calc(100vh)] flex flex-col justify-between items-center pt-5 pb-5"
+      style={{
+        position: "fixed",
+        zIndex: "10",
+        backgroundColor: "#fafafa",
+      }}
     >
       {/* Logo */}
       <div className="flex-grow flex justify-center items-start">
@@ -110,10 +114,11 @@ const SideBar: React.FC = () => {
               onClick={() => {
                 if (name === "plus") {
                   setOpenModalCreatePost(true);
+                } else if (name === "home" && path === "/") {
+                  window.location.reload();
                 } else if (iconNavigate) {
                   setActiveIcon(name);
                   navigate(iconNavigate);
-                  // window.scrollTo(0, 0);
                 }
               }}
             >

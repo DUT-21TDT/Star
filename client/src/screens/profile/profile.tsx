@@ -44,7 +44,7 @@ const Profile: React.FC<{ isPinned: boolean }> = ({ isPinned }) => {
                   <title>@{data.publicProfile.username} • Star</title>
               </Helmet>
       <ConfigProvider theme={profileTheme}>
-        <div className={!isPinned ? "w-full flex justify-center bg-white" : ""}>
+        <div className={!isPinned ? "w-full flex justify-center" : ""}>
           <div
             className=" h-full pt-2 "
             style={{ width: "100%", maxWidth: "650px" }}
@@ -53,13 +53,16 @@ const Profile: React.FC<{ isPinned: boolean }> = ({ isPinned }) => {
             <div
               style={{
                 border: "1px solid #ccc",
+                borderBottom: "none",
+                borderTopLeftRadius: "30px",
+                borderTopRightRadius: "30px",
                 marginTop: "20px",
                 height: "100%",
-                borderRadius: "30px",
                 overflowY: "auto",
-                maxHeight: "calc(100vh - 30px)",
+                maxHeight: "calc(100vh - 60px)",
                 scrollbarWidth: "thin",
                 scrollbarColor: "#b9b7b7 white",
+                backgroundColor: "white",
               }}
               ref={scrollContainerRef}
             >

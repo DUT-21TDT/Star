@@ -102,12 +102,14 @@ const NewFeed = () => {
               <div
                 style={{
                   border: "1px solid #bdbdbd",
+                  borderBottom: "none",
+                  borderTopLeftRadius: "30px",
+                  borderTopRightRadius: "30px",
                   marginTop: "20px",
-                  borderRadius: "30px",
                   padding: "20px",
                   backgroundColor: "white",
                   overflowY: "auto",
-                  maxHeight: "calc(100vh - 30px)",
+                  maxHeight: "calc(100vh - 60px)",
                   scrollbarWidth: "thin",
                   scrollbarColor: "#b9b7b7 white",
                 }}
@@ -130,12 +132,14 @@ const NewFeed = () => {
               <div
                 style={{
                   border: "1px solid #bdbdbd",
+                  borderBottom: "none",
+                  borderTopLeftRadius: "30px",
+                  borderTopRightRadius: "30px",
                   marginTop: "20px",
-                  borderRadius: "30px",
                   padding: "20px",
                   backgroundColor: "white",
                   overflowY: "auto",
-                  maxHeight: "calc(100vh - 30px)",
+                  maxHeight: "calc(100vh - 60px)",
                   scrollbarWidth: "thin",
                   scrollbarColor: "#b9b7b7 white",
                 }}
@@ -195,71 +199,16 @@ const NewFeed = () => {
               </>
             )}
           </div> */}
-                    {itemActive.label === "For you" && (
-                        <>
-                            <PostsOnNewsFeed />
-                        </>
-                    )}
-                </div>
-                {/* {isPinnedRoom && (
-          <>
-            <ConfigProvider theme={roomUserTheme}>
-              <div
-                className="h-full pt-2"
-                style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
-              >
-                <HeaderRoom />
-                <div
-                  style={{
-                    border: "1px solid #bdbdbd",
-                    marginTop: "20px",
-                    borderRadius: "30px",
-                    padding: "20px",
-                    backgroundColor: "white",
-                    overflowY: "auto",
-                    maxHeight: "calc(100vh - 30px)",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#b9b7b7 white",
-                  }}
-                >
-                  <MainRoomContent />
-                </div>
-              </div>
-            </ConfigProvider>
-          </>
-        )}
-
-        {isPinnedPeople && (
-          <>
-            <ConfigProvider theme={roomUserTheme}>
-              <div
-                className=" h-full pt-2 "
-                style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
-              >
-                <HeaderPeople />
-                <div
-                  style={{
-                    border: "1px solid #bdbdbd",
-                    marginTop: "20px",
-                    borderRadius: "30px",
-                    padding: "20px",
-                    backgroundColor: "white",
-                    overflowY: "auto",
-                    maxHeight: "calc(100vh - 30px)",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#b9b7b7 white",
-                  }}
-                >
-                  <MainPeopleContent />
-                </div>
-              </div>
-            </ConfigProvider>
-          </>
-        )} */}
-                {renderContentPinned()}
-            </div>
-        </ConfigProvider>
-    </>
+          {itemActive.label === "For you" && (
+            <>
+              <PostsOnNewsFeed />
+            </>
+          )}
+        </div>
+        {renderContentPinned()}
+      </div>
+    </ConfigProvider>
+        </>
   );
 };
 export default NewFeed;
