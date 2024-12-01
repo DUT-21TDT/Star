@@ -165,6 +165,7 @@ const PendingPostOnWall: React.FC<IProps> = forwardRef(
               idOfCreator,
               nameOfRoom,
               isRemoved,
+              reposted,
             } = post;
             return (
               <Post
@@ -184,6 +185,7 @@ const PendingPostOnWall: React.FC<IProps> = forwardRef(
                 nameOfRoom={nameOfRoom}
                 handleDeletePostSuccess={handleDeletePostSuccess}
                 isRemoved={isRemoved}
+                reposted={reposted}
               />
             );
           })

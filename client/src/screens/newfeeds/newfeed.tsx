@@ -12,7 +12,7 @@ import MainRoomContent from "../../components/user/room/main-room";
 import HeaderPeople from "../../components/user/people/header-people";
 import MainPeopleContent from "../../components/user/people/main-people";
 import Profile from "../profile/profile";
-import {Helmet} from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
 interface RoomType {
   id: number;
   key: number;
@@ -24,8 +24,8 @@ interface RoomType {
 }
 
 const NewFeed = () => {
-  const [itemActive, setItemActive] = useState({label: "For you", key: "1"});
-  const {listRoomJoined} = useGetAllRoomForUser();
+  const [itemActive, setItemActive] = useState({ label: "For you", key: "1" });
+  const { listRoomJoined } = useGetAllRoomForUser();
   const childrenRoom = listRoomJoined.map((room: RoomType) => ({
     key: room.id,
     label: room.name,
@@ -33,16 +33,16 @@ const NewFeed = () => {
   const navigate = useNavigate();
 
   const menuItems = [
-    {key: "1", label: "For you", url: "/"},
-    {key: "2", label: "Following", url: "/following"},
-    {key: "3", label: "Like", url: "/like"},
-    {key: "4", label: "Save", url: "/save"},
+    { key: "1", label: "For you", url: "/" },
+    { key: "2", label: "Following", url: "/following" },
+    { key: "3", label: "Like", url: "/like" },
+    { key: "4", label: "Save", url: "/save" },
     {
       key: "5",
       label: "Room",
       children: childrenRoom,
     },
-  ].map(({key, label, url, children}) => ({
+  ].map(({ key, label, url, children }) => ({
     key,
     label: (
       <div
@@ -52,7 +52,7 @@ const NewFeed = () => {
             if (url) {
               navigate(url);
             }
-            setItemActive({label, key});
+            setItemActive({ label, key });
           }
         }}
       >
@@ -61,18 +61,18 @@ const NewFeed = () => {
     ),
     children: children
       ? children.map((child: { key: string; label: string }) => ({
-        key: child.key,
-        label: (
-          <div
-            className="w-[200px] h-[35px] flex items-center text-[14px] font-semibold"
-            onClick={() => {
-              navigate(`/room/${child.key}/posts`);
-            }}
-          >
-            {child.label}
-          </div>
-        ),
-      }))
+          key: child.key,
+          label: (
+            <div
+              className="w-[200px] h-[35px] flex items-center text-[14px] font-semibold"
+              onClick={() => {
+                navigate(`/room/${child.key}/posts`);
+              }}
+            >
+              {child.label}
+            </div>
+          ),
+        }))
       : null,
   }));
 
@@ -95,7 +95,7 @@ const NewFeed = () => {
         return (
           <ConfigProvider key="room" theme={roomUserTheme}>
             <div
-              className="h-full pt-2"
+              className="h-full pt-2 animate-zoom-in"
               style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
             >
               <HeaderRoom />
@@ -125,7 +125,7 @@ const NewFeed = () => {
         return (
           <ConfigProvider key="people" theme={roomUserTheme}>
             <div
-              className="h-full pt-2"
+              className="h-full pt-2 animate-zoom-in"
               style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
             >
               <HeaderPeople />
@@ -161,27 +161,30 @@ const NewFeed = () => {
       <Helmet>
         <title>Star</title>
       </Helmet>
-        <ConfigProvider theme={newFeedsTheme}>
-            <div
-                className="w-full flex justify-center bg-white gap-5"
-                style={{
-                    minWidth: `${
-                        pinnedCount < 2
-                            ? ""
-                            : pinnedCount === 2
-                                ? "140vw"
-                                : pinnedCount === 3
-                                    ? "180vw"
-                                    : "220vw"
-                    }`,
-                }}
-            >
-                <div
-                    className=" h-full pt-2"
-                    style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
-                >
-                    <HeaderNewFeed itemActive={itemActive.label} menuItems={menuItems} />
-                    {/* <div
+      <ConfigProvider theme={newFeedsTheme}>
+        <div
+          className="w-full flex justify-center bg-[#fafafa] gap-5"
+          style={{
+            minWidth: `${
+              pinnedCount < 2
+                ? ""
+                : pinnedCount === 2
+                ? "140vw"
+                : pinnedCount === 3
+                ? "180vw"
+                : "220vw"
+            }`,
+          }}
+        >
+          <div
+            className=" h-full pt-2"
+            style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+          >
+            <HeaderNewFeed
+              itemActive={itemActive.label}
+              menuItems={menuItems}
+            />
+            {/* <div
             style={{
               border: "1px solid #ccc",
               marginTop: "20px",
@@ -199,16 +202,16 @@ const NewFeed = () => {
               </>
             )}
           </div> */}
-          {itemActive.label === "For you" && (
-            <>
-              <PostsOnNewsFeed />
-            </>
-          )}
+            {itemActive.label === "For you" && (
+              <>
+                <PostsOnNewsFeed />
+              </>
+            )}
+          </div>
+          {renderContentPinned()}
         </div>
-        {renderContentPinned()}
-      </div>
-    </ConfigProvider>
-        </>
+      </ConfigProvider>
+    </>
   );
 };
 export default NewFeed;

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useGetRepostsOnWall} from "../../../../hooks/post";
+import React, { forwardRef, Ref, useEffect, useState } from "react";
+import { useGetRepostsOnWall } from "../../../../hooks/post";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../../utils/queriesKey";
 import { Spin } from "antd";
@@ -31,9 +30,12 @@ interface RepostType {
   caption: string;
   repostedAt: string;
 }
+interface IProps {
+  userId: string;
+  scrollRef: Ref<HTMLDivElement>;
+}
 
-const RepostsOnWall = () => {
-  const { id: userId } = useParams<{ id: string }>();
+const RepostsOnWall: React.FC<IProps> = forwardRef(({ userId, scrollRef }) => {
   const [afterTime, setAfterTime] = useState<string | null>(null);
   const [allPosts, setAllPosts] = useState<RepostType[]>([]);
   const { dataPost, isLoading, hasNextPost, afterTimeFinalPost } =
@@ -49,7 +51,6 @@ const RepostsOnWall = () => {
 
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {
-
       if (!afterTime) {
         setAllPosts([]);
       }
@@ -57,14 +58,15 @@ const RepostsOnWall = () => {
       setAllPosts((prevPosts: RepostType[]) => [
         ...prevPosts,
         ...dataPost.map((post: RepostType) => {
-          const { repostedPost, repostedAt, repostedByUsername, caption } = post;
+          const { repostedPost, repostedAt, repostedByUsername, caption } =
+            post;
           return {
             repostedPost: repostedPost
               ? {
-                ...post.repostedPost,
-                postImageUrls: repostedPost.postImageUrls || [],
-                isRemoved: false,
-              }
+                  ...post.repostedPost,
+                  postImageUrls: repostedPost.postImageUrls || [],
+                  isRemoved: false,
+                }
               : null,
             repostedByUsername: repostedByUsername ? repostedByUsername : "",
             caption: caption ? caption : "",
@@ -75,26 +77,47 @@ const RepostsOnWall = () => {
     }
   }, [dataPost]);
 
+  // const handleScroll = debounce(() => {
+  //   const isBottom =
+  //     window.innerHeight + window.scrollY >=
+  //     document.documentElement.scrollHeight - 1;
+  //   if (isBottom && hasNextPost) {
+  //     setAfterTime(afterTimeFinalPost);
+  //   }
+  // }, 300);
+
   const handleScroll = debounce(() => {
-    const isBottom =
-      window.innerHeight + window.scrollY >=
-      document.documentElement.scrollHeight - 1;
-    if (isBottom && hasNextPost) {
-      setAfterTime(afterTimeFinalPost);
+    if (scrollRef && "current" in scrollRef && scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const isBottom = scrollTop + clientHeight >= scrollHeight - 1;
+      if (isBottom && hasNextPost) {
+        setAfterTime(afterTimeFinalPost);
+      }
     }
   }, 300);
 
+  useEffect(() => {
+    if (scrollRef && "current" in scrollRef && scrollRef.current) {
+      const currentScrollRef = scrollRef.current;
+      if (currentScrollRef) {
+        currentScrollRef.addEventListener("scroll", handleScroll);
+        return () =>
+          currentScrollRef.removeEventListener("scroll", handleScroll);
+      }
+    }
+  }, [hasNextPost, afterTimeFinalPost]);
+
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasNextPost, afterTimeFinalPost]);
+  // useEffect(() => {
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [hasNextPost, afterTimeFinalPost]);
 
   useEffect(() => {
     return () => {
       queryClient.resetQueries({
-        queryKey: [QUERY_KEY.fetchRepliesByUserId(userId || "")],
+        queryKey: [QUERY_KEY.fetchRepostsByUserId(userId || "")],
       });
     };
   }, []);
@@ -102,14 +125,14 @@ const RepostsOnWall = () => {
   if (isLoading && allPosts.length === 0) {
     return (
       <div className="flex items-center justify-center mt-8">
-        <Spin indicator={<LoadingOutlined spin/>} size="large"/>
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
       </div>
     );
   } else if (allPosts && allPosts.length === 0) {
     return (
       <div
         className="flex items-center justify-center text-xl"
-        style={{fontWeight: 450, marginTop: "25vh", color: "#999999"}}
+        style={{ fontWeight: 450, marginTop: "25vh", color: "#999999" }}
       >
         No reposts yet
       </div>
@@ -120,7 +143,7 @@ const RepostsOnWall = () => {
     <div>
       {allPosts &&
         allPosts.map((post) => {
-          const {repostedPost, repostedByUsername, caption} = post;
+          const { repostedPost, repostedByUsername, caption } = post;
           if (repostedPost) {
             return (
               <div>
@@ -140,7 +163,9 @@ const RepostsOnWall = () => {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  <span className="text-sm font-semibold">{repostedByUsername} </span>
+                  <span className="text-sm font-semibold">
+                    {repostedByUsername}{" "}
+                  </span>
                   {caption ? (
                     <>
                       <span className="text-sm">reposted:</span>
@@ -150,16 +175,12 @@ const RepostsOnWall = () => {
                     <span className="text-sm">reposted</span>
                   )}
                 </div>
-                <Post
-                  key={repostedPost.id}
-                  {...repostedPost}
-                />
+                <Post key={repostedPost.id} {...repostedPost} />
               </div>
-            )
-              ;
+            );
           }
         })}
     </div>
   );
-};
+});
 export default RepostsOnWall;

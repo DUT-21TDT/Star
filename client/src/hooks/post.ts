@@ -13,7 +13,10 @@ import {
   replyPost,
   getPostDetailById,
   getRepliesByPostId,
-  getRepliesOnUserWall, repostPost, deleteRepost, getRepostsOnWall,
+  getRepliesOnUserWall,
+  repostPost,
+  deleteRepost,
+  getRepostsOnWall,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -214,14 +217,14 @@ const useGetRepliesByUserIdOnWall = (
 };
 
 const useGetPostDetails = (postId: string) => {
-  console.log(postId)
+  console.log(postId);
   return {
     data: {
       id: "1",
       name: "test",
       description: "test",
       participantsCount: 5,
-      postsCount: 6
+      postsCount: 6,
     },
     isLoading: false,
     isError: false,
@@ -247,7 +250,7 @@ const useFetchAllPost = () => {
     isLoading: false,
     isError: false,
   };
-}
+};
 
 const useRepostPost = () => {
   return useMutation({
@@ -259,14 +262,11 @@ const useDeleteRepost = () => {
   return useMutation({
     mutationFn: deleteRepost,
   });
-}
+};
 
-const useGetRepostsOnWall = (
-  userId: string,
-  config: configTypeProfileWall
-) => {
+const useGetRepostsOnWall = (userId: string, config: configTypeProfileWall) => {
   const result = useQuery({
-    queryKey: QUERY_KEY.fetchRepostsByUserId(userId),
+    queryKey: [QUERY_KEY.fetchRepostsByUserId(userId), config.after],
     queryFn: () => getRepostsOnWall(userId, config),
   });
   return {
@@ -277,7 +277,7 @@ const useGetRepostsOnWall = (
     afterTimeFinalPost:
       result.data?.content[result.data?.content.length - 1]?.repostedAt,
   };
-}
+};
 
 export {
   useFetchAllPostsOnWall,

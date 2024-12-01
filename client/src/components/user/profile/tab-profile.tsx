@@ -38,7 +38,7 @@ const TabProfile: React.FC<IProps> = forwardRef((props) => {
     {
       key: "3",
       label: <div className="text-[16px] font-semibold">Reposts</div>,
-      children: <RepostsOnWall />,
+      children: <RepostsOnWall userId={userId} scrollRef={scrollRef} />,
     },
   ];
   if (isCurrentUser) {
