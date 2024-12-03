@@ -1,16 +1,21 @@
 package com.pbl.star.controllers.enduser;
 
+import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.usecase.enduser.ManageProfileUsecase;
 import com.pbl.star.usecase.enduser.InteractUserUsecase;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final InteractUserUsecase interactUserUsecase;
@@ -18,7 +23,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<?> searchUsers(@RequestParam String keyword,
-                                         @RequestParam(defaultValue = "20") int limit,
+                                         @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                          @RequestParam(required = false) String afterId) {
         return ResponseEntity.ok(interactUserUsecase.searchUsers(keyword, limit, afterId));
     }
@@ -43,5 +48,12 @@ public class UserController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> updatePersonalInformation(@ModelAttribute UpdateProfileParams updateProfileParams) {
         return ResponseEntity.ok(manageProfileUsecase.updatePersonalInformation(updateProfileParams));
+    }
+
+    @PutMapping("/me/password")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> updatePassword(@ModelAttribute ChangePasswordParams changePasswordParams) {
+        manageProfileUsecase.changePassword(changePasswordParams);
+        return ResponseEntity.ok().build();
     }
 }

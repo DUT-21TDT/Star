@@ -1,15 +1,13 @@
 package com.pbl.star.dtos.request.room;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class CreateRoomParams {
+    @NotBlank(message = "Name is required")
     private String name;
     private String description;
 }

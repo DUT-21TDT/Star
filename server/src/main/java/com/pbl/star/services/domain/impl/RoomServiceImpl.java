@@ -7,13 +7,11 @@ import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.entities.Room;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
-import com.pbl.star.exceptions.RequiredFieldMissingException;
 import com.pbl.star.mapper.RoomCreationMapper;
 import com.pbl.star.repositories.RoomRepository;
 import com.pbl.star.services.domain.RoomService;
 import com.pbl.star.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,10 +50,6 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public Room createRoom(CreateRoomParams params) {
 
-        if (StringUtils.isBlank(params.getName())) {
-            throw new RequiredFieldMissingException("Room name cannot be empty");
-        }
-
         if (roomRepository.existsByNameIgnoreCase(params.getName())) {
             throw new EntityConflictException("Room with name '" + params.getName() + "' already exists");
         }
@@ -85,10 +79,6 @@ public class RoomServiceImpl implements RoomService {
 
         String newName = params.getName();
         String newDescription = params.getDescription();
-
-        if (StringUtils.isBlank(newName)) {
-            throw new RequiredFieldMissingException("Room name cannot be empty");
-        }
 
         if (!newName.equalsIgnoreCase(room.getName()) && roomRepository.existsByNameIgnoreCase(newName)) {
             throw new EntityConflictException("Room with name '" + newName + "' already exists");

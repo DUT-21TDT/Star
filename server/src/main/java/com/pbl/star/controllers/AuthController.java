@@ -4,10 +4,12 @@ import com.pbl.star.dtos.request.user.ResendEmailParams;
 import com.pbl.star.dtos.request.user.SignUpParams;
 import com.pbl.star.usecase.common.AuthUsecase;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Validated
 public class AuthController {
 
     private final AuthUsecase authUsecase;

@@ -1,9 +1,12 @@
 package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.usecase.enduser.InteractUserUsecase;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -12,6 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
 public class FollowController {
 
     private final InteractUserUsecase interactUserUsecase;
@@ -39,7 +43,7 @@ public class FollowController {
 
     @GetMapping("/me/follow-requests")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> getFollowRequests(@RequestParam(defaultValue = "20") int limit,
+    public ResponseEntity<?> getFollowRequests(@RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                                @RequestParam(required = false) Instant after
     ) {
         return ResponseEntity.ok(interactUserUsecase.getFollowRequests(limit, after));
@@ -62,7 +66,7 @@ public class FollowController {
 
     @GetMapping("/{userId}/followings")
     public ResponseEntity<?> getFollowings(@PathVariable String userId,
-                                           @RequestParam(defaultValue = "20") int limit,
+                                           @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                            @RequestParam(required = false) Instant after
     ) {
         return ResponseEntity.ok(interactUserUsecase.getFollowings(userId, limit, after));
@@ -70,7 +74,7 @@ public class FollowController {
 
     @GetMapping("/{userId}/followers")
     public ResponseEntity<?> getFollowers(@PathVariable String userId,
-                                          @RequestParam(defaultValue = "20") int limit,
+                                          @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                           @RequestParam(required = false) Instant after
     ) {
         return ResponseEntity.ok(interactUserUsecase.getFollowers(userId, limit, after));

@@ -51,9 +51,6 @@ public class PostServiceImpl implements PostService {
         CreatePostValidator.validateCreatePostRequiredFields(createPostParams);
 
         List<String> imageFileNames = createPostParams.getImageFileNames();
-        if (imageFileNames != null && imageFileNames.size() > 20) {
-            throw new EntityConflictException("Number of images exceeds the limit");
-        }
 
         PostCreationMapper postCreationMapper = Mappers.getMapper(PostCreationMapper.class);
         Post post = postCreationMapper.toEntity(createPostParams);

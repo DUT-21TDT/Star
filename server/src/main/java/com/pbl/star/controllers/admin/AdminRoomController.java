@@ -5,6 +5,7 @@ import com.pbl.star.usecase.admin.AdminManageRoomUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/rooms")
+@Validated
 public class AdminRoomController {
 
     private final AdminManageRoomUsecase roomManageUsecase;

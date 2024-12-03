@@ -2,6 +2,7 @@ package com.pbl.star.usecase.enduser;
 
 import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.query.user.PersonalInformation;
+import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 
 public interface ManageProfileUsecase {
@@ -9,4 +10,5 @@ public interface ManageProfileUsecase {
     PersonalInformation getPersonalInformation();
     GeneralInformation updatePersonalInformation(UpdateProfileParams updateProfileParams);
     void acceptAllFollowRequests();
+    void changePassword(ChangePasswordParams changePasswordParams);
 }

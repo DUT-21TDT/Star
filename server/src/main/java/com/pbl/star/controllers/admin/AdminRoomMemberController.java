@@ -1,9 +1,11 @@
 package com.pbl.star.controllers.admin;
 
 import com.pbl.star.usecase.admin.AdminManageRoomMemberUsecase;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/rooms/{roomId}")
+@Validated
 public class AdminRoomMemberController {
 
     private final AdminManageRoomMemberUsecase roomMemberManageUsecase;
@@ -47,7 +50,8 @@ public class AdminRoomMemberController {
 
     @GetMapping("/members")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> getMembers(@PathVariable String roomId, @RequestParam(required = false) String keyword) {
+    public ResponseEntity<?> getMembers(@PathVariable String roomId,
+                                        @RequestParam(required = false) @Size(max = 50) String keyword) {
         return ResponseEntity.ok(roomMemberManageUsecase.getMembers(roomId, keyword));
     }
 }

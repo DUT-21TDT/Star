@@ -5,6 +5,7 @@ import com.pbl.star.dtos.query.user.OnDashboardProfileDTO;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.request.user.AdminGetUsersParams;
+import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.entities.User;
@@ -21,4 +22,5 @@ public interface UserService {
     User updatePersonalInformation(User user, UpdateProfileParams updateProfileParams);
     User getUserById(String userId);
     Page<OnDashboardProfileDTO> getUsersAsAdmin(AdminGetUsersParams params);
+    void changePassword(String userId, ChangePasswordParams changePasswordParams);
 }

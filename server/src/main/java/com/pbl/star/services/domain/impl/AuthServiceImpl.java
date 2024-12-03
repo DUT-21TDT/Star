@@ -6,16 +6,13 @@ import com.pbl.star.entities.VerificationToken;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.EntityConflictException;
-import com.pbl.star.exceptions.IllegalRequestArgumentException;
 import com.pbl.star.exceptions.InvalidVerificationTokenException;
 import com.pbl.star.mapper.UserSignUpMapper;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.VerificationTokenRepository;
 import com.pbl.star.services.domain.AuthService;
-import com.pbl.star.validators.SignUpValidator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public User signUpByEmail(SignUpParams signUpParams) {
-
         // Validate sign up information
         validateSignUpInformation(signUpParams);
 
@@ -43,17 +39,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void validateSignUpInformation(SignUpParams signUpParams) {
-        // Check required fields
-        SignUpValidator.validateSignupRequiredFields(signUpParams);
-
-        // Check sign up rules
-        SignUpValidator.validateSignUpRules(signUpParams);
-
         // Check if username already exist
         if (userRepository.existsByUsername(signUpParams.getUsername())) {
             throw new EntityConflictException("Username already exists");
         }
 
+        // Check if email already exist
         if (userRepository.existsValidAccountByEmail(signUpParams.getEmail())) {
             throw new EntityConflictException("Email already exists");
         }
@@ -87,10 +78,6 @@ public class AuthServiceImpl implements AuthService {
 
         if (StringUtils.isBlank(email) || email.equals(user.getEmail())) {
             return user;
-        }
-
-        if (!EmailValidator.getInstance().isValid(email)) {
-            throw new IllegalRequestArgumentException("Invalid email");
         }
 
         if (userRepository.existsValidAccountByEmail(email)) {

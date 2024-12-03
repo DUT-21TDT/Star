@@ -6,6 +6,7 @@ import com.pbl.star.usecase.enduser.ManagePostUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
+@Validated
 public class PostController {
     private final ManagePostUsecase postManageUsecase;
     private final InteractPostUsecase postInteractUsecase;

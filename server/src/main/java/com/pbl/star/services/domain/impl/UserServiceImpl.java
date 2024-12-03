@@ -5,6 +5,7 @@ import com.pbl.star.dtos.query.user.OnDashboardProfileDTO;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.query.user.PersonalInformation;
 import com.pbl.star.dtos.request.user.AdminGetUsersParams;
+import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.entities.User;
@@ -21,6 +22,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +37,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public Optional<GeneralInformation> getGeneralInformation(String userId) {
@@ -70,10 +74,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User updatePersonalInformation(User user, UpdateProfileParams updateProfileParams) {
-
-        if (StringUtils.isBlank(updateProfileParams.getUsername())) {
-            throw new RequiredFieldMissingException("Username cannot be empty");
-        }
 
         if (!user.getUsername().equals(updateProfileParams.getUsername())) {
             if (userRepository.existsByUsername(updateProfileParams.getUsername())) {
@@ -152,5 +152,19 @@ public class UserServiceImpl implements UserService {
                 SortDirection.ASC : SortDirection.DESC;
 
         return userRepository.findUsersAsAdmin(pageable, keyword, status, sortBy, direction);
+    }
+
+    @Override
+    public void changePassword(String userId, ChangePasswordParams changePasswordParams) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User not found")
+        );
+
+        if (!passwordEncoder.matches(changePasswordParams.getOldPassword(), user.getPassword())) {
+            throw new IllegalRequestArgumentException("Old password is incorrect");
+        }
+
+        user.setPassword(changePasswordParams.getNewPassword());
+        userRepository.save(user);
     }
 }

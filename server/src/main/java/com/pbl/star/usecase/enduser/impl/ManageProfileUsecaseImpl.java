@@ -2,6 +2,7 @@ package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.query.user.GeneralInformation;
 import com.pbl.star.dtos.query.user.PersonalInformation;
+import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.entities.User;
 import com.pbl.star.services.domain.FollowService;
@@ -50,5 +51,11 @@ public class ManageProfileUsecaseImpl implements ManageProfileUsecase {
     public void acceptAllFollowRequests() {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         followService.acceptAllFollowRequests(currentUserId);
+    }
+
+    @Override
+    public void changePassword(ChangePasswordParams changePasswordParams) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        userService.changePassword(currentUserId, changePasswordParams);
     }
 }

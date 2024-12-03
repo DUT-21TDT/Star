@@ -1,9 +1,11 @@
 package com.pbl.star.dtos.request.user;
 
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class AdminGetUsersParams {
     @Size(max = 50, message = "Keyword cannot exceed 50 characters")
     private String keyword;
