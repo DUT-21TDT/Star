@@ -8,6 +8,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/admin/users")
 @RequiredArgsConstructor
@@ -20,5 +22,21 @@ public class AdminUserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllUsers(@ModelAttribute AdminGetUsersParams params) {
         return ResponseEntity.ok(manageUserUsecase.getAllUsers(params));
+    }
+
+    @PatchMapping("/{userId}/status")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> changeUserStatus(@PathVariable String userId, Map<String, String> requestBody) {
+
+        String status = requestBody.get("status");
+
+        if (status.equalsIgnoreCase("block")) {
+            manageUserUsecase.blockUser(userId);
+        } else if (status.equalsIgnoreCase("unblock")) {
+            manageUserUsecase.unblockUser(userId);
+        } else {
+            return ResponseEntity.badRequest().body("Invalid status");
+        }
+        return ResponseEntity.ok().build();
     }
 }

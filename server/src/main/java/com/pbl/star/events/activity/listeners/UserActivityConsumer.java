@@ -1,4 +1,4 @@
-package com.pbl.star.events.notification.listeners;
+package com.pbl.star.events.activity.listeners;
 
 import com.pbl.star.configurations.RabbitMQConfig;
 import com.pbl.star.services.external.impl.NotificationProducerImpl;

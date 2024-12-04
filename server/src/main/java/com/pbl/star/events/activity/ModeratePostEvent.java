@@ -1,4 +1,4 @@
-package com.pbl.star.events.notification;
+package com.pbl.star.events.activity;
 
 import lombok.Getter;
 import lombok.Setter;

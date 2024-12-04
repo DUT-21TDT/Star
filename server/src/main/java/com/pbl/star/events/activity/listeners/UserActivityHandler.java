@@ -1,4 +1,4 @@
-package com.pbl.star.events.notification.listeners;
+package com.pbl.star.events.activity.listeners;
 
 import org.springframework.amqp.core.Message;
 

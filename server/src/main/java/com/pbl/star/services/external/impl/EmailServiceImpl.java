@@ -44,6 +44,19 @@ public class EmailServiceImpl implements EmailService {
         sendMail(email, subject, multipart);
     }
 
+//    @Override
+//    public void sendBlockEmail(String email) throws MessagingException {
+//        String subject = "Account Blocked";
+//        String content = "Your account has been blocked. Please contact the administrator for more information.";
+//
+//        MimeBodyPart contentPart = new MimeBodyPart();
+//        contentPart.setText(content, "UTF-8", "html");
+//        Multipart multipart = new MimeMultipart();
+//        multipart.addBodyPart(contentPart);
+//
+//        sendMail(email, subject, multipart);
+//    }
+
     private void sendMail(String to, String subject, Multipart content) throws MessagingException {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();

@@ -9,6 +9,7 @@ import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.entities.User;
+import com.pbl.star.enums.AccountStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 
@@ -23,4 +24,5 @@ public interface UserService {
     User getUserById(String userId);
     Page<OnDashboardProfileDTO> getUsersAsAdmin(AdminGetUsersParams params);
     void changePassword(String userId, ChangePasswordParams changePasswordParams);
+    void changeUserStatus(String userId, AccountStatus targetStatus);
 }

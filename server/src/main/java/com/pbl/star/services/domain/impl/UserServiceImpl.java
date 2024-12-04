@@ -167,4 +167,22 @@ public class UserServiceImpl implements UserService {
         user.setPassword(changePasswordParams.getNewPassword());
         userRepository.save(user);
     }
+
+    @Override
+    public void changeUserStatus(String userId, AccountStatus targetStatus) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User not found")
+        );
+
+        if (user.getStatus() == targetStatus) {
+            throw new IllegalRequestArgumentException("User is already " + targetStatus);
+        }
+
+        if (user.getStatus() == AccountStatus.INACTIVE) {
+            throw new IllegalRequestArgumentException("User is inactive");
+        }
+
+        user.setStatus(targetStatus);
+        userRepository.save(user);
+    }
 }

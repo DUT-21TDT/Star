@@ -1,8 +1,8 @@
-package com.pbl.star.events.notification.listeners;
+package com.pbl.star.events.activity.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
-import com.pbl.star.events.notification.FollowUserEvent;
+import com.pbl.star.events.activity.FollowUserEvent;
 import com.pbl.star.services.domain.NotificationService;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
@@ -11,19 +11,19 @@ import java.io.IOException;
 import java.time.Instant;
 
 @Component
-public class AcceptFollowHandler implements UserActivityHandler {
+public class RequestFollowHandler implements UserActivityHandler {
 
     private final ObjectMapper objectMapper;
     private final NotificationService notificationService;
 
-    public AcceptFollowHandler(NotificationService notificationService) {
+    public RequestFollowHandler(NotificationService notificationService) {
         this.objectMapper = new JacksonConfig().queueObjectMapper();
         this.notificationService = notificationService;
     }
 
     @Override
     public String[] getRoutingKey() {
-        return new String[]{"notification.accept_follow"};
+        return new String[]{"notification.request_follow", "notification.UNDO_request_follow"};
     }
 
     @Override
@@ -35,11 +35,15 @@ public class AcceptFollowHandler implements UserActivityHandler {
         String followeeId = event.getFolloweeId();
         Instant timestamp = event.getTimestamp();
 
-        notificationService.createAcceptFollowNotification(followingId, followerId, followeeId, timestamp);
+        notificationService.createRequestFollowNotification(followingId, followerId, followeeId, timestamp);
+
     }
 
     @Override
     public void undo(Message message) throws IOException {
+        FollowUserEvent event = objectMapper.readValue(message.getBody(), FollowUserEvent.class);
+        String followingId = event.getFollowingId();
 
+        notificationService.undoRequestFollowNotification(followingId);
     }
 }

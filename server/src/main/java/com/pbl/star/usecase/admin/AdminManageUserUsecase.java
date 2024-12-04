@@ -6,4 +6,6 @@ import org.springframework.data.domain.Page;
 
 public interface AdminManageUserUsecase {
     Page<OnDashboardProfileDTO> getAllUsers(AdminGetUsersParams params);
+    void blockUser(String userId);
+    void unblockUser(String userId);
 }

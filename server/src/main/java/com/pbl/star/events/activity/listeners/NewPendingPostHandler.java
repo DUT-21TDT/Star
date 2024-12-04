@@ -1,8 +1,8 @@
-package com.pbl.star.events.notification.listeners;
+package com.pbl.star.events.activity.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
-import com.pbl.star.events.notification.NewPendingPostEvent;
+import com.pbl.star.events.activity.NewPendingPostEvent;
 import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.services.domain.UserRoomService;
 import org.springframework.amqp.core.Message;
