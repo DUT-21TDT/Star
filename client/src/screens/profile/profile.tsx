@@ -1,5 +1,4 @@
 import { ConfigProvider } from "antd";
-
 import "../../assets/css/profile.css";
 import { profileTheme } from "../../utils/theme";
 import UserProfile from "../../components/user/profile/user-profile";
@@ -50,7 +49,7 @@ const Profile: React.FC<{ isPinned?: boolean }> = ({ isPinned }) => {
             }
           >
             <div
-              className=" h-full pt-2 "
+              className="h-full pt-2"
               style={{ width: "100%", maxWidth: "650px" }}
             >
               <HeaderProfile />

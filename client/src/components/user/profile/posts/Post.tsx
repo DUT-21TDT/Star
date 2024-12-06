@@ -452,7 +452,7 @@ const Post: React.FC<IProps> = (props) => {
                       justifyContent: "center",
                       backgroundColor: "white",
                       maxHeight: "400px",
-                      maxWidth: "560px",
+                      maxWidth: "500px",
                     }}
                   >
                     <PhotoView key={index} src={url}>

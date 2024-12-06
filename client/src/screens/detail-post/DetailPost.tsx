@@ -1,14 +1,13 @@
-import {ConfigProvider} from "antd";
+import { ConfigProvider } from "antd";
 import HeaderDetailPost from "./HeaderDetailPost";
-import {newFeedsTheme} from "../../utils/theme";
+import { newFeedsTheme } from "../../utils/theme";
 import MainContentDetailPost from "../../components/user/profile/posts/detail-post";
-import {Helmet} from "react-helmet-async";
-import {useParams} from "react-router-dom";
-import {useGetPostDetailById} from "../../hooks/post.ts";
+import { Helmet } from "react-helmet-async";
+import { useParams } from "react-router-dom";
+import { useGetPostDetailById } from "../../hooks/post.ts";
 import _ from "lodash";
 
 const DetailPost = () => {
-
   const postId = useParams<{ postId: string }>().postId || "";
   const {
     data: dataPostDetail,
@@ -21,9 +20,13 @@ const DetailPost = () => {
       <Helmet>
         <title>
           {dataPostDetail.content
-            ? _.truncate(dataPostDetail.content, {length: 100, omission: "..."}) + " • Star"
+            ? _.truncate(dataPostDetail.content, {
+                length: 100,
+                omission: "...",
+              }) + " • Star"
             : "Star"}
-        </title></Helmet>
+        </title>
+      </Helmet>
       <ConfigProvider theme={newFeedsTheme}>
         <div className="w-full flex justify-center">
           <div
@@ -33,7 +36,7 @@ const DetailPost = () => {
               maxWidth: "650px",
             }}
           >
-            <HeaderDetailPost/>
+            <HeaderDetailPost />
             <div
               style={{
                 border: "1px solid #bdbdbd",
@@ -44,9 +47,11 @@ const DetailPost = () => {
                 minHeight: "800px",
               }}
             >
-              <MainContentDetailPost dataPostDetail={dataPostDetail}
-                                     isLoading={isLoading}
-                                     isError={isError} />
+              <MainContentDetailPost
+                dataPostDetail={dataPostDetail}
+                isLoading={isLoading}
+                isError={isError}
+              />
             </div>
           </div>
         </div>

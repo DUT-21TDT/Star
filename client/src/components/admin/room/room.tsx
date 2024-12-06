@@ -8,7 +8,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
 import ModalEditRoom from "./modal-edit-room";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface DataType {
   id: number;
@@ -22,6 +22,7 @@ interface DataType {
 const Room: React.FC = () => {
   const [openModalEdit, setOpenModalEdit] = useState<boolean>(false);
   const [dataEditRoom, setDataEditRoom] = useState<DataType | null>(null);
+  const [textSearchRoom, setTextSearchRoom] = useState<string>("");
   const { mutate: deleteRoom } = useDeleteRoom();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -46,13 +47,16 @@ const Room: React.FC = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (text, record) =>
-        <a onClick={() => {
+      render: (text, record) => (
+        <a
+          onClick={() => {
             navigate(`/admin/rooms/${record.id}`);
             window.scrollTo(0, 0);
-        }}>
+          }}
+        >
           {text}
-        </a>,
+        </a>
+      ),
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
@@ -99,6 +103,11 @@ const Room: React.FC = () => {
     },
   ];
   const { data, isLoading, isError } = useFetchAllRoom();
+
+  const filteredData = data?.filter((room: DataType) =>
+    room.name.toLowerCase().includes(textSearchRoom.toLowerCase())
+  );
+
   return (
     <>
       {isLoading ? (
@@ -111,8 +120,13 @@ const Room: React.FC = () => {
         <div>
           <Table
             columns={columns}
-            dataSource={data}
-            title={() => <HeaderTableRoom countRoom={data?.length || 0} />}
+            dataSource={filteredData}
+            title={() => (
+              <HeaderTableRoom
+                countRoom={data?.length || 0}
+                setTextSearchRoom={setTextSearchRoom}
+              />
+            )}
             // footer={() => "Footer"}
             expandable={{
               expandedRowRender: (record) => (

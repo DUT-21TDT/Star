@@ -1,6 +1,6 @@
 import { BarsOutlined } from "@ant-design/icons";
-import { Avatar, Button, Input, Layout, Dropdown } from "antd";
-import { SearchOutlined, BellOutlined } from "@ant-design/icons";
+import { Avatar, Button, Layout, Dropdown } from "antd";
+import { BellOutlined } from "@ant-design/icons";
 import react from "../../../assets/images/QR.svg";
 import type { MenuProps } from "antd";
 import Cookies from "js-cookie";
@@ -45,17 +45,16 @@ const HeaderAdmin = (props: IProps) => {
             fontSize: "16px",
             width: 48,
             height: 48,
-            flex: 0.3,
           }}
         />
-        <Input
+        {/* <Input
           placeholder="Search"
           prefix={<SearchOutlined className="text-[#b9b8b8]" />}
           style={{
             flex: 3,
           }}
-        />
-        <div className="flex justify-center gap-3 flex-1">
+        /> */}
+        <div className="flex justify-center gap-3">
           <Button icon={<BellOutlined />} className="border-none" />
           <Dropdown menu={{ items }} placement="bottomRight">
             <Button

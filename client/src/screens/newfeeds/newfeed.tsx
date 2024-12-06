@@ -96,7 +96,11 @@ const NewFeed = () => {
           <ConfigProvider key="room" theme={roomUserTheme}>
             <div
               className="h-full pt-2 animate-zoom-in"
-              style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+              style={{
+                width: "100%",
+                maxWidth: "650px",
+                flexShrink: 0,
+              }}
             >
               <HeaderRoom />
               <div
@@ -110,6 +114,7 @@ const NewFeed = () => {
                   backgroundColor: "white",
                   overflowY: "auto",
                   maxHeight: "calc(100vh - 60px)",
+                  minHeight: "calc(100vh - 60px)",
                   scrollbarWidth: "thin",
                   scrollbarColor: "#b9b7b7 white",
                 }}
@@ -140,6 +145,7 @@ const NewFeed = () => {
                   backgroundColor: "white",
                   overflowY: "auto",
                   maxHeight: "calc(100vh - 60px)",
+                  minHeight: "calc(100vh - 60px)",
                   scrollbarWidth: "thin",
                   scrollbarColor: "#b9b7b7 white",
                 }}

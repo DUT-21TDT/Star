@@ -23,6 +23,7 @@ const SideBar: React.FC = () => {
       width: "33",
       height: "33",
       navigate: "/",
+      key: "home",
     },
     {
       name: "search",
@@ -30,6 +31,7 @@ const SideBar: React.FC = () => {
       width: "33",
       height: "33",
       navigate: "/search",
+      key: "people",
     },
     {
       name: "plus",
@@ -43,6 +45,7 @@ const SideBar: React.FC = () => {
       width: "33",
       height: "33",
       navigate: "/activity",
+      key: "activity",
     },
     {
       name: "room",
@@ -50,6 +53,7 @@ const SideBar: React.FC = () => {
       width: "33",
       height: "33",
       navigate: "/room",
+      key: "room",
     },
     {
       name: "user",
@@ -57,12 +61,16 @@ const SideBar: React.FC = () => {
       width: "33",
       height: "33",
       navigate: `/profile/${id}`,
+      key: "profile",
     },
   ];
   const [activeIcon, setActiveIcon] = useState<string>("home");
   const [openModalCreatePost, setOpenModalCreatePost] = useState(false);
   const navigate = useNavigate();
   const path = window.location.pathname;
+  const pinned = useAppSelector((state) => state.user.pin);
+
+  console.log("pinned", pinned);
 
   useEffect(() => {
     switch (path) {
@@ -107,6 +115,7 @@ const SideBar: React.FC = () => {
             width,
             height,
             navigate: iconNavigate,
+            key,
           }) => (
             <div
               key={name}
@@ -117,8 +126,10 @@ const SideBar: React.FC = () => {
                 } else if (name === "home" && path === "/") {
                   window.location.reload();
                 } else if (iconNavigate) {
-                  setActiveIcon(name);
-                  navigate(iconNavigate);
+                  if (!pinned?.includes(key)) {
+                    setActiveIcon(name);
+                    navigate(iconNavigate);
+                  }
                 }
               }}
             >

@@ -21,3 +21,8 @@
 .animate-zoom-in {
   animation: zoomInFromCenter 0.4s ease-out forwards;
 }
+.border-custom-scrollbar {
+  border: 1px solid #bdbdbd;
+  scrollbar-width: thin;
+  scrollbar-color: #b9b7b7 white;
+}

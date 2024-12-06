@@ -14,6 +14,7 @@ import "../../../../assets/css/modal-reply-post.css";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../../utils/queriesKey";
 import { getPostDetailById } from "../../../../service/postAPI";
+import EmojiPicker from "emoji-picker-react";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const getBase64 = (file: FileType): Promise<string> =>
@@ -225,6 +226,12 @@ const ModalReplyPost: React.FC<IProps> = ({
     return isJpgOrPng && isLt10M;
   };
 
+  // handle add emoji
+  const [showPicker, setShowPicker] = useState(false);
+  const handleEmojiClick = (emojiObject: { emoji: string }) => {
+    setTextValue((prevText) => prevText + emojiObject.emoji);
+  };
+
   return (
     <Modal
       title={
@@ -276,25 +283,44 @@ const ModalReplyPost: React.FC<IProps> = ({
                 <ImageUpload />
               </div>
             </div>
-            <div className="flex items-center gap-5">
-              <Upload
-                fileList={fileList}
-                onChange={handleChange}
-                showUploadList={false}
-                beforeUpload={() => false}
-              >
-                <Button
-                  icon={<CloudUploadOutlined />}
-                  type="text"
-                  style={{ color: "gray", backgroundColor: "#f0f0f0" }}
-                >
-                  Upload
-                </Button>
-              </Upload>
-            </div>
           </div>
         </div>
       </PerfectScrollbar>
+      <div className="flex items-center gap-3 ml-16">
+        <Upload
+          fileList={fileList}
+          onChange={handleChange}
+          showUploadList={false}
+          beforeUpload={() => false}
+        >
+          <Button
+            icon={<CloudUploadOutlined />}
+            type="text"
+            style={{ color: "gray", backgroundColor: "#f0f0f0" }}
+          >
+            Upload
+          </Button>
+        </Upload>
+        <div>
+          <Button
+            type="text"
+            style={{
+              color: "gray",
+              backgroundColor: "#f0f0f0",
+              position: "relative",
+            }}
+            onClick={() => setShowPicker(!showPicker)}
+          >
+            Emoji
+          </Button>
+          {showPicker && (
+            <EmojiPicker
+              onEmojiClick={handleEmojiClick}
+              style={{ position: "absolute" }}
+            />
+          )}
+        </div>
+      </div>
 
       <div className="flex justify-end mt-2">
         <Button
