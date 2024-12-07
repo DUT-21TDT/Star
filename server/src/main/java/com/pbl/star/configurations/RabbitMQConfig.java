@@ -11,6 +11,9 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class RabbitMQConfig {
     public static final String NOTIFICATION_EXCHANGE = "notification_exchange";
@@ -23,7 +26,9 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue userActivityQueue() {
-        return new Queue(USER_ACTIVITY_QUEUE, true); // Durable queue
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-message-ttl", 60 * 60 * 1000); // 1 hour
+        return new Queue(USER_ACTIVITY_QUEUE, true, false, false, args); // Durable queue
     }
 
     @Bean
@@ -44,7 +49,7 @@ public class RabbitMQConfig {
     public Jackson2JsonMessageConverter jsonMessageConverter() {
         Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
         DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
-        typeMapper.addTrustedPackages("com.pbl.star.events.notification");
+        typeMapper.addTrustedPackages("com.pbl.star.events.activity");
         converter.setJavaTypeMapper(typeMapper);
         return converter;
     }
