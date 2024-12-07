@@ -117,6 +117,23 @@ const moderatorTheme = {
   },
 };
 
+const activityTheme = {
+  components: {
+    Input: {
+      hoverBorderColor: "#bdbdbd",
+      activeBorderColor: "#bdbdbd",
+      activeShadow: "0 0 0 2px rgba(255, 255, 255, 0.2)",
+      hoverBg: "#fafafa",
+      activeBg: "#fafafa",
+    },
+    Button: {
+      defaultHoverBorderColor: "#bdbdbd",
+      defaultHoverColor: "none",
+      defaultHoverBg: "none",
+    },
+  },
+};
+
 export {
   SignUpTheme,
   LoginTheme,
@@ -126,4 +143,5 @@ export {
   roomUserTheme,
   newFeedsTheme,
   moderatorTheme,
+  activityTheme,
 };

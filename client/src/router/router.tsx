@@ -24,6 +24,7 @@ import RoomDetails from "../components/admin/room/room-details.tsx";
 import DetailPost from "../screens/detail-post/DetailPost.tsx";
 import PostDetails from "../components/admin/post/post-details.tsx";
 import UserDetails from "../components/admin/user/user-details.tsx";
+import Activity from "../screens/activity/activity.tsx";
 
 const router = createBrowserRouter(
   [
@@ -50,7 +51,7 @@ const router = createBrowserRouter(
         },
         {
           path: "activity",
-          element: <div>activity</div>,
+          element: <Activity />,
         },
         {
           path: "room",
