@@ -34,7 +34,6 @@ public class PostController {
         }
 
         return ResponseEntity.ok(Map.of("id", newPostId));
-
     }
 
     @DeleteMapping("/{postId}")

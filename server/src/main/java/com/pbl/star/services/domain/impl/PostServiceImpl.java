@@ -15,12 +15,11 @@ import com.pbl.star.mapper.PostCreationMapper;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.helper.ResourceAccessControl;
+import com.pbl.star.utils.SliceTransfer;
 import com.pbl.star.validators.CreatePostValidator;
 import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -102,14 +101,15 @@ public class PostServiceImpl implements PostService {
             throw new ResourceOwnershipException("User have private profile");
         }
 
-        Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistPostsOfUserByStatusAsUser(pageable, after, PostStatus.APPROVED, targetUserId);
+        List<PostForUserDTO> postsList = postRepository.findExistPostsOfUserByStatusAsUser(limit + 1, after, PostStatus.APPROVED, targetUserId);
+
+        return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
     public Slice<PendingPostForUserDTO> getPendingPostsByUser(String currentUserId, int limit, Instant after) {
-        Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistPendingPostsOfUser(pageable, after, currentUserId);
+        List<PendingPostForUserDTO> postsList = postRepository.findExistPendingPostsOfUser(limit + 1, after, currentUserId);
+        return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
@@ -118,9 +118,9 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException("User does not exist");
         }
 
-        Pageable pageable = PageRequest.of(0, limit);
         String[] joinedRoomIds = userRoomRepository.findRoomIdsByUserId(userId).toArray(String[]::new);
-        return postRepository.findExistPostsInRoomsByStatusAsUser(pageable, after, PostStatus.APPROVED, joinedRoomIds);
+        List<PostForUserDTO> postsList = postRepository.findExistPostsInRoomsByStatusAsUser(limit + 1, after, PostStatus.APPROVED, joinedRoomIds);
+        return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
@@ -129,8 +129,8 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException("Room does not exist");
         }
 
-        Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistPostsInRoomsByStatusAsUser(pageable, after, status, roomId);
+        List<PostForUserDTO> postsList = postRepository.findExistPostsInRoomsByStatusAsUser(limit + 1, after, status, roomId);
+        return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
@@ -139,8 +139,8 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException("Room does not exist");
         }
 
-        Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistPostsInRoomByStatusAsMod(pageable, after, status, roomId);
+        List<PostForModDTO> postsList = postRepository.findExistPostsInRoomByStatusAsMod(limit + 1, after, status, roomId);
+        return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
@@ -184,6 +184,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public Post deletePostOfUser(String postId, String userId) {
         Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
@@ -237,8 +238,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public CustomSlice<PostForUserDTO> getReplies(String userId, String postId, int limit, Instant after) {
-        Pageable pageable = PageRequest.of(0, limit);
-        Slice<PostForUserDTO> replies = postRepository.findExistRepliesOfPostAsUser(pageable, after, userId, postId);
+        List<PostForUserDTO> repliesList = postRepository.findExistRepliesOfPostAsUser(limit + 1, after, userId, postId);
+        Slice<PostForUserDTO> replies = SliceTransfer.trimToSlice(repliesList, limit);
 
         CustomSlice<PostForUserDTO> repliesPage = new CustomSlice<>(replies);
 
@@ -256,8 +257,8 @@ public class PostServiceImpl implements PostService {
             throw new ResourceOwnershipException("User have private profile");
         }
 
-        Pageable pageable = PageRequest.of(0, limit);
-        return postRepository.findExistRepliesOnWallAsUser(pageable, after, currentUserId, targetUserId);
+        List<ReplyOnWallDTO> postsList = postRepository.findExistRepliesOnWallAsUser(limit + 1, after, currentUserId, targetUserId);
+        return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
@@ -267,8 +268,8 @@ public class PostServiceImpl implements PostService {
             throw new ResourceOwnershipException("User have private profile");
         }
 
-        Pageable pageable = PageRequest.of(0, limit);
-        return postRepostRepository.findRepostsOnWallAsUser(pageable, after, currentUserId, targetUserId);
+        List<RepostOnWallDTO> repostsList = postRepostRepository.findRepostsOnWallAsUser(limit + 1, after, currentUserId, targetUserId);
+        return SliceTransfer.trimToSlice(repostsList, limit);
     }
 
 

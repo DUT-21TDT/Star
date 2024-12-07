@@ -9,6 +9,5 @@ public interface ManageProfileUsecase {
     GeneralInformation getGeneralInformation();
     PersonalInformation getPersonalInformation();
     GeneralInformation updatePersonalInformation(UpdateProfileParams updateProfileParams);
-    void acceptAllFollowRequests();
     void changePassword(ChangePasswordParams changePasswordParams);
 }

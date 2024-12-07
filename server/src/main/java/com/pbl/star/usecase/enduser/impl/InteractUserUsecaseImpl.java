@@ -6,7 +6,7 @@ import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
 import com.pbl.star.dtos.query.user.OnSearchProfile;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.user.FollowResponse;
-import com.pbl.star.dtos.response.user.OnWallProfileResponse;
+import com.pbl.star.dtos.query.user.OnWallProfile;
 import com.pbl.star.entities.Following;
 import com.pbl.star.enums.FollowRequestAction;
 import com.pbl.star.enums.FollowRequestStatus;
@@ -38,7 +38,7 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     }
 
     @Override
-    public OnWallProfileResponse getProfileOnWall(String userId) {
+    public OnWallProfile getProfileOnWall(String userId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return userService.getProfileOnWall(currentUserId, userId);
     }

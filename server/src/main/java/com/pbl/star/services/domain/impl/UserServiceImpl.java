@@ -1,13 +1,10 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.user.GeneralInformation;
-import com.pbl.star.dtos.query.user.OnDashboardProfileDTO;
-import com.pbl.star.dtos.query.user.OnSearchProfile;
-import com.pbl.star.dtos.query.user.PersonalInformation;
+import com.pbl.star.dtos.query.user.*;
 import com.pbl.star.dtos.request.user.AdminGetUsersParams;
 import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
-import com.pbl.star.dtos.response.user.OnWallProfileResponse;
+import com.pbl.star.dtos.query.user.OnWallProfile;
 import com.pbl.star.entities.User;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.Gender;
@@ -16,6 +13,7 @@ import com.pbl.star.exceptions.*;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.services.domain.UserService;
 import com.pbl.star.utils.ImageUtil;
+import com.pbl.star.utils.SliceTransfer;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -30,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -46,13 +45,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Slice<OnSearchProfile> searchUsers(String currentUserId, String keyword, int limit, String afterId) {
-        Pageable pageable = PageRequest.of(0, limit);
-        return userRepository.searchUsers(pageable, afterId, currentUserId, keyword);
+        List<OnSearchProfile> usersList = userRepository.searchUsers(limit + 1, afterId, currentUserId, keyword);
+        return SliceTransfer.trimToSlice(usersList, limit);
     }
 
     @Override
-    public OnWallProfileResponse getProfileOnWall(String currentUserId, String targetUserId) {
-        OnWallProfileResponse publicProfileResponse = userRepository.getPublicProfile(currentUserId, targetUserId);
+    public OnWallProfile getProfileOnWall(String currentUserId, String targetUserId) {
+        OnWallProfile publicProfileResponse = userRepository.getPublicProfile(currentUserId, targetUserId);
 
         if (publicProfileResponse == null) {
             throw new EntityNotFoundException("User not found");

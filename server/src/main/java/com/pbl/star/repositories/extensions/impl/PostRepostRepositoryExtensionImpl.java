@@ -6,9 +6,6 @@ import com.pbl.star.repositories.extensions.PostRepostRepositoryExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 
 import java.time.Instant;
 import java.util.List;
@@ -18,7 +15,7 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
     private EntityManager entityManager;
 
     @Override
-    public Slice<RepostOnWallDTO> findRepostsOnWallAsUser(Pageable pageable, Instant after, String currentUserId, String targetUserId) {
+    public List<RepostOnWallDTO> findRepostsOnWallAsUser(int limit, Instant after, String currentUserId, String targetUserId) {
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
                 "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
                 "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
@@ -44,7 +41,7 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query.setParameter("currentUserId", currentUserId)
                 .setParameter("targetUserId", targetUserId)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (after != null) {
             query.setParameter("after", after);
@@ -52,13 +49,8 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
 
         List<Object[]> resultList = query.getResultList();
 
-        boolean hasNext = resultList.size() > pageable.getPageSize();
 
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<RepostOnWallDTO> repostedPosts = resultList.stream().map(
+        return resultList.stream().map(
                 row -> {
                     PostForUserDTO post = PostForUserDTO.builder()
                             .id((String) row[0])
@@ -85,7 +77,5 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
                             .build();
                 }
         ).toList();
-
-        return new SliceImpl<>(repostedPosts, pageable, hasNext);
     }
 }

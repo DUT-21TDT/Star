@@ -10,10 +10,9 @@ import com.pbl.star.repositories.NotificationChangeRepository;
 import com.pbl.star.repositories.NotificationObjectRepository;
 import com.pbl.star.repositories.NotificationRepository;
 import com.pbl.star.services.domain.NotificationService;
+import com.pbl.star.utils.SliceTransfer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +31,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Slice<NotificationForUserDTO> getNotifications(String userId, int limit, Instant after) {
-        Pageable pageable = PageRequest.of(0, limit);
-        return notificationRepository.getNotifications(pageable, after, userId);
+        List<NotificationForUserDTO> notiList = notificationRepository.getNotifications(limit + 1, after, userId);
+        return SliceTransfer.trimToSlice(notiList, limit);
     }
 
     @Override

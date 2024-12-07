@@ -47,8 +47,7 @@ public class ManageProfileUsecaseImpl implements ManageProfileUsecase {
         return new GeneralInformation(updatedUser);
     }
 
-    @Override
-    public void acceptAllFollowRequests() {
+    private void acceptAllFollowRequests() {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         followService.acceptAllFollowRequests(currentUserId);
     }

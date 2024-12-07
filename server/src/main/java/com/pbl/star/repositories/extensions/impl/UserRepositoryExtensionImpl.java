@@ -1,7 +1,6 @@
 package com.pbl.star.repositories.extensions.impl;
 
 import com.pbl.star.dtos.query.user.*;
-import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.entities.User;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.FollowStatus;
@@ -24,7 +23,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public Slice<OnSearchProfile> searchUsers(Pageable pageable, String afterId, String currentUserId, String keyword) {
+    public List<OnSearchProfile> searchUsers(int limit, String afterId, String currentUserId, String keyword) {
         String sql = getSearchUsersQuery(afterId);
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
@@ -32,13 +31,25 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
                 .setParameter("keyword1", "%" + keyword + "%")
                 .setParameter("currentId", currentUserId)
                 .setFirstResult(0)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (afterId != null) {
             query.setParameter("afterId", afterId);
         }
 
-        return getSliceOnSearchProfile(pageable, query);
+        List<Object[]> resultList = query.getResultList();
+        return resultList.stream()
+                .map(row -> OnSearchProfile.builder()
+                        .userId((String) row[0])
+                        .username((String) row[1])
+                        .avatarUrl((String) row[2])
+                        .firstName((String) row[3])
+                        .lastName((String) row[4])
+                        .numberOfFollowers(((Long) row[5]).intValue())
+                        .followStatus(FollowStatus.valueOf((String) row[6]))
+                        .build())
+                .toList();
+
     }
 
     private String getSearchUsersQuery(String afterId) {
@@ -72,32 +83,32 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
         return sql;
     }
 
-    private Slice<OnSearchProfile> getSliceOnSearchProfile(Pageable pageable, Query query) {
-        List<Object[]> resultList = query.getResultList();
-
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<OnSearchProfile> content = resultList.stream()
-                .map(row -> OnSearchProfile.builder()
-                        .userId((String) row[0])
-                        .username((String) row[1])
-                        .avatarUrl((String) row[2])
-                        .firstName((String) row[3])
-                        .lastName((String) row[4])
-                        .numberOfFollowers(((Long) row[5]).intValue())
-                        .followStatus(FollowStatus.valueOf((String) row[6]))
-                        .build())
-                .toList();
-
-        return new SliceImpl<>(content, pageable, hasNext);
-    }
+//    private Slice<OnSearchProfile> getSliceOnSearchProfile(Pageable pageable, Query query) {
+//        List<Object[]> resultList = query.getResultList();
+//
+//        boolean hasNext = resultList.size() > pageable.getPageSize();
+//
+//        if (hasNext) {
+//            resultList.removeLast();
+//        }
+//
+//        List<OnSearchProfile> content = resultList.stream()
+//                .map(row -> OnSearchProfile.builder()
+//                        .userId((String) row[0])
+//                        .username((String) row[1])
+//                        .avatarUrl((String) row[2])
+//                        .firstName((String) row[3])
+//                        .lastName((String) row[4])
+//                        .numberOfFollowers(((Long) row[5]).intValue())
+//                        .followStatus(FollowStatus.valueOf((String) row[6]))
+//                        .build())
+//                .toList();
+//
+//        return new SliceImpl<>(content, pageable, hasNext);
+//    }
 
     @Override
-    public OnWallProfileResponse getPublicProfile(String currentId, String targetUserId) {
+    public OnWallProfile getPublicProfile(String currentId, String targetUserId) {
 
         String jpql;
         TypedQuery<Object[]> query;
@@ -135,7 +146,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
 
         try {
             Object[] result = query.getSingleResult();
-            OnWallProfile onWallProfile = OnWallProfile.builder()
+            OnWallProfileUser onWallProfile = OnWallProfileUser.builder()
                     .username((String) result[0])
                     .firstName((String) result[1])
                     .lastName((String) result[2])
@@ -145,7 +156,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
                     .numberOfFollowers(((Long) result[6]).intValue())
                     .build();
 
-            return OnWallProfileResponse.builder()
+            return OnWallProfile.builder()
                     .publicProfile(onWallProfile)
                     .isCurrentUser(targetUserId.equals(currentId))
                     .followStatus(isCurrentUser ?

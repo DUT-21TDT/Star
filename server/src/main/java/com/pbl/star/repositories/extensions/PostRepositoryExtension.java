@@ -5,20 +5,19 @@ import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
 import com.pbl.star.enums.PostStatus;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 public interface PostRepositoryExtension {
-    Slice<PostForUserDTO> findExistPostsOfUserByStatusAsUser(Pageable pageable, Instant after, PostStatus status, String userId);
-    Slice<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus status, String... roomIds);
+    List<PostForUserDTO> findExistPostsOfUserByStatusAsUser(int limit, Instant after, PostStatus status, String userId);
+    List<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(int limit, Instant after, PostStatus status, String... roomIds);
     Optional<PostForUserDTO> findExistPostByIdAsUser(String currentUserId, String postId);
-    Slice<PostForUserDTO> findExistRepliesOfPostAsUser(Pageable pageable, Instant after, String currentUserId, String postId);
-    Slice<ReplyOnWallDTO> findExistRepliesOnWallAsUser(Pageable pageable, Instant after, String currentUserId, String targetUserId);
+    List<PostForUserDTO> findExistRepliesOfPostAsUser(int limit, Instant after, String currentUserId, String postId);
+    List<ReplyOnWallDTO> findExistRepliesOnWallAsUser(int limit, Instant after, String currentUserId, String targetUserId);
 
-    Slice<PendingPostForUserDTO> findExistPendingPostsOfUser(Pageable pageable, Instant after, String userId);
+    List<PendingPostForUserDTO> findExistPendingPostsOfUser(int limit, Instant after, String userId);
     // Mod
-    Slice<PostForModDTO> findExistPostsInRoomByStatusAsMod(Pageable pageable, Instant after, PostStatus status, String roomId);
+    List<PostForModDTO> findExistPostsInRoomByStatusAsMod(int limit, Instant after, PostStatus status, String roomId);
 }

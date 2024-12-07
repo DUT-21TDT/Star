@@ -10,10 +10,6 @@ import com.pbl.star.utils.AuthUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
-import org.springframework.lang.NonNull;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,7 +22,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public Slice<PostForUserDTO> findExistPostsOfUserByStatusAsUser(Pageable pageable, Instant after, PostStatus status, String userId) {
+    public List<PostForUserDTO> findExistPostsOfUserByStatusAsUser(int limit, Instant after, PostStatus status, String userId) {
 
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
@@ -38,17 +34,21 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 .setParameter("currentUserId", currentUserId)
                 .setParameter("status", status.name())
                 .setFirstResult(0)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (after != null) {
             query.setParameter("after", after);
         }
 
-        return getSlicePostForUserDTOS(pageable, query);
+        List<Object[]> resultList = query.getResultList();
+
+        return resultList.stream()
+                .map(this::toPostForUserDTO)
+                .toList();
     }
 
     @Override
-    public Slice<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(Pageable pageable, Instant after, PostStatus
+    public List<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(int limit, Instant after, PostStatus
             status, String... roomIds) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
@@ -60,13 +60,17 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 .setParameter("currentUserId", currentUserId)
                 .setParameter("status", status.name())
                 .setFirstResult(0)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (after != null) {
             query.setParameter("after", after);
         }
 
-        return getSlicePostForUserDTOS(pageable, query);
+        List<Object[]> resultList = query.getResultList();
+
+        return resultList.stream()
+                .map(this::toPostForUserDTO)
+                .toList();
     }
 
     private static String getPostForUserQuery(ConditionType type, Instant after, PostStatus status) {
@@ -103,22 +107,22 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         return sql + "ORDER BY p.created_at DESC, p.post_id DESC ";
     }
 
-    @NonNull
-    private Slice<PostForUserDTO> getSlicePostForUserDTOS(Pageable pageable, Query query) {
-
-        List<Object[]> resultList = query.getResultList();
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<PostForUserDTO> postList = resultList.stream()
-                .map(this::toPostForUserDTO)
-                .toList();
-
-        return new SliceImpl<>(postList, pageable, hasNext);
-    }
+//    @NonNull
+//    private Slice<PostForUserDTO> getSlicePostForUserDTOS(int limit, Query query) {
+//
+//        List<Object[]> resultList = query.getResultList();
+//        boolean hasNext = resultList.size() > pageable.getPageSize();
+//
+//        if (hasNext) {
+//            resultList.removeLast();
+//        }
+//
+//        List<PostForUserDTO> postList = resultList.stream()
+//                .map(this::toPostForUserDTO)
+//                .toList();
+//
+//        return new SliceImpl<>(postList, pageable, hasNext);
+//    }
 
     private PostForUserDTO toPostForUserDTO(Object[] source) {
         return PostForUserDTO.builder()
@@ -185,7 +189,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public Slice<PostForUserDTO> findExistRepliesOfPostAsUser(Pageable pageable, Instant after, String currentUserId, String postId) {
+    public List<PostForUserDTO> findExistRepliesOfPostAsUser(int limit, Instant after, String currentUserId, String postId) {
 
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
                 "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
@@ -207,7 +211,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         query
                 .setParameter("currentUserId", currentUserId)
                 .setParameter("postId", postId)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (after != null) {
             query.setParameter("after", after);
@@ -215,13 +219,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
         List<Object[]> resultList = query.getResultList();
 
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<PostForUserDTO> postList = resultList.stream()
+        return resultList.stream()
                 .map(row -> (PostForUserDTO) PostForUserDTO.builder()
                         .id((String) row[0])
                         .idOfCreator((String) row[1])
@@ -242,12 +240,10 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
                 )
                 .toList();
-
-        return new SliceImpl<>(postList, pageable, hasNext);
     }
 
     @Override
-    public Slice<ReplyOnWallDTO> findExistRepliesOnWallAsUser(Pageable pageable, Instant after, String currentUserId, String targetUserId) {
+    public List<ReplyOnWallDTO> findExistRepliesOnWallAsUser(int limit, Instant after, String currentUserId, String targetUserId) {
         String sql = "SELECT r.post_id, r.user_id, r.username, r.avatar_url, r.created_at, r.content, r.parent_post_id, " +
                 "           r.post_image_urls, r.number_of_likes, r.number_of_comments, r.number_of_reposts, r.is_liked, r.is_reposted, " +
                 "           p.post_id, p.user_id, p.username, p.avatar_url, p.created_at, p.content, p.parent_post_id," +
@@ -341,19 +337,13 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         query
                 .setParameter("currentUserId", currentUserId)
                 .setParameter("targetUserId", targetUserId)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (after != null) {
             query.setParameter("after", after);
         }
 
         List<Object[]> resultList = query.getResultList();
-
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
 
         List<ReplyOnWallDTO> replies = new ArrayList<>();
 
@@ -408,11 +398,11 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
             );
         }
 
-        return new SliceImpl<>(replies, pageable, hasNext);
+        return replies;
     }
 
     @Override
-    public Slice<PendingPostForUserDTO> findExistPendingPostsOfUser(Pageable pageable, Instant after, String userId) {
+    public List<PendingPostForUserDTO> findExistPendingPostsOfUser(int limit, Instant after, String userId) {
 
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, p.status, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
@@ -431,24 +421,15 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         query
                 .setParameter("userId", userId)
                 .setFirstResult(0)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (after != null) {
             query.setParameter("after", after);
         }
 
-        return getSlicePendingPostForUserDTOS(pageable, query);
-    }
-
-    private Slice<PendingPostForUserDTO> getSlicePendingPostForUserDTOS(Pageable pageable, Query query) {
         List<Object[]> resultList = query.getResultList();
-        boolean hasNext = resultList.size() > pageable.getPageSize();
 
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<PendingPostForUserDTO> postList = resultList.stream()
+        return resultList.stream()
                 .map(row -> (PendingPostForUserDTO) PendingPostForUserDTO.builder()
                         .id((String) row[0])
                         .idOfCreator((String) row[1])
@@ -465,12 +446,39 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .build()
                 )
                 .toList();
-
-        return new SliceImpl<>(postList, pageable, hasNext);
     }
 
+//    private Slice<PendingPostForUserDTO> getSlicePendingPostForUserDTOS(int limit, Query query) {
+//        List<Object[]> resultList = query.getResultList();
+//        boolean hasNext = resultList.size() > pageable.getPageSize();
+//
+//        if (hasNext) {
+//            resultList.removeLast();
+//        }
+//
+//        List<PendingPostForUserDTO> postList = resultList.stream()
+//                .map(row -> (PendingPostForUserDTO) PendingPostForUserDTO.builder()
+//                        .id((String) row[0])
+//                        .idOfCreator((String) row[1])
+//                        .usernameOfCreator((String) row[2])
+//                        .avatarUrlOfCreator((String) row[3])
+//                        .createdAt((Instant) row[4])
+//                        .content((String) row[5])
+//                        .status(PostStatus.valueOf((String) row[6]))
+//                        .postImageUrls(row[7] == null ? null :
+//                                List.of(((String) row[7]).split(","))
+//                        )
+//                        .idOfRoom((String) row[8])
+//                        .nameOfRoom((String) row[9])
+//                        .build()
+//                )
+//                .toList();
+//
+//        return new SliceImpl<>(postList, pageable, hasNext);
+//    }
+
     @Override
-    public Slice<PostForModDTO> findExistPostsInRoomByStatusAsMod(Pageable pageable, Instant after, PostStatus status, String roomId) {
+    public List<PostForModDTO> findExistPostsInRoomByStatusAsMod(int limit, Instant after, PostStatus status, String roomId) {
 
         String sql = getPostForModQuery(after, status);
 
@@ -479,13 +487,34 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 .setParameter("roomId", roomId)
                 .setParameter("status", status.name())
                 .setFirstResult(0)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (after != null) {
             query.setParameter("after", after);
         }
 
-        return getSlicePostForModDTOS(pageable, query);
+        List<Object[]> resultList = query.getResultList();
+
+        return resultList.stream()
+                .map(row -> (PostForModDTO) PostForModDTO.builder()
+                        .id((String) row[0])
+                        .idOfCreator((String) row[1])
+                        .usernameOfCreator((String) row[2])
+                        .avatarUrlOfCreator((String) row[3])
+                        .createdAt((Instant) row[4])
+                        .content((String) row[5])
+                        .status(PostStatus.valueOf((String) row[6]))
+                        .violenceScore((Integer) row[7])
+                        .postImageUrls(row[8] == null ? null :
+                                List.of(((String) row[8]).split(","))
+                        )
+                        .idOfRoom((String) row[9])
+                        .idOfModerator((String) row[10])
+                        .usernameOfModerator((String) row[11])
+                        .moderatedAt((Instant) row[12])
+                        .build()
+                )
+                .toList();
     }
 
     private static String getPostForModQuery(Instant after, PostStatus status) {
@@ -511,39 +540,39 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         return sql + "ORDER BY p.created_at DESC, p.post_id DESC ";
     }
 
-    @NonNull
-    private Slice<PostForModDTO> getSlicePostForModDTOS(Pageable pageable, Query query) {
-
-        List<Object[]> resultList = query.getResultList();
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<PostForModDTO> postList = resultList.stream()
-                .map(row -> (PostForModDTO) PostForModDTO.builder()
-                        .id((String) row[0])
-                        .idOfCreator((String) row[1])
-                        .usernameOfCreator((String) row[2])
-                        .avatarUrlOfCreator((String) row[3])
-                        .createdAt((Instant) row[4])
-                        .content((String) row[5])
-                        .status(PostStatus.valueOf((String) row[6]))
-                        .violenceScore((Integer) row[7])
-                        .postImageUrls(row[8] == null ? null :
-                                List.of(((String) row[8]).split(","))
-                        )
-                        .idOfRoom((String) row[9])
-                        .idOfModerator((String) row[10])
-                        .usernameOfModerator((String) row[11])
-                        .moderatedAt((Instant) row[12])
-                        .build()
-                )
-                .toList();
-
-        return new SliceImpl<>(postList, pageable, hasNext);
-    }
+//    @NonNull
+//    private Slice<PostForModDTO> getSlicePostForModDTOS(int limit, Query query) {
+//
+//        List<Object[]> resultList = query.getResultList();
+//        boolean hasNext = resultList.size() > pageable.getPageSize();
+//
+//        if (hasNext) {
+//            resultList.removeLast();
+//        }
+//
+//        List<PostForModDTO> postList = resultList.stream()
+//                .map(row -> (PostForModDTO) PostForModDTO.builder()
+//                        .id((String) row[0])
+//                        .idOfCreator((String) row[1])
+//                        .usernameOfCreator((String) row[2])
+//                        .avatarUrlOfCreator((String) row[3])
+//                        .createdAt((Instant) row[4])
+//                        .content((String) row[5])
+//                        .status(PostStatus.valueOf((String) row[6]))
+//                        .violenceScore((Integer) row[7])
+//                        .postImageUrls(row[8] == null ? null :
+//                                List.of(((String) row[8]).split(","))
+//                        )
+//                        .idOfRoom((String) row[9])
+//                        .idOfModerator((String) row[10])
+//                        .usernameOfModerator((String) row[11])
+//                        .moderatedAt((Instant) row[12])
+//                        .build()
+//                )
+//                .toList();
+//
+//        return new SliceImpl<>(postList, pageable, hasNext);
+//    }
 
 
     enum ConditionType {

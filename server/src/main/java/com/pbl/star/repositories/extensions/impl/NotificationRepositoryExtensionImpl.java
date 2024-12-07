@@ -9,9 +9,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,7 +19,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
     private EntityManager entityManager;
 
     @Override
-    public Slice<NotificationForUserDTO> getNotifications(Pageable pageable, Instant after, String userId) {
+    public List<NotificationForUserDTO> getNotifications(int limit, Instant after, String userId) {
 
         String sql = "SELECT n.notification_id, " +
                 "           nob.notification_type, nob.artifact_id, nob.artifact_type, nob.is_read," +
@@ -50,7 +47,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query.setParameter("userId", userId)
-                .setMaxResults(pageable.getPageSize() + 1);
+                .setMaxResults(limit);
 
         if (after != null) {
             query.setParameter("after", after);
@@ -58,13 +55,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
 
         List<Object[]> resultList = query.getResultList();
 
-        boolean hasNext = resultList.size() > pageable.getPageSize();
-
-        if (hasNext) {
-            resultList.removeLast();
-        }
-
-        List<NotificationForUserDTO> notifications = resultList.stream()
+        return resultList.stream()
                 .map(row -> NotificationForUserDTO.builder()
                         .id((String) row[0])
                         .type(NotificationType.valueOf((String) row[1]))
@@ -82,7 +73,5 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
                         .build()
                 )
                 .toList();
-
-        return new SliceImpl<>(notifications, pageable, hasNext);
     }
 }

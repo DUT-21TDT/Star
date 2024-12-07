@@ -1,7 +1,6 @@
 package com.pbl.star.controllers.enduser;
 
-import com.pbl.star.usecase.enduser.InteractPostUsecase;
-import com.pbl.star.usecase.enduser.ManagePostUsecase;
+import com.pbl.star.usecase.enduser.ViewPostUsecase;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -20,60 +19,59 @@ import java.time.Instant;
 @Validated
 public class PostViewController {
 
-    private final ManagePostUsecase managePostUsecase;
-    private final InteractPostUsecase interactPostUsecase;
+    private final ViewPostUsecase viewPostUsecase;
 
     @GetMapping("/newsfeed/posts")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> getPostsOnNewsfeed(@RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                                 @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(managePostUsecase.getPostsOnNewsfeed(limit, after));
+        return ResponseEntity.ok(viewPostUsecase.getPostsOnNewsfeed(limit, after));
     }
 
     @GetMapping("/users/{userId}/posts")
     public ResponseEntity<?> getPostsByUser(@PathVariable String userId,
                                             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                             @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(managePostUsecase.getPostsOnUserWall(userId, limit, after));
+        return ResponseEntity.ok(viewPostUsecase.getPostsOnUserWall(userId, limit, after));
     }
 
     @GetMapping("/users/me/pending-posts")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> getPendingPostsByCurrentUser(@RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                                    @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(managePostUsecase.getMyPendingPosts(limit, after));
+        return ResponseEntity.ok(viewPostUsecase.getMyPendingPosts(limit, after));
     }
 
     @GetMapping("/rooms/{roomId}/posts")
     public ResponseEntity<?> getPostsInRoom(@PathVariable String roomId,
                                            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                            @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(managePostUsecase.getPostsInRoomAsUser(roomId, limit, after));
+        return ResponseEntity.ok(viewPostUsecase.getPostsInRoomAsUser(roomId, limit, after));
     }
 
     @GetMapping("/posts/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable String postId) {
-        return ResponseEntity.ok(managePostUsecase.getPostById(postId));
+        return ResponseEntity.ok(viewPostUsecase.getPostById(postId));
     }
 
     @GetMapping("/posts/{postId}/replies")
     public ResponseEntity<?> getRepliesOfPost(@PathVariable String postId,
                                              @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                              @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(interactPostUsecase.getRepliesOfPost(postId, limit, after));
+        return ResponseEntity.ok(viewPostUsecase.getRepliesOfPost(postId, limit, after));
     }
 
     @GetMapping("/users/{userId}/replies")
     public ResponseEntity<?> getRepliesByUser(@PathVariable String userId,
                                             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                             @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(managePostUsecase.getRepliesOnUserWall(userId, limit, after));
+        return ResponseEntity.ok(viewPostUsecase.getRepliesOnUserWall(userId, limit, after));
     }
 
     @GetMapping("/users/{userId}/reposts")
     public ResponseEntity<?> getRepostsByUser(@PathVariable String userId,
                                               @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                               @RequestParam(required = false) Instant after) {
-        return ResponseEntity.ok(managePostUsecase.getRepostsOnUserWall(userId, limit, after));
+        return ResponseEntity.ok(viewPostUsecase.getRepostsOnUserWall(userId, limit, after));
     }
 }
