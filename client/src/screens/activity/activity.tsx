@@ -18,17 +18,7 @@ const Activity = () => {
             style={{ width: "100%", maxWidth: "650px" }}
           >
             <HeaderActivity />
-            <div
-              style={{
-                border: "1px solid #bdbdbd",
-                marginTop: "20px",
-                borderRadius: "30px",
-                padding: "20px",
-                backgroundColor: "white",
-              }}
-            >
-              <MainContentActivity />
-            </div>
+            <MainContentActivity />
           </div>
         </div>
       </ConfigProvider>

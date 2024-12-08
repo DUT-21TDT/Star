@@ -1,0 +1,5 @@
+.border-custom-scrollbar {
+  border: 1px solid #bdbdbd;
+  scrollbar-width: thin;
+  scrollbar-color: #b9b7b7 white;
+}

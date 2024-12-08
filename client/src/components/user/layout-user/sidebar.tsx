@@ -70,8 +70,6 @@ const SideBar: React.FC = () => {
   const path = window.location.pathname;
   const pinned = useAppSelector((state) => state.user.pin);
 
-  console.log("pinned", pinned);
-
   useEffect(() => {
     switch (path) {
       case "/":
@@ -126,7 +124,7 @@ const SideBar: React.FC = () => {
                 } else if (name === "home" && path === "/") {
                   window.location.reload();
                 } else if (iconNavigate) {
-                  if (!pinned?.includes(key)) {
+                  if (!pinned?.includes(key) || path !== "/") {
                     setActiveIcon(name);
                     navigate(iconNavigate);
                   }

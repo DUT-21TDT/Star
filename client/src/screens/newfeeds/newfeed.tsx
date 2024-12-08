@@ -1,5 +1,5 @@
 import { ConfigProvider } from "antd";
-import { newFeedsTheme, roomUserTheme } from "../../utils/theme";
+import { activityTheme, newFeedsTheme, roomUserTheme } from "../../utils/theme";
 import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
 import PostsOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed";
 import { useState } from "react";
@@ -13,6 +13,8 @@ import HeaderPeople from "../../components/user/people/header-people";
 import MainPeopleContent from "../../components/user/people/main-people";
 import Profile from "../profile/profile";
 import { Helmet } from "react-helmet-async";
+import HeaderActivity from "../../components/user/activity/header-activity";
+import MainContentActivity from "../../components/user/activity/main-activity";
 interface RoomType {
   id: number;
   key: number;
@@ -158,6 +160,20 @@ const NewFeed = () => {
       }
       if (pin === optionPin.PROFILE) {
         return <Profile isPinned={true} />;
+      }
+
+      if (pin === optionPin.ACTIVITY) {
+        return (
+          <ConfigProvider theme={activityTheme}>
+            <div
+              className=" h-full pt-2 "
+              style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+            >
+              <HeaderActivity />
+              <MainContentActivity />
+            </div>
+          </ConfigProvider>
+        );
       }
     });
   };
