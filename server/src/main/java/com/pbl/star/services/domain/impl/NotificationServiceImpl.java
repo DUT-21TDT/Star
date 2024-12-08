@@ -1,14 +1,10 @@
 package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.query.notification.NotificationForUserDTO;
-import com.pbl.star.entities.Notification;
-import com.pbl.star.entities.NotificationChange;
-import com.pbl.star.entities.NotificationObject;
+import com.pbl.star.entities.*;
 import com.pbl.star.enums.ArtifactType;
 import com.pbl.star.enums.NotificationType;
-import com.pbl.star.repositories.NotificationChangeRepository;
-import com.pbl.star.repositories.NotificationObjectRepository;
-import com.pbl.star.repositories.NotificationRepository;
+import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.utils.SliceTransfer;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +21,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
+    private final PostRepository postRepository;
+    private final RoomRepository roomRepository;
+    private final UserRoomRepository userRoomRepository;
+
     private final NotificationRepository notificationRepository;
     private final NotificationObjectRepository notificationObjectRepository;
     private final NotificationChangeRepository notificationChangeRepository;
@@ -37,42 +37,22 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void createLikePostNotification(String postId, String actorId, Instant timestamp, String receiverId) {
-        createInteractPostNotification(postId, actorId, timestamp, receiverId, NotificationType.LIKE_POST);
-    }
+    public void createInteractPostNotification(String postId, String actorId, Instant timestamp, NotificationType notificationType) {
 
-    @Override
-    @Transactional
-    public void undoLikePostNotification(String postId, String actorId) {
-        undoInteractPostNotification(postId, actorId, NotificationType.LIKE_POST);
-    }
+        Post interactedPost = postRepository.findExistPostById(postId)
+                .orElse(null);
 
-    @Override
-    @Transactional
-    public void createReplyPostNotification(String postId, String actorId, Instant timestamp, String receiverId) {
-        createInteractPostNotification(postId, actorId, timestamp, receiverId, NotificationType.REPLY_POST);
-    }
+        if (interactedPost == null) {
+            return;
+        }
 
-    @Override
-    @Transactional
-    public void undoReplyPostNotification(String parentPostId, String actorId) {
-        undoInteractPostNotification(parentPostId, actorId, NotificationType.REPLY_POST);
-    }
+        String receiverId = interactedPost.getUserId();
 
-    @Override
-    @Transactional
-    public void createRepostPostNotification(String postId, String actorId, Instant timestamp, String receiverId) {
-        createInteractPostNotification(postId, actorId, timestamp, receiverId, NotificationType.REPOST_POST);
-    }
+        if (actorId.equals(receiverId)) {
+            return;
+        }
 
-    @Override
-    @Transactional
-    public void undoRepostPostNotification(String postId, String actorId) {
-        undoInteractPostNotification(postId, actorId, NotificationType.REPOST_POST);
-    }
-
-    private void createInteractPostNotification(String postId, String actorId, Instant timestamp, String receiverId, NotificationType notificationType) {
-
+        String preview = getPostPreview(interactedPost.getContent());
         boolean isExistNotification = true;
 
         // Upsert notification object
@@ -89,6 +69,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .ref(postId)
                     .artifactId(postId)
                     .artifactType(ArtifactType.POST)
+                    .artifactPreview(preview)
                     .isRead(false)
                     .build();
             try {
@@ -121,7 +102,9 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private void undoInteractPostNotification(String postId, String actorId, NotificationType notificationType) {
+    @Override
+    @Transactional
+    public void undoInteractPostNotification(String postId, String actorId, NotificationType notificationType) {
 
         Optional<NotificationObject> notificationObjOpt = notificationObjectRepository.findByNotificationTypeAndRef(notificationType, postId);
 
@@ -134,37 +117,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationChangeRepository.deleteFirstByNotificationObjectIdAndActorId(notificationObj.getId(), actorId);
     }
 
-    @Override
-    @Transactional
-    public void createFollowNotification(String followingId, String followerId, String followeeId, Instant timestamp) {
-        createFollowUserNotification(followingId, followerId, followeeId, timestamp, NotificationType.FOLLOW);
-    }
-
-    @Override
-    @Transactional
-    public void undoFollowNotification(String followingId) {
-        undoFollowUserNotification(followingId, NotificationType.FOLLOW);
-    }
-
-    @Override
-    @Transactional
-    public void createRequestFollowNotification(String followingId, String followerId, String followeeId, Instant timestamp) {
-        createFollowUserNotification(followingId, followerId, followeeId, timestamp, NotificationType.REQUEST_FOLLOW);
-    }
-
-    @Override
-    @Transactional
-    public void undoRequestFollowNotification(String followingId) {
-        undoFollowUserNotification(followingId, NotificationType.REQUEST_FOLLOW);
-    }
-
-    @Override
-    @Transactional
-    public void createAcceptFollowNotification(String followingId, String followerId, String followeeId, Instant timestamp) {
-        createFollowUserNotification(followingId, followerId, followeeId, timestamp, NotificationType.ACCEPT_FOLLOW);
-    }
-
-    private void createFollowUserNotification(String followingId, String followerId, String followeeId, Instant timestamp, NotificationType notificationType) {
+    public void createFollowUserNotification(String followingId, String followerId, String followeeId, Instant timestamp, NotificationType notificationType) {
         NotificationObject obj = NotificationObject.builder()
                 .notificationType(notificationType)
                 .ref(followingId)
@@ -191,23 +144,25 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
     }
 
-    private void undoFollowUserNotification(String followingId, NotificationType notificationType) {
+    @Override
+    @Transactional
+    public void undoFollowUserNotification(String followingId, NotificationType notificationType) {
         notificationObjectRepository.deleteByNotificationTypeAndRef(notificationType, followingId);
     }
 
     @Override
     @Transactional
-    public void createApprovePostNotification(String postId, Instant timestamp, String receiverId) {
-        createModeratePostNotification(postId, timestamp, receiverId, NotificationType.APPROVE_POST);
-    }
+    public void createModeratePostNotification(String postId, Instant timestamp, NotificationType notificationType) {
 
-    @Override
-    @Transactional
-    public void createRejectPostNotification(String postId, Instant timestamp, String receiverId) {
-        createModeratePostNotification(postId, timestamp, receiverId, NotificationType.REJECT_POST);
-    }
+        Post moderatedPost = postRepository.findExistPostById(postId)
+                .orElse(null);
 
-    private void createModeratePostNotification(String postId, Instant timestamp, String receiverId, NotificationType notificationType) {
+        if (moderatedPost == null) {
+            return;
+        }
+
+        String receiverId = moderatedPost.getUserId();
+        String preview = getPostPreview(moderatedPost.getContent());
 
         boolean isExistNotification = true;
 
@@ -224,6 +179,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .ref(postId)
                     .artifactId(postId)
                     .artifactType(ArtifactType.ROOM)
+                    .artifactPreview(preview)
                     .isRead(false)
                     .build();
             try {
@@ -256,9 +212,26 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    private String getPostPreview(String content) {
+        return content == null ? "" : content.substring(0, 100);
+    }
+
     @Override
     @Transactional
-    public void createNewPostNotification(String roomId, String actorId, Instant timestamp, List<String> receiverIds) {
+    public void createNewPostNotification(String roomId, String actorId, Instant timestamp) {
+
+        Room room = roomRepository.findById(roomId)
+                .orElse(null);
+
+        if (room == null) {
+            return;
+        }
+
+        List<String> receivers = userRoomRepository.findModeratorIdsByRoomId(roomId);
+
+        if (receivers.isEmpty()) {
+            return;
+        }
 
         boolean isExistNotification = true;
 
@@ -276,6 +249,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .ref(roomId)
                     .artifactId(roomId)
                     .artifactType(ArtifactType.ROOM)
+                    .artifactPreview(room.getName())
                     .isRead(false)
                     .build();
             try {
@@ -301,7 +275,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (!isExistNotification) {
             NotificationObject finalSavedNotificationObj = savedNotificationObj;
-            List<Notification> notifications = receiverIds.stream()
+            List<Notification> notifications = receivers.stream()
                     .map(receiverId -> Notification.builder()
                             .notificationObjectId(finalSavedNotificationObj.getId())
                             .receiverId(receiverId)
@@ -314,14 +288,14 @@ public class NotificationServiceImpl implements NotificationService {
             List<String> oldReceiverIds = notificationRepository.findReceiverIdsByNotificationObjectId(savedNotificationObj.getId());
             // Remove old receiver
             List<String> removedReceiverIds = oldReceiverIds.stream()
-                    .filter(oldReceiverId -> !receiverIds.contains(oldReceiverId))
+                    .filter(oldReceiverId -> !receivers.contains(oldReceiverId))
                     .toList();
 
             if (!removedReceiverIds.isEmpty()) {
                 notificationRepository.deleteByNotificationObjectIdAndReceiverIdIn(savedNotificationObj.getId(), removedReceiverIds);
             }
 
-            List<String> newReceiverIds = receiverIds.stream()
+            List<String> newReceiverIds = receivers.stream()
                     .filter(newReceiverId -> !oldReceiverIds.contains(newReceiverId))
                     .toList();
 

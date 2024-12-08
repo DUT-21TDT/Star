@@ -17,6 +17,7 @@ public class NotificationForUserDTO {
     private NotificationType type;
     private String artifactId;
     private ArtifactType artifactType;
+    private String artifactPreview;
     private boolean isRead;
 
     private NotificationActorDTO lastActor;

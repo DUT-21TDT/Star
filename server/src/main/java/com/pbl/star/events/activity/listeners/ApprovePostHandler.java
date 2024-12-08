@@ -2,10 +2,9 @@ package com.pbl.star.events.activity.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
-import com.pbl.star.entities.Post;
+import com.pbl.star.enums.NotificationType;
 import com.pbl.star.events.activity.ModeratePostEvent;
 import com.pbl.star.services.domain.NotificationService;
-import com.pbl.star.services.domain.PostService;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +15,10 @@ import java.time.Instant;
 public class ApprovePostHandler implements UserActivityHandler {
 
     private final ObjectMapper objectMapper;
-    private final PostService postService;
     private final NotificationService notificationService;
 
-    public ApprovePostHandler(PostService postService, NotificationService notificationService) {
+    public ApprovePostHandler(NotificationService notificationService) {
         this.objectMapper = new JacksonConfig().queueObjectMapper();
-        this.postService = postService;
         this.notificationService = notificationService;
     }
 
@@ -36,11 +33,7 @@ public class ApprovePostHandler implements UserActivityHandler {
         String postId = event.getPostId();
         Instant timestamp = event.getTimestamp();
 
-        Post post = postService.findExistPostById(postId).orElse(null);
-
-        if (post == null) return;
-
-        notificationService.createApprovePostNotification(postId, timestamp, post.getUserId());
+        notificationService.createModeratePostNotification(postId, timestamp, NotificationType.APPROVE_POST);
     }
 
     @Override

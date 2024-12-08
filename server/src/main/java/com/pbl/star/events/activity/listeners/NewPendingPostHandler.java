@@ -4,23 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
 import com.pbl.star.events.activity.NewPendingPostEvent;
 import com.pbl.star.services.domain.NotificationService;
-import com.pbl.star.services.domain.UserRoomService;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
 
 @Component
 public class NewPendingPostHandler implements UserActivityHandler {
     private final ObjectMapper objectMapper;
-    private final UserRoomService userRoomService;
     private final NotificationService notificationService;
 
-    public NewPendingPostHandler(UserRoomService userRoomService, NotificationService notificationService) {
+    public NewPendingPostHandler(NotificationService notificationService) {
         this.objectMapper = new JacksonConfig().queueObjectMapper();
-        this.userRoomService = userRoomService;
         this.notificationService = notificationService;
     }
 
@@ -37,13 +33,7 @@ public class NewPendingPostHandler implements UserActivityHandler {
         Instant timestamp = event.getTimestamp();
         String roomId = event.getRoomId();
 
-        List<String> receivers = userRoomService.getModeratorIds(roomId);
-
-        if (receivers.isEmpty()) {
-            return;
-        }
-
-        notificationService.createNewPostNotification(roomId, actorId, timestamp, receivers);
+        notificationService.createNewPostNotification(roomId, actorId, timestamp);
     }
 
     @Override

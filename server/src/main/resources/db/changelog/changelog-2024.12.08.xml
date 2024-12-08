@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="32_add_preview_column_to_notification_object" author="Quang Nguyen">
+        <addColumn tableName="notification_object">
+            <column name="artifact_preview" type="VARCHAR"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="33_remove_non_null_post_content" author="Quang Nguyen">
+        <sql>
+            ALTER TABLE post
+            ALTER COLUMN content DROP NOT NULL;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

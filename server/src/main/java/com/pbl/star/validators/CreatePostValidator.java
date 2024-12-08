@@ -10,8 +10,8 @@ public class CreatePostValidator {
             throw new RequiredFieldMissingException("Room ID is required");
         }
 
-        if (StringUtils.isBlank(createPostParams.getContent())) {
-            throw new RequiredFieldMissingException("Content is required");
+        if (isContentEmpty(createPostParams)) {
+            throw new RequiredFieldMissingException("Content or image is required");
         }
     }
 
@@ -20,8 +20,15 @@ public class CreatePostValidator {
             throw new RequiredFieldMissingException("Post ID is required");
         }
 
-        if (StringUtils.isBlank(createReplyParams.getContent())) {
-            throw new RequiredFieldMissingException("Content is required");
+        if (isContentEmpty(createReplyParams)) {
+            throw new RequiredFieldMissingException("Content or image is required");
         }
+    }
+
+    private static boolean isContentEmpty(CreatePostParams createPostParams) {
+        boolean isContentEmpty = StringUtils.isBlank(createPostParams.getContent());
+        boolean isImageFileNamesEmpty = createPostParams.getImageFileNames() == null || createPostParams.getImageFileNames().isEmpty();
+
+        return isContentEmpty && isImageFileNamesEmpty;
     }
 }

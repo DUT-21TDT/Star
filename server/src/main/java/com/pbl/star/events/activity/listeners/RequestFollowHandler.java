@@ -2,6 +2,7 @@ package com.pbl.star.events.activity.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
+import com.pbl.star.enums.NotificationType;
 import com.pbl.star.events.activity.FollowUserEvent;
 import com.pbl.star.services.domain.NotificationService;
 import org.springframework.amqp.core.Message;
@@ -35,8 +36,7 @@ public class RequestFollowHandler implements UserActivityHandler {
         String followeeId = event.getFolloweeId();
         Instant timestamp = event.getTimestamp();
 
-        notificationService.createRequestFollowNotification(followingId, followerId, followeeId, timestamp);
-
+        notificationService.createFollowUserNotification(followingId, followerId, followeeId, timestamp, NotificationType.REQUEST_FOLLOW);
     }
 
     @Override
@@ -44,6 +44,6 @@ public class RequestFollowHandler implements UserActivityHandler {
         FollowUserEvent event = objectMapper.readValue(message.getBody(), FollowUserEvent.class);
         String followingId = event.getFollowingId();
 
-        notificationService.undoRequestFollowNotification(followingId);
+        notificationService.undoFollowUserNotification(followingId, NotificationType.REQUEST_FOLLOW);
     }
 }

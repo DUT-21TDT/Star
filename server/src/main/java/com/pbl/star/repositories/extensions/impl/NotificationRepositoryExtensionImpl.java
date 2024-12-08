@@ -25,7 +25,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
                 "           nob.notification_type, nob.artifact_id, nob.artifact_type, nob.is_read," +
                 "           nc.actor_id, nc.change_at, " +
                 "           (SELECT COUNT(distinct _nc.actor_id) FROM notification_change _nc WHERE _nc.notification_object_id = nob.notification_object_id), " +
-                "           u.username, u.avatar_url " +
+                "           u.username, u.avatar_url, nob.artifact_preview " +
                 "FROM notification n " +
                 "INNER JOIN notification_object nob " +
                 "ON n.notification_object_id = nob.notification_object_id " +
@@ -70,6 +70,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
                                 .build()
                         )
                         .changeAt((Instant) row[6])
+                        .artifactPreview((String) row[10])
                         .build()
                 )
                 .toList();

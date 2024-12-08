@@ -2,10 +2,9 @@ package com.pbl.star.events.activity.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
-import com.pbl.star.entities.Post;
+import com.pbl.star.enums.NotificationType;
 import com.pbl.star.events.activity.InteractPostEvent;
 import com.pbl.star.services.domain.NotificationService;
-import com.pbl.star.services.domain.PostService;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +15,10 @@ import java.time.Instant;
 public class LikePostHandler implements UserActivityHandler {
 
     private final ObjectMapper objectMapper;
-    private final PostService postService;
     private final NotificationService notificationService;
 
-    public LikePostHandler(PostService postService, NotificationService notificationService) {
+    public LikePostHandler(NotificationService notificationService) {
         this.objectMapper = new JacksonConfig().queueObjectMapper();
-        this.postService = postService;
         this.notificationService = notificationService;
     }
 
@@ -40,15 +37,7 @@ public class LikePostHandler implements UserActivityHandler {
         String actorId = event.getActorId();
         Instant timestamp = event.getTimestamp();
 
-        Post post = postService.findExistPostById(postId).orElse(null);
-
-        if (post == null) return;
-
-        String receiverId = post.getUserId();
-
-        if (!actorId.equals(receiverId)) {
-            notificationService.createLikePostNotification(postId, actorId, timestamp, receiverId);
-        }
+        notificationService.createInteractPostNotification(postId, actorId, timestamp, NotificationType.LIKE_POST);
     }
 
     @Override
@@ -59,6 +48,6 @@ public class LikePostHandler implements UserActivityHandler {
         String postId = event.getPostId();
         String actorId = event.getActorId();
 
-        notificationService.undoLikePostNotification(postId, actorId);
+        notificationService.undoInteractPostNotification(postId, actorId, NotificationType.LIKE_POST);
     }
 }
