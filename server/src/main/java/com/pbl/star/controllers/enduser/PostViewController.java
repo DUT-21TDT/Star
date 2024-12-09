@@ -28,6 +28,13 @@ public class PostViewController {
         return ResponseEntity.ok(viewPostUsecase.getPostsOnNewsfeed(limit, after));
     }
 
+    @GetMapping("/followings/posts")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> getPostsOnFollowings(@RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
+                                                @RequestParam(required = false) Instant after) {
+        return ResponseEntity.ok(viewPostUsecase.getPostsOfFollowingUsers(limit, after));
+    }
+
     @GetMapping("/users/{userId}/posts")
     public ResponseEntity<?> getPostsByUser(@PathVariable String userId,
                                             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,

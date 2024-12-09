@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,4 +29,7 @@ public interface FollowingRepository extends JpaRepository<Following, String>, F
 
     Long countByFollowerIdAndStatus(String followerId, FollowRequestStatus status);
     Long countByFolloweeIdAndStatus(String followeeId, FollowRequestStatus status);
+
+    @Query("SELECT f.followeeId FROM Following f WHERE f.followerId=?1 AND f.status=?2")
+    List<String> findFolloweeIdsByFollowerIdAndStatus(String followerId, FollowRequestStatus status);
 }

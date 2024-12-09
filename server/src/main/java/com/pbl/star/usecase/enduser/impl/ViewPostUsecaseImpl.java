@@ -34,6 +34,12 @@ public class ViewPostUsecaseImpl implements ViewPostUsecase {
     }
 
     @Override
+    public Slice<PostForUserDTO> getPostsOfFollowingUsers(int limit, Instant after) {
+        String userId = AuthUtil.getCurrentUser().getId();
+        return postService.getPostsOfFollowingUsers(userId, limit, after);
+    }
+
+    @Override
     public Slice<PostForUserDTO> getPostsOnUserWall(String userId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.getPostsOnUserWall(currentUserId, userId, limit, after);

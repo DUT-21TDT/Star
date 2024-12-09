@@ -12,6 +12,7 @@ import java.time.Instant;
 public interface ViewPostUsecase {
     PostForUserDTO getPostById(String postId);
     Slice<PostForUserDTO> getPostsOnNewsfeed(int limit, Instant after);
+    Slice<PostForUserDTO> getPostsOfFollowingUsers(int limit, Instant after);
     Slice<PostForUserDTO> getPostsOnUserWall(String userId, int limit, Instant after);
     Slice<PostForUserDTO> getPostsInRoomAsUser(String roomId, int limit, Instant after);
     CustomSlice<PostForUserDTO> getRepliesOfPost(String postId, int limit, Instant after);

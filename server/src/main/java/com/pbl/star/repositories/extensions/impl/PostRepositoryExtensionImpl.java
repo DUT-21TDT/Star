@@ -22,7 +22,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public List<PostForUserDTO> findExistPostsOfUserByStatusAsUser(int limit, Instant after, PostStatus status, String userId) {
+    public List<PostForUserDTO> findExistPostsOfUsersByStatusAsUser(int limit, Instant after, PostStatus status, List<String> userIds) {
 
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
@@ -30,7 +30,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query
-                .setParameter("userId", userId)
+                .setParameter("userIds", userIds)
                 .setParameter("currentUserId", currentUserId)
                 .setParameter("status", status.name())
                 .setFirstResult(0)
@@ -49,17 +49,16 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
     @Override
     public List<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(int limit, Instant after, PostStatus
-            status, String... roomIds) {
+            status, List<String> roomIds) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
         String sql = getPostForUserQuery(ConditionType.ROOM, after, status);
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query
-                .setParameter("roomIds", List.of(roomIds))
+                .setParameter("roomIds", roomIds)
                 .setParameter("currentUserId", currentUserId)
                 .setParameter("status", status.name())
-                .setFirstResult(0)
                 .setMaxResults(limit);
 
         if (after != null) {
@@ -91,7 +90,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
 
         if (type == ConditionType.USER) {
-            sql += "AND p.user_id = :userId ";
+            sql += "AND p.user_id IN :userIds ";
         } else if (type == ConditionType.ROOM) {
             sql += "AND p.room_id IN :roomIds ";
         }
@@ -106,23 +105,6 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
         return sql + "ORDER BY p.created_at DESC, p.post_id DESC ";
     }
-
-//    @NonNull
-//    private Slice<PostForUserDTO> getSlicePostForUserDTOS(int limit, Query query) {
-//
-//        List<Object[]> resultList = query.getResultList();
-//        boolean hasNext = resultList.size() > pageable.getPageSize();
-//
-//        if (hasNext) {
-//            resultList.removeLast();
-//        }
-//
-//        List<PostForUserDTO> postList = resultList.stream()
-//                .map(this::toPostForUserDTO)
-//                .toList();
-//
-//        return new SliceImpl<>(postList, pageable, hasNext);
-//    }
 
     private PostForUserDTO toPostForUserDTO(Object[] source) {
         return PostForUserDTO.builder()
