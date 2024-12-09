@@ -213,7 +213,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private String getPostPreview(String content) {
-        return content == null ? "" : content.substring(0, 100);
+        if (content == null) {
+            return "";
+        }
+
+        return content.length() > 100 ? content.substring(0, 100) : content;
     }
 
     @Override
