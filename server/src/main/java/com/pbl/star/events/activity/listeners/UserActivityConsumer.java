@@ -44,7 +44,7 @@ public class UserActivityConsumer {
             retryCount = (int) deathDetails.get("count");
         }
 
-        if (retryCount > 3) {
+        if (retryCount > RETRY_LIMIT) {
             return;
         }
 

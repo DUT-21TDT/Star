@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +40,6 @@ public class PostServiceImpl implements PostService {
     private final PostImageRepository postImageRepository;
     private final PostRepostRepository postRepostRepository;
     private final UserRoomRepository userRoomRepository;
-    private final UserRepository userRepository;
     private final RoomRepository roomRepository;
 
     private final ResourceAccessControl resourceAccessControl;
@@ -286,12 +284,5 @@ public class PostServiceImpl implements PostService {
 
         List<RepostOnWallDTO> repostsList = postRepostRepository.findRepostsOnWallAsUser(limit + 1, after, currentUserId, targetUserId);
         return SliceTransfer.trimToSlice(repostsList, limit);
-    }
-
-
-    // Repository methods
-    @Override
-    public Optional<Post> findExistPostById(String postId) {
-        return postRepository.findExistPostById(postId);
     }
 }

@@ -8,7 +8,6 @@ import com.pbl.star.enums.PostStatus;
 import org.springframework.data.domain.Slice;
 
 import java.time.Instant;
-import java.util.Optional;
 
 public interface PostService {
     Post createPost(String userId, CreatePostParams createPostParams);
@@ -26,7 +25,4 @@ public interface PostService {
     CustomSlice<PostForUserDTO> getReplies(String userId, String postId, int limit, Instant after);
     Slice<ReplyOnWallDTO> getRepliesOnWall(String currentUserId, String targetUserId, int limit, Instant after);
     Slice<RepostOnWallDTO> getRepostsOnWall(String currentUserId, String targetUserId, int limit, Instant after);
-
-    // Repository methods
-    Optional<Post> findExistPostById(String postId);
 }
