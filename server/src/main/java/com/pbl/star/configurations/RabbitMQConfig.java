@@ -1,9 +1,6 @@
 package com.pbl.star.configurations;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.DefaultJackson2JavaTypeMapper;
@@ -18,6 +15,8 @@ import java.util.Map;
 public class RabbitMQConfig {
     public static final String NOTIFICATION_EXCHANGE = "notification_exchange";
     public static final String USER_ACTIVITY_QUEUE = "user_activity_queue";
+    public static final String DLX_EXCHANGE = "dlx_exchange";
+    public static final String DLQ = "dlq";
 
     @Bean
     public TopicExchange notificationExchange() {
@@ -25,10 +24,22 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public TopicExchange dlxExchange() {
+        return new TopicExchange(DLX_EXCHANGE);
+    }
+
+    @Bean
     public Queue userActivityQueue() {
         Map<String, Object> args = new HashMap<>();
-        args.put("x-message-ttl", 60 * 60 * 1000); // 1 hour
-        return new Queue(USER_ACTIVITY_QUEUE, true, false, false, args); // Durable queue
+        args.put("x-message-ttl", 60 * 5 * 1000); // 5 minutes TTL
+        args.put("x-dead-letter-exchange", DLX_EXCHANGE); // Send to DLX on failure
+        args.put("x-dead-letter-routing-key", DLQ); // DLQ routing key
+        return new Queue(USER_ACTIVITY_QUEUE, true, false, false, args);
+    }
+
+    @Bean
+    public Queue deadLetterQueue() {
+        return QueueBuilder.durable(DLQ).build();
     }
 
     @Bean
@@ -36,6 +47,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(userActivityQueue)
                 .to(notificationExchange)
                 .with("notification.#");
+    }
+
+    @Bean
+    public Binding deadLetterBinding(Queue deadLetterQueue, TopicExchange dlxExchange) {
+        return BindingBuilder.bind(deadLetterQueue)
+                .to(dlxExchange)
+                .with(DLQ);
     }
 
     @Bean
@@ -54,3 +72,4 @@ public class RabbitMQConfig {
         return converter;
     }
 }
+
