@@ -4,7 +4,6 @@ import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
 import com.pbl.star.dtos.query.post.RepostOnWallDTO;
-import com.pbl.star.dtos.query.user.OnInteractProfile;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.post.PostInteractionList;
 import com.pbl.star.enums.InteractType;

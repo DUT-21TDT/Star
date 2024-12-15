@@ -1,7 +1,5 @@
 package com.pbl.star.services.domain;
 
-import com.pbl.star.dtos.query.user.OnInteractProfile;
-import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.post.PostInteractionList;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostLike;

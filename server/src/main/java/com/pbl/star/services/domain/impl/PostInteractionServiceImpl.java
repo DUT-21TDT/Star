@@ -1,7 +1,6 @@
 package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.query.user.OnInteractProfile;
-import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.post.PostInteractionList;
 import com.pbl.star.entities.Post;
 import com.pbl.star.entities.PostLike;
@@ -19,7 +18,6 @@ import com.pbl.star.repositories.UserRoomRepository;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.utils.SliceTransfer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
