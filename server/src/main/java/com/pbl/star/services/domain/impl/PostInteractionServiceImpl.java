@@ -148,21 +148,21 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         if (type == InteractType.LIKE) {
             actorProfiles = postLikeRepository.getPostLikes(currentUserId, postId, limit + 1, after);
 
-            if (after != null) {
+            if (after == null) {
                 likesCount = postLikeRepository.countPostLikesByPostId(postId);
             }
 
         } else if (type == InteractType.REPOST) {
             actorProfiles = postLikeRepository.getPostReposts(currentUserId, postId, limit + 1, after);
 
-            if (after != null) {
+            if (after == null) {
                 repostsCount = postRepostRepository.countPostRepostsByPostId(postId);
             }
 
         } else if (type == InteractType.ALL) {
             actorProfiles = postLikeRepository.getPostInteractions(currentUserId, postId, limit + 1, after);
 
-            if (after != null) {
+            if (after == null) {
                 likesCount = postLikeRepository.countPostLikesByPostId(postId);
                 repostsCount = postRepostRepository.countPostRepostsByPostId(postId);
             }

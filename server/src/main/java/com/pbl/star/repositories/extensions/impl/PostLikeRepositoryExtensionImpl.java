@@ -102,7 +102,7 @@ public class PostLikeRepositoryExtensionImpl implements PostLikeRepositoryExtens
     @Override
     public List<OnInteractProfile> getPostInteractions(String currentUserId, String postId, int limit, Instant after) {
         String sql =
-                "SELECT u.user_id, u.username, u.avatar_url, u.first_name, u.last_name, pl.like_at AS interact_at, " +
+                "(SELECT u.user_id, u.username, u.avatar_url, u.first_name, u.last_name, pl.like_at AS interact_at, " +
                         "       (CASE " +
                         "           WHEN NOT EXISTS (SELECT 1 FROM following f WHERE f.follower_id = :currentUserId AND f.followee_id = u.user_id) THEN 'NOT_FOLLOWING' " +
                         "           WHEN EXISTS (SELECT 1 FROM following f WHERE f.follower_id = :currentUserId AND f.followee_id = u.user_id AND f.status='ACCEPTED') THEN 'FOLLOWING' " +
@@ -113,11 +113,11 @@ public class PostLikeRepositoryExtensionImpl implements PostLikeRepositoryExtens
                         "INNER JOIN \"user\" u ON pl.user_id = u.user_id " +
                         "WHERE pl.post_id = :postId " +
                         (after != null ? "AND pl.like_at < :after " : "") +
-                        "LIMIT :limit " +
+                        "LIMIT :limit) " +
 
                         "UNION ALL " +
 
-                        "SELECT u.user_id, u.username, u.avatar_url, u.first_name, u.last_name, pr.repost_at AS interact_at, " +
+                        "(SELECT u.user_id, u.username, u.avatar_url, u.first_name, u.last_name, pr.repost_at AS interact_at, " +
                         "       (CASE " +
                         "           WHEN NOT EXISTS (SELECT 1 FROM following f WHERE f.follower_id = :currentUserId AND f.followee_id = u.user_id) THEN 'NOT_FOLLOWING' " +
                         "           WHEN EXISTS (SELECT 1 FROM following f WHERE f.follower_id = :currentUserId AND f.followee_id = u.user_id AND f.status='ACCEPTED') THEN 'FOLLOWING' " +
@@ -128,11 +128,11 @@ public class PostLikeRepositoryExtensionImpl implements PostLikeRepositoryExtens
                         "INNER JOIN \"user\" u ON pr.user_id = u.user_id " +
                         "WHERE pr.post_id = :postId " +
                         (after != null ? "AND pr.repost_at < :after " : "") +
-                        "LIMIT :limit " +
+                        "LIMIT :limit) " +
 
                         "UNION ALL " +
 
-                        "SELECT u.user_id, u.username, u.avatar_url, u.first_name, u.last_name, p.created_at AS interact_at, " +
+                        "(SELECT u.user_id, u.username, u.avatar_url, u.first_name, u.last_name, p.created_at AS interact_at, " +
                         "       (CASE " +
                         "           WHEN NOT EXISTS (SELECT 1 FROM following f WHERE f.follower_id = :currentUserId AND f.followee_id = u.user_id) THEN 'NOT_FOLLOWING' " +
                         "           WHEN EXISTS (SELECT 1 FROM following f WHERE f.follower_id = :currentUserId AND f.followee_id = u.user_id AND f.status='ACCEPTED') THEN 'FOLLOWING' " +
@@ -143,13 +143,14 @@ public class PostLikeRepositoryExtensionImpl implements PostLikeRepositoryExtens
                         "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                         "WHERE p.parent_post_id = :postId " +
                         (after != null ? "AND p.created_at < :after " : "") +
-                        "LIMIT :limit " +
+                        "LIMIT :limit) " +
 
                         "ORDER BY interact_at DESC, user_id ";
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query.setParameter("postId", postId)
                 .setParameter("currentUserId", currentUserId)
+                .setParameter("limit", limit)
                 .setMaxResults(limit);
 
         if (after != null) {
