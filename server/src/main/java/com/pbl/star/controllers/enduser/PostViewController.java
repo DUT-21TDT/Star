@@ -1,5 +1,6 @@
 package com.pbl.star.controllers.enduser;
 
+import com.pbl.star.enums.InteractType;
 import com.pbl.star.usecase.enduser.ViewPostUsecase;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -66,6 +67,27 @@ public class PostViewController {
                                              @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
                                              @RequestParam(required = false) Instant after) {
         return ResponseEntity.ok(viewPostUsecase.getRepliesOfPost(postId, limit, after));
+    }
+
+    @GetMapping("/posts/{postId}/likes")
+    public ResponseEntity<?> getLikesOfPost(@PathVariable String postId,
+                                           @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
+                                           @RequestParam(required = false) Instant after) {
+        return ResponseEntity.ok(viewPostUsecase.getActorProfilesOfPost(postId, InteractType.LIKE, limit, after));
+    }
+
+    @GetMapping("/posts/{postId}/reposts")
+    public ResponseEntity<?> getRepostsOfPost(@PathVariable String postId,
+                                            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
+                                            @RequestParam(required = false) Instant after) {
+        return ResponseEntity.ok(viewPostUsecase.getActorProfilesOfPost(postId, InteractType.REPOST, limit, after));
+    }
+
+    @GetMapping("/posts/{postId}/interactions")
+    public ResponseEntity<?> getInteractionsOfPost(@PathVariable String postId,
+                                            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
+                                            @RequestParam(required = false) Instant after) {
+        return ResponseEntity.ok(viewPostUsecase.getActorProfilesOfPost(postId, InteractType.ALL, limit, after));
     }
 
     @GetMapping("/users/{userId}/replies")

@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface PostRepostRepository extends JpaRepository<PostRepost, String>, PostRepostRepositoryExtension {
     boolean existsByPostIdAndUserId(String postId, String userId);
     Optional<PostRepost> findPostRepostByPostIdAndUserId(String postId, String userId);
+    Long countPostRepostsByPostId(String postId);
 }

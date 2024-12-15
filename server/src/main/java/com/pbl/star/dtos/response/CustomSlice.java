@@ -8,9 +8,9 @@ import org.springframework.data.domain.SliceImpl;
 @Getter
 @Setter
 public class CustomSlice<T> extends SliceImpl<T> {
+    private Integer totalElements;
+
     public CustomSlice(Slice<T> slice) {
         super(slice.getContent(), slice.getPageable(), slice.hasNext());
     }
-
-    private Integer totalElements;
 }

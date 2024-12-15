@@ -1,11 +1,16 @@
 package com.pbl.star.usecase.enduser.impl;
 
+import com.pbl.star.controllers.enduser.PostViewController;
 import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
 import com.pbl.star.dtos.query.post.PostForUserDTO;
 import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
 import com.pbl.star.dtos.query.post.RepostOnWallDTO;
+import com.pbl.star.dtos.query.user.OnInteractProfile;
 import com.pbl.star.dtos.response.CustomSlice;
+import com.pbl.star.dtos.response.post.PostInteractionList;
+import com.pbl.star.enums.InteractType;
 import com.pbl.star.enums.PostStatus;
+import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.usecase.enduser.ViewPostUsecase;
 import com.pbl.star.utils.AuthUtil;
@@ -20,6 +25,7 @@ import java.time.Instant;
 public class ViewPostUsecaseImpl implements ViewPostUsecase {
 
     private final PostService postService;
+    private final PostInteractionService postInteractionService;
 
     @Override
     public PostForUserDTO getPostById(String postId) {
@@ -54,6 +60,12 @@ public class ViewPostUsecaseImpl implements ViewPostUsecase {
     public CustomSlice<PostForUserDTO> getRepliesOfPost(String postId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.getReplies(currentUserId, postId, limit, after);
+    }
+
+    @Override
+    public PostInteractionList getActorProfilesOfPost(String postId, InteractType type, int limit, Instant after) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        return postInteractionService.getActorProfilesOfPost(currentUserId, postId, type, limit, after);
     }
 
     @Override

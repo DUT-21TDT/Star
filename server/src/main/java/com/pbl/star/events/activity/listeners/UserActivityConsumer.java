@@ -4,6 +4,7 @@ import com.pbl.star.configurations.RabbitMQConfig;
 import com.pbl.star.services.external.impl.NotificationProducerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,8 @@ public class UserActivityConsumer {
         }
 
         if (retryCount > RETRY_LIMIT) {
-            return;
+            // Retry limit reached, send to DLQ
+            throw new AmqpRejectAndDontRequeueException("Retry limit reached for message: " + message);
         }
 
         String routingKey = message.getMessageProperties().getReceivedRoutingKey();

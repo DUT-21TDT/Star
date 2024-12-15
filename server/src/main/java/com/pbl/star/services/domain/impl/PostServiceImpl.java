@@ -159,46 +159,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Post moderatePostStatus(String postId, PostStatus status, String moderatorId) {
-        Post post = postRepository.findExistPostById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
-
-        if (!userRoomRepository.existsByUserIdAndRoomIdAndRole(moderatorId, post.getRoomId(), RoomRole.MODERATOR)) {
-            throw new ModeratorAccessException("User is not a moderator of the room");
-        }
-
-        if (post.getStatus() == status) {
-            throw new EntityConflictException("Post already has the status " + status.name());
-        }
-
-        post.setStatus(status);
-        post.setModeratedBy(moderatorId);
-        post.setModeratedAt(Instant.now());
-        return postRepository.save(post);
-    }
-
-    @Override
-    @Transactional
-    public void unmoderatePostStatus(String postId, String moderatorId) {
-        Post post = postRepository.findExistPostById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
-
-        if (!userRoomRepository.existsByUserIdAndRoomIdAndRole(moderatorId, post.getRoomId(), RoomRole.MODERATOR)) {
-            throw new ModeratorAccessException("User is not a moderator of the room");
-        }
-
-        if (post.getStatus() == PostStatus.PENDING) {
-            throw new EntityConflictException("Post is not moderated yet");
-        }
-
-        post.setStatus(PostStatus.PENDING);
-        post.setModeratedBy(null);
-        post.setModeratedAt(null);
-        postRepository.save(post);
-    }
-
-    @Override
-    @Transactional
     public Post deletePostOfUser(String postId, String userId) {
         Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));

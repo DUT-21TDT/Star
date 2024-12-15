@@ -18,8 +18,6 @@ public interface PostService {
     Slice<PostForUserDTO> getPostsOfFollowingUsers(String currentUserId, int limit, Instant after);
     Slice<PostForUserDTO> getPostsInRoom(String roomId, PostStatus status, int limit, Instant after);
     Slice<PostForModDTO> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after);
-    Post moderatePostStatus(String postId, PostStatus status, String moderatorId);
-    void unmoderatePostStatus(String postId, String moderatorId);
     Post deletePostOfUser(String postId, String userId);
     Post createReply(String userId, CreatePostParams createReplyParams);
     CustomSlice<PostForUserDTO> getReplies(String userId, String postId, int limit, Instant after);

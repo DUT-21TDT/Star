@@ -4,6 +4,7 @@ import com.pbl.star.dtos.query.post.PostForModDTO;
 import com.pbl.star.entities.Post;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.ModeratorAccessException;
+import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.domain.UserRoomService;
 import com.pbl.star.services.external.NotificationProducer;
@@ -20,6 +21,7 @@ import java.time.Instant;
 public class ModeratePostUsecaseImpl implements ModeratePostUsecase {
 
     private final PostService postService;
+    private final PostInteractionService postInteractionService;
     private final UserRoomService userRoomService;
 
     private final NotificationProducer notificationProducer;
@@ -37,7 +39,7 @@ public class ModeratePostUsecaseImpl implements ModeratePostUsecase {
     @Override
     public void approvePost(String postId) {
         String moderatorId = AuthUtil.getCurrentUser().getId();
-        Post approvedPost = postService.moderatePostStatus(postId, PostStatus.APPROVED, moderatorId);
+        Post approvedPost = postInteractionService.moderatePostStatus(postId, PostStatus.APPROVED, moderatorId);
 
         notificationProducer.pushApprovePostMessage(approvedPost);
     }
@@ -45,7 +47,7 @@ public class ModeratePostUsecaseImpl implements ModeratePostUsecase {
     @Override
     public void rejectPost(String postId) {
         String moderatorId = AuthUtil.getCurrentUser().getId();
-        Post rejectedPost = postService.moderatePostStatus(postId, PostStatus.REJECTED, moderatorId);
+        Post rejectedPost = postInteractionService.moderatePostStatus(postId, PostStatus.REJECTED, moderatorId);
 
         notificationProducer.pushRejectPostMessage(rejectedPost);
     }
@@ -53,6 +55,6 @@ public class ModeratePostUsecaseImpl implements ModeratePostUsecase {
     @Override
     public void returnPostToPending(String postId) {
         String moderatorId = AuthUtil.getCurrentUser().getId();
-        postService.unmoderatePostStatus(postId, moderatorId);
+        postInteractionService.unmoderatePostStatus(postId, moderatorId);
     }
 }
