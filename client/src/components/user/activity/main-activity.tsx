@@ -13,6 +13,7 @@ interface INotificationType {
   type: string;
   artifactId: string;
   artifactType: string;
+  artifactPreview: string;
   lastActor: {
     id: string;
     username: string;
@@ -85,7 +86,6 @@ const MainContentActivity = () => {
       </div>
     );
   }
-  console.log("allNotifications", allNotifications);
   return (
     <>
       <div
