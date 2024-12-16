@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import "../css/sidebar.css";
 import type { MenuProps } from "antd";
-import { Dropdown } from "antd";
+import { Modal } from "antd";
+import { Dropdown, message } from "antd";
 import { useAppDispatch } from "../../redux/store/hook";
-import { endSession, revokeToken } from "../../service/userAPI";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  endSession,
+  revokeToken,
+  userChangePassword,
+} from "../../service/userAPI";
 import {
   addPinPageToRedux,
   removeInformationUser,
 } from "../../redux/slice/user-slice";
+import ChangePasswordModal from "../../components/user/UpdatePasswordModal/ChangePasswordModal";
+// import SetPasswordModal from "../../components/user/UpdatePasswordModal/SetPasswordModal";
 import Cookies from "js-cookie";
 import logoImage from "../images/logo_no_background.png";
 import optionPin from "../../utils/optionPin";
@@ -347,6 +355,8 @@ const PinIcon: React.FC<IProps> = ({ width, height }) => {
 };
 
 const MenuIcon: React.FC<IProps> = ({ width, height }) => {
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
   const dispatch = useAppDispatch();
   const handleLogout = async () => {
     await revokeToken();
@@ -360,6 +370,15 @@ const MenuIcon: React.FC<IProps> = ({ width, height }) => {
   };
   const items: MenuProps["items"] = [
     {
+      key: "title",
+      label: (
+        <div className="w-full text-[15px] font-semibold flex items-center justify-center">
+          Change password
+        </div>
+      ),
+      onClick: () => setIsChangePasswordModalOpen(true), // Open the modal
+    },
+    {
       key: "1",
       label: (
         <div className="w-[100px] h-[35px] text-[18px] font-semibold flex items-center justify-center">
@@ -370,30 +389,108 @@ const MenuIcon: React.FC<IProps> = ({ width, height }) => {
     },
   ];
 
+  const handlePasswordChange = async (
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string
+  ) => {
+    try {
+      // Assuming `userChangePassword` is the function to call the API
+      const response = await userChangePassword({
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      if (response)
+        message.error("Please check the current password or try again.");
+      setIsChangePasswordModalOpen(false);
+    } catch (error) {
+      message.error("Please check the current password or try again.");
+      return;
+    }
+
+    // Show logout confirmation
+    Modal.confirm({
+      title: "Your password change successfully. Do you want to log out?",
+      icon: <ExclamationCircleOutlined />,
+      onOk() {
+        handleLogout();
+      },
+      onCancel() {
+        // Handle cancel action if necessary
+      },
+    });
+  };
+
+  // const handlePasswordSet = async (
+  //   newPassword: string,
+  //   confirmPassword: string
+  // ) => {
+  //   try {
+  //     // Assuming `userChangePassword` is the function to call the API
+  //     const response = await userChangePassword({
+  //       newPassword,
+  //       confirmPassword,
+  //     });
+
+  //     if (response) message.error("Please check the current password or try again.");
+  //     setIsChangePasswordModalOpen(false);
+  //   } catch (error) {
+  //     message.error("Please check the current password or try again.");
+  //     return;
+  //   }
+
+  //   // Show logout confirmation
+  //   Modal.confirm({
+  //     title: "Your password set successfully.",
+  //     icon: <ExclamationCircleOutlined />,
+  //     onOk() {
+  //       handleLogout();
+  //     },
+  //     onCancel() {
+  //       // Handle cancel action if necessary
+  //     },
+  //   });
+  // };
+
   return (
-    <Dropdown
-      menu={{ items }}
-      placement="topRight"
-      arrow={false}
-      trigger={["click"]}
-    >
-      <svg
-        className="menu-icon"
-        width={`${width}px`}
-        height={`${height}px`}
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+    <div>
+      <Dropdown
+        menu={{ items }}
+        placement="topRight"
+        arrow={false}
+        trigger={["click"]}
       >
-        <path
-          d="M4 6H20M4 12H14M4 18H9"
-          // stroke="#B8B8B8"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </Dropdown>
+        <svg
+          className="menu-icon"
+          width={`${width}px`}
+          height={`${height}px`}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M4 6H20M4 12H14M4 18H9"
+            // stroke="#B8B8B8"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </Dropdown>
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordModalOpen}
+        onClose={() => setIsChangePasswordModalOpen(false)}
+        onSubmit={handlePasswordChange}
+      />
+      {/* <SetPasswordModal
+        isOpen={isChangePasswordModalOpen}
+        onClose={() => setIsChangePasswordModalOpen(false)}
+        onSubmit={handlePasswordSet}
+      /> */}
+    </div>
   );
 };
 
