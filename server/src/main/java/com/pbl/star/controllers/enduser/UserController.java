@@ -4,6 +4,7 @@ import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.usecase.enduser.ManageProfileUsecase;
 import com.pbl.star.usecase.enduser.InteractUserUsecase;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class UserController {
 
     @PutMapping("/me/password")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> updatePassword(@ModelAttribute ChangePasswordParams changePasswordParams) {
+    public ResponseEntity<?> updatePassword(@RequestBody ChangePasswordParams changePasswordParams) {
         manageProfileUsecase.changePassword(changePasswordParams);
         return ResponseEntity.ok().build();
     }

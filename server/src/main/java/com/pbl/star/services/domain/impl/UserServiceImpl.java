@@ -163,7 +163,9 @@ public class UserServiceImpl implements UserService {
             throw new IllegalRequestArgumentException("Old password is incorrect");
         }
 
-        user.setPassword(changePasswordParams.getNewPassword());
+        String newHashedPassword = passwordEncoder.encode(changePasswordParams.getNewPassword());
+
+        user.setPassword(newHashedPassword);
         userRepository.save(user);
     }
 

@@ -26,9 +26,13 @@ public class AdminUserController {
 
     @PatchMapping("/{userId}/status")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> changeUserStatus(@PathVariable String userId, Map<String, String> requestBody) {
+    public ResponseEntity<?> changeUserStatus(@PathVariable String userId, @RequestBody Map<String, String> requestBody) {
 
         String status = requestBody.get("status");
+
+        if (status == null) {
+            return ResponseEntity.badRequest().body("Status is required");
+        }
 
         if (status.equalsIgnoreCase("block")) {
             manageUserUsecase.blockUser(userId);
