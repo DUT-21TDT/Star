@@ -9,11 +9,13 @@ import React, { useState } from "react";
 import { timeAgo } from "../../../utils/convertTime";
 import ContainerInformationUser from "../profile/posts/container-information-user";
 import { useNavigate } from "react-router-dom";
+import default_avatar from "../../../assets/images/default_image.jpg";
 interface INotificationType {
   id: string;
   type: string;
   artifactId: string;
   artifactType: string;
+  artifactPreview: string;
   lastActor: {
     id: string;
     username: string;
@@ -34,9 +36,10 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
     numberOfActors,
     changeAt,
     artifactType,
+    artifactPreview,
   } = notification;
+  console.log(artifactPreview);
   const { id: idOfLastActor, username, avatarUrl } = lastActor;
-
   const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
     useState(false);
   const [popoverContent, setPopoverContent] = useState<React.ReactNode>(
@@ -76,35 +79,27 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
 
   const mapperMessageWithNotificationType = ({
     type,
-    numberOfActors,
   }: {
     type: string;
     numberOfActors: number;
   }) => {
-    const pluralSuffix =
-      numberOfActors > 1
-        ? ` and ${numberOfActors - 1} ${
-            numberOfActors > 2 ? "others" : "other"
-          }`
-        : "";
-
     switch (type) {
       case "NEW_PENDING_POST":
-        return `New pending post${pluralSuffix}`;
+        return `New pending post to review`;
       case "APPROVE_POST":
         return "Your post has been approved";
       case "REJECT_POST":
         return "Your post has been rejected";
       case "LIKE_POST":
-        return `Liked your post${pluralSuffix}`;
+        return artifactPreview ? artifactPreview : `Liked your post`;
       case "REPLY_POST":
-        return `Replied to your post${pluralSuffix}`;
+        return artifactPreview ? artifactPreview : `Replied to your post`;
       case "REPOST_POST":
-        return `Reposted your post${pluralSuffix}`;
+        return artifactPreview ? artifactPreview : `Reposted your post`;
       case "FOLLOW":
-        return `Followed you${pluralSuffix}`;
+        return artifactPreview ? artifactPreview : `Followed you`;
       case "REQUEST_FOLLOW":
-        return `Sent you a follow request${pluralSuffix}`;
+        return artifactPreview ? artifactPreview : `Sent you a follow request`;
       case "ACCEPT_FOLLOW":
         return "Your follow request has been accepted";
       default:
@@ -115,7 +110,8 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
   const handleNavigateToArtifact = (
     e: React.MouseEvent,
     artifactType: string,
-    artifactId: string
+    artifactId: string,
+    artifactPreview: string
   ) => {
     e.stopPropagation();
     switch (artifactType) {
@@ -126,7 +122,9 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
       }
       case "ROOM": {
         if (type === "NEW_PENDING_POST") {
-          navigate(`/room`);
+          navigate(`/moderator/${artifactId}/pending`, {
+            state: { roomName: artifactPreview },
+          });
           window.scrollTo(0, 0);
           break;
         } else {
@@ -149,6 +147,11 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
     }
   };
 
+  const pluralSuffix =
+    numberOfActors > 1
+      ? ` and ${numberOfActors - 1} other${numberOfActors > 2 ? "s" : ""}`
+      : "";
+
   return (
     <div
       className="w-full flex items-start gap-4 my-3"
@@ -163,7 +166,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
           marginLeft: "20px",
         }}
       >
-        <Avatar size={45} src={avatarUrl} />
+        <Avatar size={45} src={avatarUrl || default_avatar} />
         {mapperIconWithNotificationType(type)}
       </div>
       <div
@@ -172,7 +175,9 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
           paddingBottom: "10px",
           cursor: "pointer",
         }}
-        onClick={(e) => handleNavigateToArtifact(e, artifactType, artifactId)}
+        onClick={(e) =>
+          handleNavigateToArtifact(e, artifactType, artifactId, artifactPreview)
+        }
       >
         <div>
           <div
@@ -191,7 +196,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
               open={isPopoverVisibleUsername}
               onOpenChange={handlePopoverUsernameVisibilityChange}
             >
-              {username}{" "}
+              {username} {pluralSuffix} {""}
               <span
                 style={{
                   color: "#ababab",
@@ -207,6 +212,11 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
               fontSize: "16px",
               color: "#ababab",
               fontWeight: 400,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {mapperMessageWithNotificationType({ type, numberOfActors })}
