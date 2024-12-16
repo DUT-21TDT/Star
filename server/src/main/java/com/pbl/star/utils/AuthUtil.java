@@ -7,8 +7,4 @@ public class AuthUtil {
     public static GeneralInformation getCurrentUser() {
         return (GeneralInformation) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-
-    public static boolean isCurrentUser(String userId) {
-        return getCurrentUser().getId().equals(userId);
-    }
 }

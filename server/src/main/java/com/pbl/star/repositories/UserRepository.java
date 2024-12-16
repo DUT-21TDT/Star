@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, String>, UserReposit
     @Query("SELECT COUNT(*) > 0 FROM User u WHERE u.email = ?1 AND u.status = 'ACTIVE'")
     Boolean existsValidAccountByEmail(String email);
 
-    @Query("SELECT new com.pbl.star.dtos.query.user.GeneralInformation(u.id, u.username, u.avatarUrl, u.role, u.status) " +
+    @Query("SELECT new com.pbl.star.dtos.query.user.GeneralInformation(u.id, u.username, u.avatarUrl, u.role, u.status, u.password) " +
             "FROM User u " +
             "WHERE u.id = ?1")
     Optional<GeneralInformation> getGeneralInformationById(String userId);

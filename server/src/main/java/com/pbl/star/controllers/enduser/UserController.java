@@ -4,7 +4,6 @@ import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.usecase.enduser.ManageProfileUsecase;
 import com.pbl.star.usecase.enduser.InteractUserUsecase;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMyProfile() {
+    public ResponseEntity<?> getMyGeneralInformation() {
         return ResponseEntity.ok(manageProfileUsecase.getGeneralInformation());
     }
 
