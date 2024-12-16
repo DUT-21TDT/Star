@@ -227,6 +227,24 @@ const unfollowUser = async (userId: string) => {
   return response.data;
 };
 
+const blockAndUnblockUser = async (
+  userId: string,
+  status: "block" | "unblock"
+) => {
+  if (!status) {
+    throw new Error("Status must be provided and cannot be null or undefined.");
+  }
+  try {
+    const response = await instance.patch(`/admin/users/${userId}/status`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    throw error;
+  }
+};
+
 const getMembersInRoom = async (roomId: string, searchTerm: string) => {
   const response = await instance.get(`/admin/rooms/${roomId}/members`, {
     params: {
@@ -266,6 +284,15 @@ const fetchAllUsers = async (
   return response.data;
 };
 
+const userChangePassword = async (data: {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}) => {
+  const response = await instance.put(`/users/me/password`, data);
+  return response.data;
+};
+
 export {
   createNewUser,
   confirmAccount,
@@ -285,4 +312,6 @@ export {
   getMembersInRoom,
   getAllUsers,
   fetchAllUsers,
+  blockAndUnblockUser,
+  userChangePassword,
 };

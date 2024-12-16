@@ -11,14 +11,17 @@ import {
 } from "antd";
 import type { TableProps } from "antd";
 import HeaderTableUser from "./header-table-user";
-import { fetchAllUsers } from "../../../service/userAPI.ts";
+import {
+  fetchAllUsers,
+  blockAndUnblockUser,
+} from "../../../service/userAPI.ts";
 import { LockFilled, SearchOutlined, UnlockFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "../../../assets/css/table-select-paginate.css";
 import dayjs from "dayjs";
 
 interface PeopleType {
-  userId: string;
+  id: string;
   avatarUrl: string;
   firstName: string;
   lastName: string;
@@ -41,7 +44,6 @@ const User: React.FC = () => {
   const [direction, setDirection] = useState<string>("asc");
   const [searchValue, setSearchValue] = useState<string>("");
   const [resultList, setResultList] = useState<PeopleType[]>([]);
-  const [blockedUsers, setBlockedUsers] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Unified API Call Function
@@ -83,20 +85,52 @@ const User: React.FC = () => {
     setSortBy(sorter.field);
   };
 
-  const handleToggleBlock = (record: PeopleType) => {
-    const isCurrentlyBlocked = blockedUsers[record.userId];
-    setBlockedUsers((prev) => ({
-      ...prev,
-      [record.userId]: !isCurrentlyBlocked,
-    }));
+  const handleToggleBlock = async (record: PeopleType) => {
+    const newStatus = userStatus === "BLOCKED" ? "unblock" : "block";
 
-    if (isCurrentlyBlocked) {
-      message.success(`User "${record.username}" is now unblocked!`);
-    } else {
-      message.warning(`User "${record.username}" is now blocked!`);
+    // Optimistic UI Update
+    setResultList((prev) =>
+      prev.map((user) =>
+        user.id === record.id ? { ...user, userStatus: newStatus } : user
+      )
+    );
+
+    try {
+      const response = await blockAndUnblockUser(record.id, newStatus);
+
+      // Check HTTP status
+      if (response) {
+        throw new Error("Failed to update block state");
+      }
+
+      // Refetch user list to ensure consistency
+      await fetchUsers();
+
+      // Notify user of success
+      if (newStatus === "unblock") {
+        message.success(`User "${record.username}" is now unblocked!`);
+      } else {
+        message.warning(`User "${record.username}" is now blocked!`);
+      }
+    } catch (error) {
+      console.error("Error updating user block state:", error);
+
+      // Rollback optimistic update in case of error
+      setResultList((prev) =>
+        prev.map((user) =>
+          user.id === record.id
+            ? { ...user, userStatus: userStatus } // Rollback
+            : user
+        )
+      );
+
+      message.error(
+        `Failed to update block state for "${record.username}": ${
+          (error as Error).message
+        }`
+      );
     }
   };
-
   const handleChangeStatus = (value: string) => {
     setUserStatus(value);
     setPagination((prev) => ({
@@ -154,7 +188,7 @@ const User: React.FC = () => {
       render: (_, record) => (
         <a
           onClick={() => {
-            navigate(`/admin/users/${record.userId}`);
+            navigate(`/admin/users/${record.id}`);
             window.scrollTo(0, 0);
           }}
         >
@@ -174,7 +208,7 @@ const User: React.FC = () => {
       render: (_, record) => (
         <a
           onClick={() => {
-            navigate(`/admin/users/${record.userId}`);
+            navigate(`/admin/users/${record.id}`);
             window.scrollTo(0, 0);
           }}
         >
@@ -239,12 +273,10 @@ const User: React.FC = () => {
         <Space size="small">
           <Popconfirm
             title={
-              blockedUsers[record.userId]
-                ? "Unblock the user"
-                : "Block the user"
+              userStatus === "BLOCKED" ? "Unblock the user" : "Block the user"
             }
             description={
-              blockedUsers[record.userId]
+              userStatus === "BLOCKED"
                 ? "Are you sure to unblock this user?"
                 : "Are you sure to block this user?"
             }
@@ -252,16 +284,18 @@ const User: React.FC = () => {
             cancelText="No"
             placement="topRight"
           >
-            <Button
-              icon={
-                !blockedUsers[record.userId] ? (
-                  <UnlockFilled className="text-green-500" />
-                ) : (
-                  <LockFilled className="text-red-500" />
-                )
-              }
-              className="border-none"
-            />
+            {userStatus !== "INACTIVE" && (
+              <Button
+                icon={
+                  userStatus === "BLOCKED" ? (
+                    <LockFilled className="text-red-500" />
+                  ) : (
+                    <UnlockFilled className="text-green-500" />
+                  )
+                }
+                className="border-none"
+              />
+            )}
           </Popconfirm>
           <Tag color="red" bordered style={{ borderRadius: "10px" }}>
             99 reports
@@ -295,6 +329,7 @@ const User: React.FC = () => {
           options={[
             { value: "ACTIVE", label: "ACTIVE" },
             { value: "INACTIVE", label: "INACTIVE" },
+            { value: "BLOCKED", label: "BLOCKED" },
           ]}
         />
       </div>
@@ -304,7 +339,7 @@ const User: React.FC = () => {
           dataSource={resultList}
           loading={isLoading} // Show spinner in table instead
           title={() => <HeaderTableUser countUser={totalUsers || 0} />}
-          rowKey={(record) => record.userId}
+          rowKey={(record) => record.id}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
