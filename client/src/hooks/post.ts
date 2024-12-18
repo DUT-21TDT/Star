@@ -17,6 +17,7 @@ import {
   repostPost,
   deleteRepost,
   getRepostsOnWall,
+  getAllPostFollowingOnNewFeed,
 } from "../service/postAPI";
 import { likePost, unlikePost } from "../service/postAPI";
 type configTypeProfileWall = {
@@ -279,6 +280,20 @@ const useGetRepostsOnWall = (userId: string, config: configTypeProfileWall) => {
   };
 };
 
+const useFetchAllPostsFollowingOnNewsFeed = (config: configTypeProfileWall) => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchAllPostsFollowingOnNewsFeed(),
+    queryFn: () => getAllPostFollowingOnNewFeed(config),
+  });
+  return {
+    dataPost: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextPost: !result.data?.last,
+    afterTime: result.data?.content[result.data?.content.length - 1]?.createdAt,
+  };
+};
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -300,4 +315,5 @@ export {
   useRepostPost,
   useDeleteRepost,
   useGetRepostsOnWall,
+  useFetchAllPostsFollowingOnNewsFeed,
 };

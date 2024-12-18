@@ -15,6 +15,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../../utils/queriesKey";
 import { getPostDetailById } from "../../../../service/postAPI";
 import EmojiPicker from "emoji-picker-react";
+import default_avatar from "../../../../assets/images/default_image.jpg";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const getBase64 = (file: FileType): Promise<string> =>
@@ -259,7 +260,7 @@ const ModalReplyPost: React.FC<IProps> = ({
           idOfCreator={idOfCreator}
         />
         <div className="flex items-start gap-3 p-3">
-          <Avatar src={userData?.avatarUrl} size={45} />
+          <Avatar src={userData?.avatarUrl || default_avatar} size={45} />
           <div style={{ width: "calc(100% - 100px)" }}>
             <p className="text-[16px] font-semibold">{userData?.username}</p>
             <Input.TextArea

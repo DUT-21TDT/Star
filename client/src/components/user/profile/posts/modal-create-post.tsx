@@ -9,6 +9,7 @@ import { useGetAllRoomForUser } from "../../../../hooks/room";
 import { useCreateAPost, useGetAllPresignedUrl } from "../../../../hooks/post";
 import "../../../../assets/css/modal-create-post.css";
 import EmojiPicker from "emoji-picker-react";
+import default_avatar from "../../../../assets/images/default_image.jpg";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type RoomType = {
   id: number;
@@ -220,7 +221,7 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
       destroyOnClose
     >
       <div className="flex items-start gap-5">
-        <Avatar src={userData?.avatarUrl} size={50} />
+        <Avatar src={userData?.avatarUrl || default_avatar} size={50} />
         <div style={{ width: "calc(100% - 100px)" }}>
           <p className="text-[16px] font-semibold">{userData?.username}</p>
           <Input.TextArea
