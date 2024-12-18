@@ -1,6 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
-import { getNotifications } from "../service/notification";
+import {
+  getActivitiesOnPostDetail,
+  getNotifications,
+} from "../service/notification";
 type configType = {
   limit: number;
   after: string | null;
@@ -20,4 +23,27 @@ const useGetNotification = (config: configType) => {
     totalElements: result.data?.totalElements,
   };
 };
-export { useGetNotification };
+
+const useGetAllActivitiesOnDetailPost = (
+  postId: string,
+  config: configType
+) => {
+  const result = useQuery({
+    queryKey: [QUERY_KEY.fetchAllActivitiesOnPostDetail(postId), config.after],
+    queryFn: () => getActivitiesOnPostDetail(postId, config),
+  });
+  return {
+    dataNotification: result.data?.actors.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextNotification: !result.data?.actors.last,
+    afterTimeFinalNotification:
+      result.data?.actors?.content[result.data?.actors?.content.length - 1]
+        ?.interactAt,
+    viewsCount: result.data?.viewsCount,
+    likesCount: result.data?.likesCount,
+    repostsCount: result.data?.repostsCount,
+  };
+};
+
+export { useGetNotification, useGetAllActivitiesOnDetailPost };

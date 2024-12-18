@@ -9,16 +9,38 @@ import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import ModalConfirmUnfollow from "./modal-confirm-unfollow.tsx";
 import { LoadingOutlined } from "@ant-design/icons";
+
+interface IActivityItemPostDetail {
+  userId: string;
+  username: string;
+  avatarUrl: string;
+  firstName: string;
+  lastName: string;
+  interactType: string;
+  interactAt: string;
+  followStatus: string;
+}
 interface ContainerInformationUserProps {
   idOfCreator: string;
   parentFollowStatus?: string;
   updateParentFollowStatus?: React.Dispatch<React.SetStateAction<string>>;
+
+  isDetailPostPage?: boolean;
+  setAllActivitiesOnDetailPost?: React.Dispatch<
+    React.SetStateAction<IActivityItemPostDetail[]>
+  >;
 }
 
 const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
   props
 ) => {
-  const { idOfCreator, parentFollowStatus, updateParentFollowStatus } = props;
+  const {
+    idOfCreator,
+    parentFollowStatus,
+    updateParentFollowStatus,
+    isDetailPostPage,
+    setAllActivitiesOnDetailPost,
+  } = props;
   const { data, isLoading } = useGetProfileUser(idOfCreator || "");
   const navigate = useNavigate();
 
@@ -50,9 +72,35 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
       onSuccess: (response) => {
         if (response?.followStatus === "REQUESTED") {
           _setFollowStatus("REQUESTED");
+          if (isDetailPostPage) {
+            setAllActivitiesOnDetailPost?.((prevState) => {
+              return prevState.map((item) => {
+                if (item.userId === idOfCreator) {
+                  return {
+                    ...item,
+                    followStatus: "REQUESTED",
+                  };
+                }
+                return item;
+              });
+            });
+          }
         } else if (response?.followStatus === "FOLLOWING") {
           _setFollowStatus("FOLLOWING");
           setNumberOfFollowers((prevState) => prevState + 1);
+          if (isDetailPostPage) {
+            setAllActivitiesOnDetailPost?.((prevState) => {
+              return prevState.map((item) => {
+                if (item.userId === idOfCreator) {
+                  return {
+                    ...item,
+                    followStatus: "FOLLOWING",
+                  };
+                }
+                return item;
+              });
+            });
+          }
         }
       },
       onError: (error: Error) => {
@@ -76,8 +124,34 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
         if (_followStatus === "FOLLOWING") {
           _setFollowStatus("NOT_FOLLOWING");
           setNumberOfFollowers((prevState) => prevState - 1);
+          if (isDetailPostPage) {
+            setAllActivitiesOnDetailPost?.((prevState) => {
+              return prevState.map((item) => {
+                if (item.userId === idOfCreator) {
+                  return {
+                    ...item,
+                    followStatus: "NOT_FOLLOWING",
+                  };
+                }
+                return item;
+              });
+            });
+          }
         } else if (_followStatus === "REQUESTED") {
           _setFollowStatus("NOT_FOLLOWING");
+          if (isDetailPostPage) {
+            setAllActivitiesOnDetailPost?.((prevState) => {
+              return prevState.map((item) => {
+                if (item.userId === idOfCreator) {
+                  return {
+                    ...item,
+                    followStatus: "NOT_FOLLOWING",
+                  };
+                }
+                return item;
+              });
+            });
+          }
         }
       },
       onError: (error: Error) => {
@@ -157,21 +231,30 @@ const ContainerInformationUser: React.FC<ContainerInformationUserProps> = (
         (_followStatus === "NOT_FOLLOWING" ? (
           <button
             className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[black] text-[white]"
-            onClick={handleFollowUser}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFollowUser();
+            }}
           >
             Follow
           </button>
         ) : _followStatus === "REQUESTED" ? (
           <button
             className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[white]"
-            onClick={handleUnfollowUser}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleUnfollowUser();
+            }}
           >
             Requested
           </button>
         ) : _followStatus === "FOLLOWING" ? (
           <button
             className="font-semibold w-full h-[40px] text-[15px] border rounded-[10px] bg-[white]"
-            onClick={handleUnfollowUser}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleUnfollowUser();
+            }}
           >
             Following
           </button>

@@ -38,7 +38,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
     artifactType,
     artifactPreview,
   } = notification;
-  console.log(artifactPreview);
+
   const { id: idOfLastActor, username, avatarUrl } = lastActor;
   const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
     useState(false);

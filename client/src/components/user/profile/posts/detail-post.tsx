@@ -4,6 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import Post from "./Post";
 import ListReplyPost from "./list-reply-post";
 import React from "react";
+import ModalViewActiviesPost from "../../activity/modal-view-activites-posts";
 
 interface PostDetail {
   id: string;
@@ -27,14 +28,12 @@ interface IProps {
   isError: boolean;
 }
 
-const MainContentDetailPost : React.FC<IProps> = (props) => {
+const MainContentDetailPost: React.FC<IProps> = (props) => {
   const postId = useParams<{ postId: string }>().postId || "";
 
-  const {
-    dataPostDetail,
-    isLoading,
-    isError,
-  } = props;
+  const [isOpenModal, setIsOpenModal] = React.useState(false);
+
+  const { dataPostDetail, isLoading, isError } = props;
 
   const {
     id,
@@ -90,11 +89,19 @@ const MainContentDetailPost : React.FC<IProps> = (props) => {
         }}
       >
         <div className="font-[500] text-[15px]">Replies</div>
-        <div className=" text-[15px] text-[#c3c3c3] hover:cursor-pointer">
+        <div
+          className=" text-[15px] text-[#c3c3c3] hover:cursor-pointer"
+          onClick={() => setIsOpenModal(!isOpenModal)}
+        >
           View activity
         </div>
       </div>
       <ListReplyPost postId={postId} />
+      <ModalViewActiviesPost
+        isOpenModal={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+        dataDetailPost={dataPostDetail}
+      />
     </>
   );
 };

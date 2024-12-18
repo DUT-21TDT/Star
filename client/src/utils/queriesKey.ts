@@ -46,4 +46,8 @@ export const QUERY_KEY = {
   fetchRepostsByUserId: (userId: string) => ["fetchRepostsByUserId", userId],
   fetchAllNotification: () => ["fetchAllNotification"],
   fetchAllPostsFollowingOnNewsFeed: () => ["fetchAllPostsFollowingOnNewsFeed"],
+  fetchAllActivitiesOnPostDetail: (postId: string) => [
+    "fetchAllActivitiesOnPostDetail",
+    postId,
+  ],
 };

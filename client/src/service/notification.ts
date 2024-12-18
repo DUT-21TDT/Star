@@ -13,4 +13,19 @@ const getNotifications = async (config: configTypeProfileWall) => {
   const response = await instance.get(url);
   return response.data;
 };
-export { getNotifications };
+
+const getActivitiesOnPostDetail = async (
+  postId: string,
+  config: configTypeProfileWall
+) => {
+  let url;
+  if (config.after !== null) {
+    url = `/posts/${postId}/interactions?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/posts/${postId}/interactions?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+};
+
+export { getNotifications, getActivitiesOnPostDetail };

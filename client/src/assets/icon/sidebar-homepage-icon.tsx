@@ -560,6 +560,41 @@ const RoomIcon: React.FC<IProps> = ({ width, height, isActive }) => {
   );
 };
 
+const ViewsIcon: React.FC<IProps> = ({ width, height }) => {
+  return (
+    <svg
+      aria-label="Views"
+      role="img"
+      viewBox="0 0 24 24"
+      width={width}
+      height={height}
+    >
+      <title>Views</title>
+      <path d="M23.44141,11.81885C23.41309,11.74072,20.542,4,12,4S.58691,11.74072.55859,11.81885a1,1,0,0,0,1.88184.67724,10.28206,10.28206,0,0,1,19.11914-.00048.99992.99992,0,0,0,1.88184-.67676Zm-7.124,2.36853a3.35859,3.35859,0,0,1-1.541-.101,3.55981,3.55981,0,0,1-2.364-2.361,3.35086,3.35086,0,0,1-.103-1.542.99093.99093,0,0,0-1.134-1.107,5.42733,5.42733,0,0,0-3.733,2.339,5.50019,5.50019,0,0,0,8.44605,6.971,5.402,5.402,0,0,0,1.53595-3.091A.98311.98311,0,0,0,16.31738,14.18738Z"></path>
+    </svg>
+  );
+};
+
+const RepostIcon: React.FC<IProps> = ({ width, height }) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="-0.5 0 25 25"
+      fill="black"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M10.52 4.13998C11.25 4.35998 11.72 5.96 11.9 7.91C17.21 7.91 22 13.4802 22 20.0802C19.8 14.0802 15 12.45 11.86 12.45C11.65 14.21 11.2 15.6202 10.52 15.8202C8.41996 16.4302 2 12.4401 2 9.98006C2 7.52006 8.40996 3.52998 10.52 4.13998Z"
+        stroke="black"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
 export {
   Logo,
   HomeIcon,
@@ -574,4 +609,6 @@ export {
   PinIcon,
   MenuIcon,
   RoomIcon,
+  ViewsIcon,
+  RepostIcon,
 };
