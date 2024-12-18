@@ -79,8 +79,21 @@ const MainContentActivity = () => {
   } else if (allNotifications && allNotifications.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-xl"
-        style={{ fontWeight: 450, marginTop: "25vh", color: "#999999" }}
+        style={{
+          border: "1px solid #bdbdbd",
+          marginTop: "20px",
+          borderRadius: "30px",
+          padding: "20px 0px 20px 0px",
+          backgroundColor: "white",
+          overflowY: "auto",
+          height: "calc(100vh - 60px)",
+          fontWeight: 450,
+          color: "#999999",
+          fontSize: "1.2rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
         No activities yet
       </div>

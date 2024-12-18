@@ -166,14 +166,17 @@ const getRepliesOnUserWall = async (
 const repostPost = async (postId: string) => {
   const response = await instance.post(`/posts/${postId}/reposts`);
   return response.data;
-}
+};
 
 const deleteRepost = async (postId: string) => {
   const response = await instance.delete(`/posts/${postId}/reposts`);
   return response.data;
-}
+};
 
-const getRepostsOnWall = async (userId: string, config: configTypeProfileWall) => {
+const getRepostsOnWall = async (
+  userId: string,
+  config: configTypeProfileWall
+) => {
   let url;
   if (config.after !== null) {
     url = `/users/${userId}/reposts?limit=${config.limit}&after=${config.after}`;
@@ -182,7 +185,18 @@ const getRepostsOnWall = async (userId: string, config: configTypeProfileWall) =
   }
   const response = await instance.get(url);
   return response.data;
-}
+};
+
+const getAllPostFollowingOnNewFeed = async (config: configTypeProfileWall) => {
+  let url;
+  if (config.after !== null) {
+    url = `/followings/posts?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/followings/posts?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+};
 
 export {
   getPostOnProfileWall,
@@ -203,4 +217,5 @@ export {
   repostPost,
   deleteRepost,
   getRepostsOnWall,
+  getAllPostFollowingOnNewFeed,
 };

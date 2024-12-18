@@ -213,7 +213,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
               color: "#ababab",
               fontWeight: 400,
               display: "-webkit-box",
-              WebkitLineClamp: 2,
+              WebkitLineClamp: 1,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
               textOverflow: "ellipsis",

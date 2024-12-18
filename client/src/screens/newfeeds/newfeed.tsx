@@ -15,6 +15,7 @@ import Profile from "../profile/profile";
 import { Helmet } from "react-helmet-async";
 import HeaderActivity from "../../components/user/activity/header-activity";
 import MainContentActivity from "../../components/user/activity/main-activity";
+import PostsFollowingOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed-following";
 interface RoomType {
   id: number;
   key: number;
@@ -33,6 +34,18 @@ const NewFeed = () => {
     label: room.name,
   }));
   const navigate = useNavigate();
+  const pinnedPage = useAppSelector((state) => state.user.pin);
+  const isPinnedRoom = pinnedPage?.includes(optionPin.ROOM);
+  const isPinnedProfile = pinnedPage?.includes(optionPin.PROFILE);
+  const isPinnedPeople = pinnedPage?.includes(optionPin.PEOPLE);
+  const isPinnedActivity = pinnedPage?.includes(optionPin.ACTIVITY);
+
+  const pinnedCount = [
+    isPinnedRoom,
+    isPinnedProfile,
+    isPinnedPeople,
+    isPinnedActivity,
+  ].filter(Boolean).length;
 
   const menuItems = [
     { key: "1", label: "For you", url: "/" },
@@ -44,16 +57,13 @@ const NewFeed = () => {
       label: "Room",
       children: childrenRoom,
     },
-  ].map(({ key, label, url, children }) => ({
+  ].map(({ key, label, children }) => ({
     key,
     label: (
       <div
         className="w-[200px] h-[40px] flex items-center text-[14px] font-semibold"
         onClick={() => {
           if (label !== "Room") {
-            if (url) {
-              navigate(url);
-            }
             setItemActive({ label, key });
           }
         }}
@@ -77,19 +87,6 @@ const NewFeed = () => {
         }))
       : null,
   }));
-
-  const pinnedPage = useAppSelector((state) => state.user.pin);
-  const isPinnedRoom = pinnedPage?.includes(optionPin.ROOM);
-  const isPinnedProfile = pinnedPage?.includes(optionPin.PROFILE);
-  const isPinnedPeople = pinnedPage?.includes(optionPin.PEOPLE);
-  const isPinnedActivity = pinnedPage?.includes(optionPin.ACTIVITY);
-
-  const pinnedCount = [
-    isPinnedRoom,
-    isPinnedProfile,
-    isPinnedPeople,
-    isPinnedActivity,
-  ].filter(Boolean).length;
 
   const renderContentPinned = () => {
     return pinnedPage?.map((pin) => {
@@ -206,27 +203,14 @@ const NewFeed = () => {
               itemActive={itemActive.label}
               menuItems={menuItems}
             />
-            {/* <div
-            style={{
-              border: "1px solid #ccc",
-              marginTop: "20px",
-              height: "100%",
-              borderRadius: "30px",
-              paddingTop: "10px",
-              overflowY: "auto",
-              maxHeight: "calc(100vh - 30px)",
-            }}
-          >
-            <CreatePost />
             {itemActive.label === "For you" && (
               <>
                 <PostsOnNewsFeed />
               </>
             )}
-          </div> */}
-            {itemActive.label === "For you" && (
+            {itemActive.label === "Following" && (
               <>
-                <PostsOnNewsFeed />
+                <PostsFollowingOnNewsFeed />
               </>
             )}
           </div>
