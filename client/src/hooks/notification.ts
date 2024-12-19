@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
 import {
+  getActivitiesLikeOnPostDetail,
   getActivitiesOnPostDetail,
+  getActivitiesRepostOnPostDetail,
   getNotifications,
 } from "../service/notification";
 type configType = {
@@ -26,11 +28,13 @@ const useGetNotification = (config: configType) => {
 
 const useGetAllActivitiesOnDetailPost = (
   postId: string,
-  config: configType
+  config: configType,
+  isDataFetched: boolean
 ) => {
   const result = useQuery({
     queryKey: [QUERY_KEY.fetchAllActivitiesOnPostDetail(postId), config.after],
     queryFn: () => getActivitiesOnPostDetail(postId, config),
+    enabled: isDataFetched,
   });
   return {
     dataNotification: result.data?.actors.content || [],
@@ -46,4 +50,63 @@ const useGetAllActivitiesOnDetailPost = (
   };
 };
 
-export { useGetNotification, useGetAllActivitiesOnDetailPost };
+const useGetAllActivitiesLikeOnDetailPost = (
+  postId: string,
+  config: configType,
+  enable: boolean
+) => {
+  const result = useQuery({
+    queryKey: [
+      QUERY_KEY.fetchAllActivitiesLikeOnPostDetail(postId),
+      config.after,
+    ],
+    queryFn: () => getActivitiesLikeOnPostDetail(postId, config),
+    enabled: enable,
+  });
+  return {
+    dataNotification: result.data?.actors.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextNotification: !result.data?.actors.last,
+    afterTimeFinalNotification:
+      result.data?.actors?.content[result.data?.actors?.content.length - 1]
+        ?.interactAt,
+    viewsCount: result.data?.viewsCount,
+    likesCount: result.data?.likesCount,
+    repostsCount: result.data?.repostsCount,
+  };
+};
+
+const useGetAllActivitiesRepostOnDetailPost = (
+  postId: string,
+  config: configType,
+  enable: boolean
+) => {
+  const result = useQuery({
+    queryKey: [
+      QUERY_KEY.fetchAllActivitiesRepostOnPostDetail(postId),
+      config.after,
+    ],
+    queryFn: () => getActivitiesRepostOnPostDetail(postId, config),
+    enabled: enable,
+  });
+  return {
+    dataNotification: result.data?.actors.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextNotification: !result.data?.actors.last,
+    afterTimeFinalNotification:
+      result.data?.actors?.content[result.data?.actors?.content.length - 1]
+        ?.interactAt,
+    viewsCount: result.data?.viewsCount,
+    likesCount: result.data?.likesCount,
+    repostsCount: result.data?.repostsCount,
+  };
+};
+
+export {
+  useGetNotification,
+  useGetAllActivitiesOnDetailPost,
+  useGetAllActivitiesLikeOnDetailPost,
+  useGetAllActivitiesRepostOnDetailPost,
+};

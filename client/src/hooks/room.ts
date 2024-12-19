@@ -8,7 +8,10 @@ import {
   getRoomDetails,
   getAllRoomForUser,
   joinRoom,
-  leaveRoomForUser, addModeratorToRoom, removeModeratorFromRoom, getModeratorsOfRoom,
+  leaveRoomForUser,
+  addModeratorToRoom,
+  removeModeratorFromRoom,
+  getModeratorsOfRoom,
 } from "../service/roomAPI";
 import { format } from "date-fns";
 
@@ -55,16 +58,16 @@ const useFetchAllRoom = () => {
 };
 
 const useGetRoomDetails = (id: string) => {
-    const response = useQuery({
-        queryKey: QUERY_KEY.getRoomDetails(id),
-        queryFn: () => getRoomDetails(id),
-    });
-    return {
-        data: response.data,
-        isLoading: response.isLoading,
-        isError: response.isError,
-    };
-}
+  const response = useQuery({
+    queryKey: QUERY_KEY.getRoomDetails(id),
+    queryFn: () => getRoomDetails(id),
+  });
+  return {
+    data: response.data,
+    isLoading: response.isLoading,
+    isError: response.isError,
+  };
+};
 
 const useCreateRoom = () => {
   return useMutation({
@@ -90,10 +93,11 @@ const useJoinRoom = () => {
   });
 };
 
-const useGetAllRoomForUser = () => {
+const useGetAllRoomForUser = (enable: boolean) => {
   const response = useQuery({
     queryKey: QUERY_KEY.fetchAllRoomForUser(),
     queryFn: getAllRoomForUser,
+    enabled: enable,
   });
   const listRoomJoined =
     response?.data?.filter((item: DataType) => item.isParticipant) || [];
@@ -130,23 +134,21 @@ const useGetModerators = (roomId: string) => {
     isError: response.isError,
     refetch: response.refetch,
   };
-}
+};
 
 const useAddModerator = () => {
   return useMutation({
-    mutationFn: (
-        { roomId, username } : { roomId: string; username: string; }
-    ) => addModeratorToRoom(roomId, username)
+    mutationFn: ({ roomId, username }: { roomId: string; username: string }) =>
+      addModeratorToRoom(roomId, username),
   });
-}
+};
 
 const useRemoveModerator = () => {
   return useMutation({
-    mutationFn: (
-      { roomId, userId } : { roomId: string; userId: string; }
-    ) => removeModeratorFromRoom(roomId, userId)
+    mutationFn: ({ roomId, userId }: { roomId: string; userId: string }) =>
+      removeModeratorFromRoom(roomId, userId),
   });
-}
+};
 
 export {
   useFetchAllRoom,
@@ -159,5 +161,5 @@ export {
   useGetAllRoomForUser,
   useLeaveRoomForUser,
   useAddModerator,
-  useRemoveModerator
+  useRemoveModerator,
 };

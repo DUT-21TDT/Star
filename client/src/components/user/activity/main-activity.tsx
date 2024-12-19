@@ -103,25 +103,45 @@ const MainContentActivity = () => {
     <>
       <div
         style={{
-          border: "1px solid #bdbdbd",
+          border: "1px solid #ccc",
           marginTop: "20px",
-          borderRadius: "30px",
-          padding: "20px 0px 20px 0px",
+          height: "100%",
+          borderBottom: "none",
+          borderTopLeftRadius: "30px",
+          borderTopRightRadius: "30px",
+          paddingTop: "5px",
           backgroundColor: "white",
-          overflowY: "auto",
+          paddingRight: "3px",
           maxHeight: "calc(100vh - 60px)",
+          overflow: "hidden",
         }}
-        ref={divRef}
-        onScroll={handleScroll}
-        className="border-custom-scrollbar"
       >
-        {allNotifications &&
-          allNotifications.length > 0 &&
-          allNotifications.map((notification: INotificationType) => {
-            return (
-              <ActivityItem key={notification.id} notification={notification} />
-            );
-          })}
+        <div
+          style={{
+            // border: "1px solid #bdbdbd",
+            // marginTop: "20px",
+            // borderRadius: "30px",
+            // padding: "20px 0px 20px 0px",
+            height: "100%",
+            // backgroundColor: "white",
+            overflowY: "auto",
+            maxHeight: "calc(100vh - 60px)",
+          }}
+          ref={divRef}
+          onScroll={handleScroll}
+          className="custom-scrollbar"
+        >
+          {allNotifications &&
+            allNotifications.length > 0 &&
+            allNotifications.map((notification: INotificationType) => {
+              return (
+                <ActivityItem
+                  key={notification.id}
+                  notification={notification}
+                />
+              );
+            })}
+        </div>
       </div>
     </>
   );

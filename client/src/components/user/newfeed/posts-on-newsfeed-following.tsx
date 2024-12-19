@@ -107,7 +107,6 @@ const PostsFollowingOnNewsFeed: React.FC = () => {
   return (
     <>
       <div
-        className="custom-scrollbar"
         style={{
           border: "1px solid #ccc",
           marginTop: "20px",
@@ -116,59 +115,76 @@ const PostsFollowingOnNewsFeed: React.FC = () => {
           borderTopLeftRadius: "30px",
           borderTopRightRadius: "30px",
           paddingTop: "10px",
-          overflowY: "auto",
-          maxHeight: "calc(100vh - 60px)",
           backgroundColor: "white",
+          paddingRight: "3px",
+          maxHeight: "calc(100vh - 60px)",
+          overflow: "hidden",
         }}
-        ref={divRef}
-        onScroll={handleScroll}
       >
-        <CreatePost />
-        {isLoading && (
-          <div className="flex items-center justify-center mt-8">
-            <Spin indicator={<LoadingOutlined spin />} size="large" />
-          </div>
-        )}
-        {allPosts &&
-          allPosts.length > 0 &&
-          allPosts.map((post) => {
-            const {
-              id,
-              usernameOfCreator,
-              avatarUrlOfCreator,
-              createdAt,
-              content,
-              postImageUrls,
-              numberOfLikes,
-              numberOfComments,
-              numberOfReposts,
-              liked,
-              idOfCreator,
-              nameOfRoom,
-              isRemoved,
-              reposted,
-            } = post;
-            return (
-              <Post
-                key={id}
-                id={id}
-                usernameOfCreator={usernameOfCreator}
-                avatarUrlOfCreator={avatarUrlOfCreator}
-                createdAt={createdAt}
-                content={content}
-                postImageUrls={postImageUrls}
-                numberOfLikes={numberOfLikes}
-                numberOfComments={numberOfComments}
-                numberOfReposts={numberOfReposts}
-                liked={liked}
-                idOfCreator={idOfCreator}
-                nameOfRoom={nameOfRoom}
-                isRemoved={isRemoved}
-                reposted={reposted}
-                handleDeletePostSuccess={handleDeletePostSuccess}
-              />
-            );
-          })}
+        <div
+          className="custom-scrollbar"
+          style={{
+            // border: "1px solid #ccc",
+            // marginTop: "20px",
+            height: "100%",
+            // borderBottom: "none",
+            // borderTopLeftRadius: "30px",
+            // borderTopRightRadius: "30px",
+            // paddingTop: "10px",
+            overflowY: "auto",
+            maxHeight: "calc(100vh - 60px)",
+            // backgroundColor: "white",
+          }}
+          ref={divRef}
+          onScroll={handleScroll}
+        >
+          <CreatePost />
+          {isLoading && (
+            <div className="flex items-center justify-center mt-8">
+              <Spin indicator={<LoadingOutlined spin />} size="large" />
+            </div>
+          )}
+          {allPosts &&
+            allPosts.length > 0 &&
+            allPosts.map((post) => {
+              const {
+                id,
+                usernameOfCreator,
+                avatarUrlOfCreator,
+                createdAt,
+                content,
+                postImageUrls,
+                numberOfLikes,
+                numberOfComments,
+                numberOfReposts,
+                liked,
+                idOfCreator,
+                nameOfRoom,
+                isRemoved,
+                reposted,
+              } = post;
+              return (
+                <Post
+                  key={id}
+                  id={id}
+                  usernameOfCreator={usernameOfCreator}
+                  avatarUrlOfCreator={avatarUrlOfCreator}
+                  createdAt={createdAt}
+                  content={content}
+                  postImageUrls={postImageUrls}
+                  numberOfLikes={numberOfLikes}
+                  numberOfComments={numberOfComments}
+                  numberOfReposts={numberOfReposts}
+                  liked={liked}
+                  idOfCreator={idOfCreator}
+                  nameOfRoom={nameOfRoom}
+                  isRemoved={isRemoved}
+                  reposted={reposted}
+                  handleDeletePostSuccess={handleDeletePostSuccess}
+                />
+              );
+            })}
+        </div>
       </div>
     </>
   );

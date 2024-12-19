@@ -55,48 +55,63 @@ const Profile: React.FC<{ isPinned?: boolean }> = ({ isPinned }) => {
               <HeaderProfile />
               <div
                 style={{
-                  border: "1px solid #ccc",
+                  border: "1px solid #bdbdbd",
                   borderBottom: "none",
                   borderTopLeftRadius: "30px",
                   borderTopRightRadius: "30px",
                   marginTop: "20px",
-                  height: "100%",
-                  overflowY: "auto",
-                  maxHeight: "calc(100vh - 60px)",
-                  scrollbarWidth: "thin",
-                  scrollbarColor: "#b9b7b7 white",
                   backgroundColor: "white",
+                  maxHeight: "calc(100vh - 60px)",
+                  overflow: "hidden",
+                  height: "100%",
+                  padding: "10px 0px 0px 0px",
                 }}
-                ref={scrollContainerRef}
               >
-                <UserProfile
-                  isCurrentUser={data?.isCurrentUser}
-                  followStatus={followStatus}
-                  setFollowStatus={setFollowStatus}
-                  publicProfile={data?.publicProfile}
-                  userId={id || ""}
-                />
-                {followStatus === "FOLLOWING" ||
-                data?.publicProfile.privateProfile === false ||
-                data?.isCurrentUser ? (
-                  <TabProfile
+                <div
+                  style={{
+                    // border: "1px solid #ccc",
+                    // borderBottom: "none",
+                    // borderTopLeftRadius: "30px",
+                    // borderTopRightRadius: "30px",
+                    // marginTop: "20px",
+                    height: "100%",
+                    overflowY: "auto",
+                    maxHeight: "calc(100vh - 60px)",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#b9b7b7 white",
+                    // backgroundColor: "white",
+                  }}
+                  ref={scrollContainerRef}
+                >
+                  <UserProfile
                     isCurrentUser={data?.isCurrentUser}
+                    followStatus={followStatus}
+                    setFollowStatus={setFollowStatus}
+                    publicProfile={data?.publicProfile}
                     userId={id || ""}
-                    scrollRef={scrollContainerRef}
                   />
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "50vh",
-                      color: "#999999",
-                    }}
-                  >
-                    This profile is private
-                  </div>
-                )}
+                  {followStatus === "FOLLOWING" ||
+                  data?.publicProfile.privateProfile === false ||
+                  data?.isCurrentUser ? (
+                    <TabProfile
+                      isCurrentUser={data?.isCurrentUser}
+                      userId={id || ""}
+                      scrollRef={scrollContainerRef}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "50vh",
+                        color: "#999999",
+                      }}
+                    >
+                      This profile is private
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

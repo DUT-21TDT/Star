@@ -1,4 +1,4 @@
-import { Avatar, Modal, Popover } from "antd";
+import { Avatar, Modal, Popover, Spin } from "antd";
 import default_image from "../../../assets/images/default_image.jpg";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
@@ -11,10 +11,11 @@ import { debounce } from "lodash";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
 import {
-  HeartIcon,
+  HeartIconActivity,
   RepostIcon,
   ViewsIcon,
 } from "../../../assets/icon/sidebar-homepage-icon";
+import { LoadingOutlined } from "@ant-design/icons";
 
 type DataDetailPost = {
   id: string;
@@ -44,14 +45,44 @@ interface IActivityItemPostDetail {
 }
 
 import React, { ReactNode } from "react";
+import { useAppSelector } from "../../../redux/store/hook";
+import ModalViewPeopleLikePost from "./modal-people-liked-posts";
+import ModalViewPeopleRepostPost from "./modal-people-reposted-posts";
 
 interface StatCardProps {
   icon: ReactNode;
   label: string;
   count: number;
+  setIsOpenModalPeopleLikedPost?: (isOpen: boolean) => void;
+  setIsOpenModalPeopleRepostedPost?: (isOpen: boolean) => void;
+  setIsOpenMainModal?: (isOpen: boolean) => void;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ icon, label, count }) => {
+const StatCard: React.FC<StatCardProps> = ({
+  icon,
+  label,
+  count,
+  setIsOpenModalPeopleLikedPost,
+  setIsOpenModalPeopleRepostedPost,
+  setIsOpenMainModal,
+}) => {
+  const handleOpenModal = () => {
+    if (
+      label === "Likes" &&
+      setIsOpenModalPeopleLikedPost &&
+      setIsOpenMainModal
+    ) {
+      setIsOpenModalPeopleLikedPost(true);
+      setIsOpenMainModal(false);
+    } else if (
+      label === "Reports" &&
+      setIsOpenModalPeopleRepostedPost &&
+      setIsOpenMainModal
+    ) {
+      setIsOpenModalPeopleRepostedPost(true);
+      setIsOpenMainModal(false);
+    }
+  };
   return (
     <div
       className="w-full flex items-start gap-3 my-3"
@@ -74,7 +105,9 @@ const StatCard: React.FC<StatCardProps> = ({ icon, label, count }) => {
           paddingBottom: "10px",
           borderBottom: "1px solid rgb(240,240,240)",
           width: "calc(100% - 50px)",
+          cursor: "pointer",
         }}
+        onClick={handleOpenModal}
       >
         <div
           style={{
@@ -90,9 +123,30 @@ const StatCard: React.FC<StatCardProps> = ({ icon, label, count }) => {
             fontSize: "16px",
             color: "black",
             fontWeight: 500,
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
           }}
         >
-          {count}
+          {count}{" "}
+          {label !== "Views" ? (
+            <span>
+              <svg
+                aria-label="Next"
+                role="img"
+                viewBox="0 0 24 24"
+                height={16}
+                width={16}
+                fill="none"
+                stroke="#000000"
+              >
+                <title>Next</title>
+                <polyline points="7.498 3 16.502 12 7.498 21"></polyline>
+              </svg>
+            </span>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </div>
@@ -154,17 +208,61 @@ const ModalViewActiviesPost = ({
   const [allActivitiesOnDetailPost, setAllActivitiesOnDetailPost] = useState<
     IActivityItemPostDetail[]
   >([]);
+  const [isDataFetched, setIsDataFetched] = useState(false);
   const {
     dataNotification,
     hasNextNotification,
+    isLoading,
     afterTimeFinalNotification,
-    viewsCount,
-    likesCount,
-    repostsCount,
-  } = useGetAllActivitiesOnDetailPost(id, {
-    limit: 15,
-    after: afterTime,
+    viewsCount: initialViewsCount,
+    likesCount: initialLikesCount,
+    repostsCount: initialRepostsCount,
+  } = useGetAllActivitiesOnDetailPost(
+    id,
+    {
+      limit: 15,
+      after: afterTime,
+    },
+    isDataFetched
+  );
+
+  useEffect(() => {
+    if (isOpenModal && !isDataFetched) {
+      setIsDataFetched(true);
+    }
+  }, [isOpenModal]);
+
+  const [viewsCount, setViewsCount] = useState<number>(0);
+  const [likesCount, setLikesCount] = useState<number>(0);
+  const [repostsCount, setRepostsCount] = useState<number>(0);
+
+  const cachedCounts = useRef({
+    viewsCount: 0,
+    likesCount: 0,
+    repostsCount: 0,
   });
+
+  useEffect(() => {
+    if (afterTime === null) {
+      cachedCounts.current = {
+        viewsCount: initialViewsCount ?? 0,
+        likesCount: initialLikesCount ?? 0,
+        repostsCount: initialRepostsCount ?? 0,
+      };
+
+      setViewsCount(initialViewsCount ?? 0);
+      setLikesCount(initialLikesCount ?? 0);
+      setRepostsCount(initialRepostsCount ?? 0);
+    }
+  }, [afterTime, initialViewsCount, initialLikesCount, initialRepostsCount]);
+
+  useEffect(() => {
+    if (afterTime !== null) {
+      setViewsCount(cachedCounts.current.viewsCount);
+      setLikesCount(cachedCounts.current.likesCount);
+      setRepostsCount(cachedCounts.current.repostsCount);
+    }
+  }, [afterTime]);
 
   const divRef = useRef(null);
   useEffect(() => {
@@ -187,6 +285,8 @@ const ModalViewActiviesPost = ({
   }, 300);
 
   const queryClient = useQueryClient();
+  const isCurrentUser =
+    useAppSelector((state) => state.user.id) === idOfCreator;
 
   useEffect(() => {
     return () => {
@@ -195,169 +295,214 @@ const ModalViewActiviesPost = ({
       });
     };
   }, []);
+
+  // state filter people liked post
+  const [isOpenModalPeopleLikedPost, setIsOpenModalPeopleLikedPost] =
+    useState(false);
+  const [isOpenModalPeopleRepostedPost, setIsOpenModalPeopleRepostedPost] =
+    useState(false);
+
   return (
-    <Modal
-      title={
-        <p className="text-center text-[18px] pt-3 font-semibold">
-          Post activity
-        </p>
-      }
-      open={isOpenModal}
-      onCancel={() => setIsOpenModal(false)}
-      centered
-      width={650}
-      footer={null}
-      closeIcon={null}
-    >
-      <div
-        style={{
-          backgroundColor: "white",
-          overflowY: "auto",
-          maxHeight: "calc(100vh - 200px)",
-        }}
-        className="custom-scrollbar"
-        onScroll={handleScroll}
-        ref={divRef}
+    <>
+      <Modal
+        title={
+          <p className="text-center text-[18px] pt-3 font-semibold">
+            Post activity
+          </p>
+        }
+        open={isOpenModal}
+        onCancel={() => setIsOpenModal(false)}
+        centered
+        width={650}
+        footer={null}
+        closeIcon={null}
       >
         <div
-          className="w-full h-[90px] mt-5"
           style={{
-            border: "1px solid #bdbdbd",
-            borderRadius: "10px",
+            backgroundColor: "white",
+            overflowY: "auto",
+            maxHeight: "calc(100vh - 200px)",
           }}
+          className="custom-scrollbar"
+          onScroll={handleScroll}
+          ref={divRef}
         >
           <div
-            className="p-3 hover:cursor-pointer"
+            className="w-full h-[90px] mt-5"
             style={{
-              display: "flex",
-              gap: "10px",
+              border: "1px solid #bdbdbd",
+              borderRadius: "10px",
             }}
           >
             <div
+              className="p-3 hover:cursor-pointer"
               style={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                minHeight: "80px",
+                gap: "10px",
               }}
             >
-              <Avatar
+              <div
                 style={{
-                  width: "45px",
-                  height: "45px",
-                  cursor: "pointer",
-                  flexShrink: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  minHeight: "80px",
                 }}
-                src={avatarUrlOfCreator || default_image}
-                onClick={handleNavigateProfileUser(idOfCreator || "")}
-              />
-            </div>
-
-            <div style={{ width: "calc(100% - 65px)" }}>
-              <div className="flex justify-between w-full">
-                <Popover
-                  content={popoverContent}
-                  placement="bottomLeft"
-                  trigger="hover"
-                  mouseEnterDelay={0.35}
-                  overlayClassName="custom-popover"
-                  arrow={false}
-                  open={isPopoverVisibleUsername}
-                  onOpenChange={handlePopoverUsernameVisibilityChange}
-                >
-                  <div
-                    style={{
-                      fontWeight: "500",
-                      fontSize: "16px",
-                      cursor: "pointer",
-                    }}
-                    onClick={handleNavigateProfileUser(idOfCreator || "")}
-                  >
-                    {usernameOfCreator}{" "}
-                    <span
-                      style={{
-                        color: "rgb(153,153,153)",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {timeAgo(createdAt)}
-                    </span>
-                  </div>
-                </Popover>
+              >
+                <Avatar
+                  style={{
+                    width: "45px",
+                    height: "45px",
+                    cursor: "pointer",
+                    flexShrink: 0,
+                  }}
+                  src={avatarUrlOfCreator || default_image}
+                  onClick={handleNavigateProfileUser(idOfCreator || "")}
+                />
               </div>
-              <p
-                style={{
-                  lineHeight: "22px",
-                  fontSize: "15px",
-                  textAlign: "left",
-                  marginTop: "4px",
-                  wordBreak: "break-word",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 1,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-                dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-              ></p>
+
+              <div style={{ width: "calc(100% - 65px)" }}>
+                <div className="flex justify-between w-full">
+                  <Popover
+                    content={popoverContent}
+                    placement="bottomLeft"
+                    trigger="hover"
+                    mouseEnterDelay={0.35}
+                    overlayClassName="custom-popover"
+                    arrow={false}
+                    open={isPopoverVisibleUsername}
+                    onOpenChange={handlePopoverUsernameVisibilityChange}
+                  >
+                    <div
+                      style={{
+                        fontWeight: "500",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                      }}
+                      onClick={handleNavigateProfileUser(idOfCreator || "")}
+                    >
+                      {usernameOfCreator}{" "}
+                      <span
+                        style={{
+                          color: "rgb(153,153,153)",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {timeAgo(createdAt)}
+                      </span>
+                    </div>
+                  </Popover>
+                </div>
+                <p
+                  style={{
+                    lineHeight: "22px",
+                    fontSize: "15px",
+                    textAlign: "left",
+                    marginTop: "4px",
+                    wordBreak: "break-word",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 1,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                ></p>
+              </div>
             </div>
           </div>
-        </div>
-        <div>
-          <StatCard
-            icon={<ViewsIcon width="25" height="25" />}
-            label="Views"
-            count={viewsCount}
-          />
-          <StatCard
-            icon={<HeartIcon width="30" height="30" isActive={true} />}
-            label="Likes"
-            count={likesCount}
-          />
-          <StatCard
-            icon={<RepostIcon width="30" height="30" />}
-            label="Reports"
-            count={repostsCount}
-          />
-        </div>
-        {allActivitiesOnDetailPost &&
-          allActivitiesOnDetailPost.length === 0 && (
-            <div
-              style={{
-                marginTop: "20px",
-                borderRadius: "30px",
-                padding: "20px 0px 20px 0px",
-                backgroundColor: "white",
-                overflowY: "auto",
-                height: "25vh",
-                fontWeight: 450,
-                color: "#999999",
-                fontSize: "1.2rem",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              No activities yet
-            </div>
-          )}
-        <div>
-          {allActivitiesOnDetailPost &&
-            allActivitiesOnDetailPost.length > 0 &&
-            allActivitiesOnDetailPost.map(
-              (notification: IActivityItemPostDetail, index: number) => {
-                return (
-                  <ActivityItemOnPostDetail
-                    key={index}
-                    data={notification}
-                    setAllActivitiesOnDetailPost={setAllActivitiesOnDetailPost}
-                  />
-                );
-              }
+          <div>
+            {isCurrentUser && (
+              <StatCard
+                icon={<ViewsIcon width="25" height="25" />}
+                label="Views"
+                count={viewsCount}
+              />
             )}
+            <StatCard
+              icon={<HeartIconActivity width="30" height="30" />}
+              label="Likes"
+              count={likesCount}
+              setIsOpenModalPeopleLikedPost={setIsOpenModalPeopleLikedPost}
+              setIsOpenModalPeopleRepostedPost={
+                setIsOpenModalPeopleRepostedPost
+              }
+              setIsOpenMainModal={setIsOpenModal}
+            />
+            <StatCard
+              icon={<RepostIcon width="30" height="30" />}
+              label="Reports"
+              count={repostsCount}
+              setIsOpenModalPeopleLikedPost={setIsOpenModalPeopleLikedPost}
+              setIsOpenModalPeopleRepostedPost={
+                setIsOpenModalPeopleRepostedPost
+              }
+              setIsOpenMainModal={setIsOpenModal}
+            />
+          </div>
+          {allActivitiesOnDetailPost &&
+            allActivitiesOnDetailPost.length === 0 &&
+            !isLoading && (
+              <div
+                style={{
+                  marginTop: "20px",
+                  borderRadius: "30px",
+                  padding: "20px 0px 20px 0px",
+                  backgroundColor: "white",
+                  overflowY: "auto",
+                  height: "25vh",
+                  fontWeight: 450,
+                  color: "#999999",
+                  fontSize: "1.2rem",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                No activities yet
+              </div>
+            )}
+          {allActivitiesOnDetailPost &&
+            allActivitiesOnDetailPost.length === 0 &&
+            isLoading && (
+              <div className="flex items-center justify-center mt-8">
+                <Spin indicator={<LoadingOutlined spin />} size="large" />
+              </div>
+            )}
+          <div>
+            {allActivitiesOnDetailPost &&
+              allActivitiesOnDetailPost.length > 0 &&
+              allActivitiesOnDetailPost.map(
+                (notification: IActivityItemPostDetail, index: number) => {
+                  return (
+                    <ActivityItemOnPostDetail
+                      key={index}
+                      data={notification}
+                      setAllActivitiesOnDetailPost={
+                        setAllActivitiesOnDetailPost
+                      }
+                    />
+                  );
+                }
+              )}
+          </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+
+      <ModalViewPeopleLikePost
+        isOpenModal={isOpenModalPeopleLikedPost}
+        setIsOpenModal={setIsOpenModalPeopleLikedPost}
+        dataDetailPost={dataDetailPost}
+        setIsOpenMainModal={setIsOpenModal}
+      />
+
+      <ModalViewPeopleRepostPost
+        isOpenModal={isOpenModalPeopleRepostedPost}
+        setIsOpenModal={setIsOpenModalPeopleRepostedPost}
+        dataDetailPost={dataDetailPost}
+        setIsOpenMainModal={setIsOpenModal}
+      />
+    </>
   );
 };
 export default ModalViewActiviesPost;

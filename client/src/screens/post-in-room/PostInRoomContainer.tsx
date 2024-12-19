@@ -20,7 +20,7 @@ interface RoomType {
 
 const PostInRoomContainer = () => {
   const { roomId } = useParams<{ roomId: string }>();
-  const { listRoomJoined, isLoading } = useGetAllRoomForUser();
+  const { listRoomJoined, isLoading } = useGetAllRoomForUser(true);
   const childrenRoom = listRoomJoined.map((room: RoomType) => ({
     key: room.id.toString(),
     label: room.name,

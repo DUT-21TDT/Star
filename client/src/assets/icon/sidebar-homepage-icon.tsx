@@ -581,7 +581,7 @@ const RepostIcon: React.FC<IProps> = ({ width, height }) => {
       width={width}
       height={height}
       viewBox="-0.5 0 25 25"
-      fill="black"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -590,6 +590,25 @@ const RepostIcon: React.FC<IProps> = ({ width, height }) => {
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+const HeartIconActivity: React.FC<IProps> = ({ width, height }) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M23.8983 7.38499C20.594 4.72024 17.2151 7.38499 16 8.60988C14.7848 7.38499 11.406 4.72024 8.10169 7.38499C4.79734 10.0497 4.07919 15.5791 8.70925 20.2464C13.3393 24.9137 16 25.7585 16 25.7585C16 25.7585 18.6607 24.9137 23.2907 20.2464C27.9208 15.5791 27.2026 10.0497 23.8983 7.38499Z"
+        fill="none"
+        stroke="black"
+        strokeWidth="2"
       />
     </svg>
   );
@@ -611,4 +630,5 @@ export {
   RoomIcon,
   ViewsIcon,
   RepostIcon,
+  HeartIconActivity,
 };

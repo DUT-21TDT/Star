@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, Modal, Input, Button, Upload, message, Select } from "antd";
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import { CloudUploadOutlined } from "@ant-design/icons";
@@ -35,6 +35,7 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
   const [textValue, setTextValue] = useState<string>("");
   const [optionSelected, setOptionSelected] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [isDataFetched, setIsDataFetched] = useState(false);
   const [emblaRef] = useEmblaCarousel();
 
   // handle add emoji
@@ -44,7 +45,14 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
   };
 
   const userData = useAppSelector((state) => state.user);
-  const { listRoomJoined } = useGetAllRoomForUser();
+  const { listRoomJoined } = useGetAllRoomForUser(isDataFetched);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setIsDataFetched(true);
+    }
+  }, [isModalOpen]);
+
   const { mutate: createAPost } = useCreateAPost();
   const { mutate: getPostPresignedURL } = useGetAllPresignedUrl();
 

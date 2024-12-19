@@ -28,7 +28,7 @@ interface RoomType {
 
 const NewFeed = () => {
   const [itemActive, setItemActive] = useState({ label: "For you", key: "1" });
-  const { listRoomJoined } = useGetAllRoomForUser();
+  const { listRoomJoined } = useGetAllRoomForUser(true);
   const childrenRoom = listRoomJoined.map((room: RoomType) => ({
     key: room.id,
     label: room.name,
@@ -109,16 +109,33 @@ const NewFeed = () => {
                   borderTopLeftRadius: "30px",
                   borderTopRightRadius: "30px",
                   marginTop: "20px",
-                  padding: "20px",
                   backgroundColor: "white",
-                  overflowY: "auto",
                   maxHeight: "calc(100vh - 60px)",
-                  minHeight: "calc(100vh - 60px)",
-                  scrollbarWidth: "thin",
-                  scrollbarColor: "#b9b7b7 white",
+                  overflow: "hidden",
+                  height: "100%",
+                  padding: "20px 0px 20px 20px",
                 }}
               >
-                <MainRoomContent />
+                <div
+                  style={{
+                    // border: "1px solid #bdbdbd",
+                    // borderBottom: "none",
+                    // borderTopLeftRadius: "30px",
+                    // borderTopRightRadius: "30px",
+                    // marginTop: "20px",
+                    // padding: "20px",
+                    // backgroundColor: "white",
+                    height: "100%",
+                    overflowY: "auto",
+                    maxHeight: "calc(100vh - 60px)",
+                    minHeight: "calc(100vh - 60px)",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#b9b7b7 white",
+                    paddingRight: "5px",
+                  }}
+                >
+                  <MainRoomContent />
+                </div>
               </div>
             </div>
           </ConfigProvider>
@@ -133,7 +150,43 @@ const NewFeed = () => {
               style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
             >
               <HeaderPeople />
+
               <div
+                style={{
+                  border: "1px solid #bdbdbd",
+                  borderBottom: "none",
+                  borderTopLeftRadius: "30px",
+                  borderTopRightRadius: "30px",
+                  marginTop: "20px",
+                  backgroundColor: "white",
+                  maxHeight: "calc(100vh - 60px)",
+                  overflow: "hidden",
+                  height: "100%",
+                  padding: "20px 0px 20px 20px",
+                }}
+              >
+                <div
+                  style={{
+                    // border: "1px solid #bdbdbd",
+                    // borderBottom: "none",
+                    // borderTopLeftRadius: "30px",
+                    // borderTopRightRadius: "30px",
+                    // marginTop: "20px",
+                    // padding: "20px",
+                    // backgroundColor: "white",
+                    height: "100%",
+                    overflowY: "auto",
+                    maxHeight: "calc(100vh - 60px)",
+                    minHeight: "calc(100vh - 60px)",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#b9b7b7 white",
+                    paddingRight: "5px",
+                  }}
+                >
+                  <MainPeopleContent />
+                </div>
+              </div>
+              {/* <div
                 style={{
                   border: "1px solid #bdbdbd",
                   borderBottom: "none",
@@ -150,7 +203,7 @@ const NewFeed = () => {
                 }}
               >
                 <MainPeopleContent />
-              </div>
+              </div> */}
             </div>
           </ConfigProvider>
         );

@@ -50,4 +50,12 @@ export const QUERY_KEY = {
     "fetchAllActivitiesOnPostDetail",
     postId,
   ],
+  fetchAllActivitiesLikeOnPostDetail: (postId: string) => [
+    "fetchAllActivitiesLikeOnPostDetail",
+    postId,
+  ],
+  fetchAllActivitiesRepostOnPostDetail: (postId: string) => [
+    "fetchAllActivitiesRepostOnPostDetail",
+    postId,
+  ],
 };

@@ -23,7 +23,7 @@ const MainRoomContent: React.FC = () => {
     isLoading,
     isError,
     listRoomYourModerator,
-  } = useGetAllRoomForUser();
+  } = useGetAllRoomForUser(true);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [dataRoom, setDataRoom] = useState<RoomType | undefined>(undefined);
