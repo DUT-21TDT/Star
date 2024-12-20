@@ -29,15 +29,77 @@ instance.interceptors.request.use(
 instance.interceptors.request.use();
 
 const NO_RETRY_HEADER = "x-no-retry";
-// Add a response interceptor
+
+// instance.interceptors.response.use(
+//   function (response) {
+//     return response;
+//   },
+//   async function (error) {
+//     const status = error.response ? error.response.status : null;
+//     if (status === 401 && !error.config.headers[NO_RETRY_HEADER]) {
+//       try {
+//         const response = await handleRefreshToken();
+//         if (response && response.access_token) {
+//           Cookies.set("access_token", response.access_token);
+//           Cookies.set("refresh_token", response.refresh_token);
+//           Cookies.set("id_token", response.id_token);
+
+//           error.config.headers[NO_RETRY_HEADER] = "true";
+//           error.config.headers[
+//             "Authorization"
+//           ] = `Bearer ${response.access_token}`;
+//           return instance.request(error.config);
+//         }
+//       } catch (err) {
+//         console.error("Token refresh failed:", err);
+//       }
+//     }
+//     return Promise.reject(error);
+//   }
+// );
+
+let isRefreshing = false;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let failedQueue: any[] = [];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (token) {
+      prom.resolve(token);
+    } else {
+      prom.reject(error);
+    }
+  });
+
+  failedQueue = [];
+};
+
 instance.interceptors.response.use(
   function (response) {
     return response;
   },
-
   async function (error) {
     const status = error.response ? error.response.status : null;
-    if (status === 401 && !error.config.headers[NO_RETRY_HEADER]) {
+    const originalRequest = error.config;
+
+    if (status === 401 && !originalRequest.headers[NO_RETRY_HEADER]) {
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            return instance(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest.headers[NO_RETRY_HEADER] = "true";
+      isRefreshing = true;
+
       try {
         const response = await handleRefreshToken();
         if (response && response.access_token) {
@@ -45,16 +107,20 @@ instance.interceptors.response.use(
           Cookies.set("refresh_token", response.refresh_token);
           Cookies.set("id_token", response.id_token);
 
-          error.config.headers[NO_RETRY_HEADER] = "true";
-          error.config.headers[
+          instance.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${response.access_token}`;
-          return instance.request(error.config);
+          processQueue(null, response.access_token);
+          return instance(originalRequest);
         }
       } catch (err) {
+        processQueue(err, null);
         console.error("Token refresh failed:", err);
+      } finally {
+        isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
   }
 );
