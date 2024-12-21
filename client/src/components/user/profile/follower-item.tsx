@@ -2,7 +2,7 @@ import { Button, Divider, message, Popover, Image } from "antd";
 import default_image from "../../../assets/images/default_image.jpg";
 import ContainerInformationUser from "./posts/container-information-user";
 import { useNavigate } from "react-router-dom";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { useAppSelector } from "../../../redux/store/hook";
 import {
   useAcceptFollowRequest,
@@ -43,20 +43,28 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const [currentFollowStatus, setCurrentFollowStatus] = useState<string>(followStatus);
+  const [currentFollowStatus, setCurrentFollowStatus] =
+    useState<string>(followStatus);
 
   useEffect(() => {
     setCurrentFollowStatus(followStatus);
   }, [followStatus]);
 
-  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] = useState(false);
-  const [popoverContent, setPopoverContent] = useState<React.ReactNode>(<div></div>);
+  const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
+    useState(false);
+  const [popoverContent, setPopoverContent] = useState<React.ReactNode>(
+    <div></div>
+  );
 
   const handlePopoverUsernameVisibilityChange = (visible: boolean) => {
     setIsPopoverVisibleUsername(visible);
     if (visible) {
       setPopoverContent(
-        <ContainerInformationUser idOfCreator={userId || ""} parentFollowStatus={currentFollowStatus} updateParentFollowStatus={setCurrentFollowStatus} />
+        <ContainerInformationUser
+          idOfCreator={userId || ""}
+          parentFollowStatus={currentFollowStatus}
+          updateParentFollowStatus={setCurrentFollowStatus}
+        />
       );
     }
   };
@@ -64,7 +72,11 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
   useEffect(() => {
     if (isPopoverVisibleUsername) {
       setPopoverContent(
-        <ContainerInformationUser idOfCreator={userId || ""} parentFollowStatus={currentFollowStatus} updateParentFollowStatus={setCurrentFollowStatus} />
+        <ContainerInformationUser
+          idOfCreator={userId || ""}
+          parentFollowStatus={currentFollowStatus}
+          updateParentFollowStatus={setCurrentFollowStatus}
+        />
       );
     }
   }, [currentFollowStatus, isPopoverVisibleUsername, userId]);
@@ -197,7 +209,9 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
                   fontWeight: "500",
                   fontSize: "16px",
                   cursor: "pointer",
+                  maxWidth: "150px",
                 }}
+                className="line-clamp-1"
                 onClick={() => {
                   setIsOpenModalRequestFollow(false);
                   navigate(`/profile/${userId}`);
@@ -207,15 +221,18 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
               </div>
             </Popover>
 
-            <p className="text-[16px] text-gray-500">
+            <p
+              className="text-[16px] text-gray-500 line-clamp-1"
+              style={{
+                maxWidth: "150px",
+              }}
+            >
               {firstName || lastName ? (
                 <div className="text-[16px] text-gray-500">
                   {`${firstName || ""} ${lastName || ""}`}
                 </div>
               ) : (
-                <div className="text-[16px] text-gray-500">
-                  {username}
-                </div>
+                <div className="text-[16px] text-gray-500">{username}</div>
               )}
             </p>
           </div>
@@ -247,14 +264,15 @@ const FollowerItem: React.FC<IFollowerType & IProps> = ({
             </div>
           )}
 
-          {currentFollowStatus === "NOT_FOLLOWING" && !isCurrentFollowerItem && (
-            <Button
-              className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[black] text-[16px] mr-5 "
-              onClick={handleFollowerUser}
-            >
-              Follow
-            </Button>
-          )}
+          {currentFollowStatus === "NOT_FOLLOWING" &&
+            !isCurrentFollowerItem && (
+              <Button
+                className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[black] text-[16px] mr-5 "
+                onClick={handleFollowerUser}
+              >
+                Follow
+              </Button>
+            )}
           {currentFollowStatus === "FOLLOWING" && !isCurrentFollowerItem && (
             <Button
               className="w-[100px] h-[35px] p-[15px] rounded-lg font-semibold text-[#ababab] text-[16px] mr-5 "

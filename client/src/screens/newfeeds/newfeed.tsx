@@ -16,6 +16,7 @@ import { Helmet } from "react-helmet-async";
 import HeaderActivity from "../../components/user/activity/header-activity";
 import MainContentActivity from "../../components/user/activity/main-activity";
 import PostsFollowingOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed-following";
+import SuggestionPeopleOnNewFeed from "../../components/user/suggestion/suggestion-people";
 interface RoomType {
   id: number;
   key: number;
@@ -39,6 +40,9 @@ const NewFeed = () => {
   const isPinnedProfile = pinnedPage?.includes(optionPin.PROFILE);
   const isPinnedPeople = pinnedPage?.includes(optionPin.PEOPLE);
   const isPinnedActivity = pinnedPage?.includes(optionPin.ACTIVITY);
+
+  const isHasPin =
+    isPinnedRoom || isPinnedProfile || isPinnedPeople || isPinnedActivity;
 
   const pinnedCount = [
     isPinnedRoom,
@@ -235,7 +239,7 @@ const NewFeed = () => {
       </Helmet>
       <ConfigProvider theme={newFeedsTheme}>
         <div
-          className="w-full flex justify-center bg-[#fafafa] gap-5"
+          className="w-full flex justify-center bg-[#fafafa] gap-8"
           style={{
             minWidth: `${
               pinnedCount < 2
@@ -246,11 +250,14 @@ const NewFeed = () => {
                 ? "180vw"
                 : "220vw"
             }`,
+            width: "calc(100% - 200px)",
+            marginLeft: "200px",
           }}
         >
           <div
-            className=" h-full pt-2"
-            style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+            className="h-full pt-2"
+            // style={{ width: "100%", maxWidth: "650px", flexShrink: 0 }}
+            style={{ maxWidth: "650px", flexShrink: 0, width: "650px" }}
           >
             <HeaderNewFeed
               itemActive={itemActive.label}
@@ -267,6 +274,8 @@ const NewFeed = () => {
               </>
             )}
           </div>
+          {!isHasPin && <SuggestionPeopleOnNewFeed />}
+
           {renderContentPinned()}
         </div>
       </ConfigProvider>
