@@ -1,7 +1,6 @@
 package com.pbl.star.usecase.admin;
 
 import com.pbl.star.dtos.response.user.OnDashboardProfileResponse;
-import com.pbl.star.models.projections.user.OnDashboardProfile;
 import com.pbl.star.dtos.request.user.AdminGetUsersParams;
 import org.springframework.data.domain.Page;
 

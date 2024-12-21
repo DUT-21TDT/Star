@@ -2,7 +2,6 @@ package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.response.notification.NotificationForUserResponse;
 import com.pbl.star.mapper.notification.NotificationDTOMapper;
-import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.usecase.enduser.ManageNotificationUsecase;
 import com.pbl.star.utils.AuthUtil;

@@ -5,13 +5,8 @@ import com.pbl.star.dtos.response.user.OnFollowProfileResponse;
 import com.pbl.star.dtos.response.user.OnFollowReqProfileResponse;
 import com.pbl.star.dtos.response.user.OnSearchProfileResponse;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
-import com.pbl.star.models.projections.follow.FollowCount;
-import com.pbl.star.models.projections.user.OnFollowProfile;
-import com.pbl.star.models.projections.user.OnFollowRequestProfile;
-import com.pbl.star.models.projections.user.OnSearchProfile;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.follow.FollowResponse;
-import com.pbl.star.models.projections.user.OnWallProfile;
 import org.springframework.data.domain.Slice;
 
 import java.time.Instant;

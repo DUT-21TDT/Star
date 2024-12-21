@@ -2,9 +2,6 @@ package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.response.post.*;
 import com.pbl.star.mapper.post.PostDTOMapper;
-import com.pbl.star.models.projections.post.PendingPostForUser;
-import com.pbl.star.models.projections.post.ReplyOnWall;
-import com.pbl.star.models.projections.post.RepostOnWall;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.enums.InteractType;
 import com.pbl.star.enums.PostStatus;

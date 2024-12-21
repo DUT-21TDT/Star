@@ -2,7 +2,6 @@ package com.pbl.star.usecase.moderator.impl;
 
 import com.pbl.star.dtos.response.post.PostForModResponse;
 import com.pbl.star.mapper.post.PostDTOMapper;
-import com.pbl.star.models.projections.post.PostForMod;
 import com.pbl.star.models.entities.Post;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.ModeratorAccessException;

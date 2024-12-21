@@ -2,7 +2,6 @@ package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.response.user.OnSuggestionProfileResponse;
 import com.pbl.star.mapper.user.UserDTOMapper;
-import com.pbl.star.models.projections.user.OnSuggestionProfile;
 import com.pbl.star.services.domain.FollowService;
 import com.pbl.star.usecase.enduser.GetSuggestionsUsecase;
 import com.pbl.star.utils.AuthUtil;

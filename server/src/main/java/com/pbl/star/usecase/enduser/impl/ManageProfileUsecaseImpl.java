@@ -4,7 +4,6 @@ import com.pbl.star.dtos.response.user.BasicUserInfoResponse;
 import com.pbl.star.dtos.response.user.DetailsUserInfoResponse;
 import com.pbl.star.mapper.user.UserDTOMapper;
 import com.pbl.star.models.projections.user.BasicUserInfo;
-import com.pbl.star.models.projections.user.DetailsUserInfo;
 import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.models.entities.User;

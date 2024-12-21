@@ -2,7 +2,6 @@ package com.pbl.star.usecase.admin.impl;
 
 import com.pbl.star.dtos.response.user.OnDashboardProfileResponse;
 import com.pbl.star.mapper.user.UserDTOMapper;
-import com.pbl.star.models.projections.user.OnDashboardProfile;
 import com.pbl.star.dtos.request.user.AdminGetUsersParams;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.services.domain.UserService;

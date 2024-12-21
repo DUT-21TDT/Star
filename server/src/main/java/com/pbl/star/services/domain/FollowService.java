@@ -5,7 +5,6 @@ import com.pbl.star.models.projections.user.OnFollowProfile;
 import com.pbl.star.models.projections.user.OnFollowRequestProfile;
 import com.pbl.star.models.projections.user.OnSuggestionProfile;
 import com.pbl.star.dtos.response.CustomSlice;
-import com.pbl.star.dtos.response.follow.FollowCountResponse;
 import com.pbl.star.models.entities.Following;
 import com.pbl.star.enums.FollowRequestAction;
 

@@ -1,7 +1,6 @@
 package com.pbl.star.usecase.moderator;
 
 import com.pbl.star.dtos.response.post.PostForModResponse;
-import com.pbl.star.models.projections.post.PostForMod;
 import com.pbl.star.enums.PostStatus;
 import org.springframework.data.domain.Slice;
 

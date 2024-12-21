@@ -1,7 +1,6 @@
 package com.pbl.star.usecase.admin;
 
 import com.pbl.star.dtos.response.user.UserInRoomResponse;
-import com.pbl.star.models.projections.user.UserInRoom;
 
 import java.util.List;
 

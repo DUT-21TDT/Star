@@ -2,7 +2,6 @@ package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.response.room.RoomForUserResponse;
 import com.pbl.star.mapper.room.RoomDTOMapper;
-import com.pbl.star.models.projections.room.RoomForUser;
 import com.pbl.star.services.domain.RoomService;
 import com.pbl.star.services.domain.UserRoomService;
 import com.pbl.star.usecase.enduser.InteractRoomUsecase;

@@ -1,9 +1,6 @@
 package com.pbl.star.usecase.enduser;
 
 import com.pbl.star.dtos.response.post.*;
-import com.pbl.star.models.projections.post.PendingPostForUser;
-import com.pbl.star.models.projections.post.ReplyOnWall;
-import com.pbl.star.models.projections.post.RepostOnWall;
 import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.enums.InteractType;
 import org.springframework.data.domain.Slice;
