@@ -58,4 +58,5 @@ export const QUERY_KEY = {
     "fetchAllActivitiesRepostOnPostDetail",
     postId,
   ],
+  fetchListPeopleSuggestion: () => ["fetchListPeopleSuggestion"],
 };

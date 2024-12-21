@@ -11,11 +11,16 @@ import {
   UserIcon,
 } from "../../../assets/icon/sidebar-homepage-icon";
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../../../redux/store/hook";
+import { useAppDispatch, useAppSelector } from "../../../redux/store/hook";
 import ModalCreatePost from "../profile/posts/modal-create-post";
+import { Avatar, Dropdown, MenuProps } from "antd";
+import default_avatar from "../../../assets/images/default_image.jpg";
+import { addPinPageToRedux } from "../../../redux/slice/user-slice";
+import optionPin from "../../../utils/optionPin";
 
 const SideBar: React.FC = () => {
   const id = useAppSelector((state) => state.user.id);
+  const avatarUrl = useAppSelector((state) => state.user.avatarUrl);
   const icons = [
     {
       name: "home",
@@ -24,6 +29,7 @@ const SideBar: React.FC = () => {
       height: "33",
       navigate: "/",
       key: "home",
+      displayText: "Home",
     },
     {
       name: "search",
@@ -32,12 +38,14 @@ const SideBar: React.FC = () => {
       height: "33",
       navigate: "/search",
       key: "people",
+      displayText: "Search",
     },
     {
       name: "plus",
       component: PlusIcon,
       width: "22",
       height: "22",
+      displayText: "Create",
     },
     {
       name: "heart",
@@ -46,6 +54,7 @@ const SideBar: React.FC = () => {
       height: "33",
       navigate: "/activity",
       key: "activity",
+      displayText: "Activity",
     },
     {
       name: "room",
@@ -54,6 +63,7 @@ const SideBar: React.FC = () => {
       height: "33",
       navigate: "/room",
       key: "room",
+      displayText: "Room",
     },
     {
       name: "user",
@@ -62,6 +72,7 @@ const SideBar: React.FC = () => {
       height: "33",
       navigate: `/profile/${id}`,
       key: "profile",
+      displayText: "Profile",
     },
   ];
   const [activeIcon, setActiveIcon] = useState<string>("home");
@@ -90,22 +101,80 @@ const SideBar: React.FC = () => {
     }
   }, [path]);
 
+  const dispatch = useAppDispatch();
+  const items: MenuProps["items"] = [
+    {
+      key: "title",
+      label: (
+        <div className="w-full text-[15px] text-center font-bold mb-2">
+          Pin to home
+        </div>
+      ),
+      type: "group",
+    },
+    {
+      key: "1",
+      label: (
+        <div className="w-[150px] h-[35px] text-[16px] font-semibold flex items-center flex-start">
+          Room
+        </div>
+      ),
+      onClick: () => {
+        dispatch(addPinPageToRedux(optionPin.ROOM));
+      },
+    },
+    {
+      key: "2",
+      label: (
+        <div className="w-[150px] h-[35px] text-[16px] font-semibold flex items-center flex-start">
+          Profile
+        </div>
+      ),
+      onClick: () => {
+        dispatch(addPinPageToRedux(optionPin.PROFILE));
+      },
+    },
+    {
+      key: "3",
+      label: (
+        <div className="w-[150px] h-[35px] text-[16px] font-semibold flex items-center flex-start">
+          People
+        </div>
+      ),
+      onClick: () => {
+        dispatch(addPinPageToRedux(optionPin.PEOPLE));
+      },
+    },
+    {
+      key: "4",
+      label: (
+        <div className="w-[150px] h-[35px] text-[16px] font-semibold flex items-center flex-start">
+          Activity
+        </div>
+      ),
+      onClick: () => {
+        dispatch(addPinPageToRedux(optionPin.ACTIVITY));
+      },
+    },
+  ];
+
   return (
     <div
-      className=" w-[70px] h-[calc(100vh)] flex flex-col justify-between items-center pt-5 pb-5"
+      className=" w-[200px] h-[calc(100vh)] flex flex-col justify-start items-center pt-5 pb-5 pl-5 pr-2"
       style={{
         position: "fixed",
         zIndex: "10",
         backgroundColor: "#fafafa",
+        borderRight: "1px solid #dbdbdb",
       }}
     >
       {/* Logo */}
-      <div className="flex-grow flex justify-center items-start">
+      <div className="flex-grow flex justify-center items-start w-full">
         <Logo width="40" height="40" />
       </div>
 
       {/* Icon List */}
-      <div className="flex-grow flex flex-col items-center gap-4">
+      <div className="flex-grow flex flex-col items-start gap-4 w-full">
         {icons.map(
           ({
             name,
@@ -114,10 +183,11 @@ const SideBar: React.FC = () => {
             height,
             navigate: iconNavigate,
             key,
+            displayText,
           }) => (
             <div
               key={name}
-              className="div-hover"
+              className="div-hover w-full flex items-center justify-start"
               onClick={() => {
                 if (name === "plus") {
                   setOpenModalCreatePost(true);
@@ -131,11 +201,28 @@ const SideBar: React.FC = () => {
                 }
               }}
             >
-              <IconComponent
-                width={width}
-                height={height}
-                isActive={activeIcon === name}
-              />
+              <div className="w-[60px] flex items-center justify-center">
+                {name === "user" ? (
+                  <Avatar src={avatarUrl || default_avatar} size={33} />
+                ) : (
+                  <IconComponent
+                    width={width}
+                    height={height}
+                    isActive={activeIcon === name}
+                  />
+                )}{" "}
+              </div>
+
+              <span
+                style={{
+                  fontWeight: activeIcon === name ? "600" : "400",
+                  lineHeight: "20px",
+                  wordBreak: "break-word",
+                  fontSize: "18px",
+                }}
+              >
+                {displayText}
+              </span>
             </div>
           )
         )}
@@ -147,9 +234,38 @@ const SideBar: React.FC = () => {
       />
 
       {/* Bottom Icons */}
-      <div className="flex-grow flex flex-col items-center gap-3 justify-end">
-        <PinIcon width="30" height="30" />
-        <MenuIcon width="30" height="30" />
+      <div className="flex-grow flex flex-col gap-3 justify-end items-start w-full pl-5 cursor-pointer">
+        <Dropdown
+          menu={{ items }}
+          placement="topRight"
+          arrow={false}
+          trigger={["click"]}
+        >
+          <div className="w-full flex items-center justify-start gap-3">
+            <PinIcon width="30" height="30" />
+            <span
+              style={{
+                lineHeight: "20px",
+                wordBreak: "break-word",
+                fontSize: "18px",
+              }}
+            >
+              Pin
+            </span>
+          </div>
+        </Dropdown>
+        <div className="w-full flex items-center justify-start gap-3">
+          <MenuIcon width="30" height="30" />
+          <span
+            style={{
+              lineHeight: "20px",
+              wordBreak: "break-word",
+              fontSize: "18px",
+            }}
+          >
+            More
+          </span>
+        </div>
       </div>
     </div>
   );
