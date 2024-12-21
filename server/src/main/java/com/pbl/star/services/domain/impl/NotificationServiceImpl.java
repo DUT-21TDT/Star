@@ -1,9 +1,9 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.notification.NotificationForUserDTO;
-import com.pbl.star.entities.*;
+import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.enums.ArtifactType;
 import com.pbl.star.enums.NotificationType;
+import com.pbl.star.models.entities.*;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.utils.SliceTransfer;
@@ -30,8 +30,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationChangeRepository notificationChangeRepository;
 
     @Override
-    public Slice<NotificationForUserDTO> getNotifications(String userId, int limit, Instant after) {
-        List<NotificationForUserDTO> notiList = notificationRepository.getNotifications(limit + 1, after, userId);
+    public Slice<NotificationForUser> getNotifications(String userId, int limit, Instant after) {
+        List<NotificationForUser> notiList = notificationRepository.getNotifications(limit + 1, after, userId);
         return SliceTransfer.trimToSlice(notiList, limit);
     }
 

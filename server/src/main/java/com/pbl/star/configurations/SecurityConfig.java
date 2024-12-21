@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -32,10 +33,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .headers(header ->
+                        header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                )
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/h2-console", "/h2-console/**").permitAll();
-                    authorize.requestMatchers("auth/signup", "auth/confirm-signup").permitAll();
+                    authorize.requestMatchers("auth/sign-up", "auth/confirm-sign-up").permitAll();
                     authorize.anyRequest().authenticated();
                 })
                 .oauth2ResourceServer(

@@ -1,33 +1,28 @@
 package com.pbl.star.validators;
 
 import com.pbl.star.dtos.request.post.CreatePostParams;
+import com.pbl.star.dtos.request.post.CreateReplyParams;
 import com.pbl.star.exceptions.RequiredFieldMissingException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
 public class CreatePostValidator {
     public static void validateCreatePostRequiredFields(CreatePostParams createPostParams) {
-        if (StringUtils.isBlank(createPostParams.getRoomId())) {
-            throw new RequiredFieldMissingException("Room ID is required");
-        }
-
-        if (isContentEmpty(createPostParams)) {
+        if (isContentEmpty(createPostParams.getContent(), createPostParams.getImageFileNames())) {
             throw new RequiredFieldMissingException("Content or image is required");
         }
     }
 
-    public static void validateCreateReplyRequiredFields(CreatePostParams createReplyParams) {
-        if (StringUtils.isBlank(createReplyParams.getParentPostId())) {
-            throw new RequiredFieldMissingException("Post ID is required");
-        }
-
-        if (isContentEmpty(createReplyParams)) {
+    public static void validateCreateReplyRequiredFields(CreateReplyParams createReplyParams) {
+        if (isContentEmpty(createReplyParams.getContent(), createReplyParams.getImageFileNames())) {
             throw new RequiredFieldMissingException("Content or image is required");
         }
     }
 
-    private static boolean isContentEmpty(CreatePostParams createPostParams) {
-        boolean isContentEmpty = StringUtils.isBlank(createPostParams.getContent());
-        boolean isImageFileNamesEmpty = createPostParams.getImageFileNames() == null || createPostParams.getImageFileNames().isEmpty();
+    private static boolean isContentEmpty(String content, List<String> imageFilenames) {
+        boolean isContentEmpty = StringUtils.isBlank(content);
+        boolean isImageFileNamesEmpty = imageFilenames == null || imageFilenames.isEmpty();
 
         return isContentEmpty && isImageFileNamesEmpty;
     }

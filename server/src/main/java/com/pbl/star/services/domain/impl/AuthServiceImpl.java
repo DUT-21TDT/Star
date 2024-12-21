@@ -1,13 +1,13 @@
 package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.request.user.SignUpParams;
-import com.pbl.star.entities.User;
-import com.pbl.star.entities.VerificationToken;
+import com.pbl.star.mapper.user.UserEntityMapper;
+import com.pbl.star.models.entities.User;
+import com.pbl.star.models.entities.VerificationToken;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.InvalidVerificationTokenException;
-import com.pbl.star.mapper.UserSignUpMapper;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.VerificationTokenRepository;
 import com.pbl.star.services.domain.AuthService;
@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
-    private final UserSignUpMapper userSignUpMapper;
+    private final UserEntityMapper userSignUpMapper;
 
     @Override
     @Transactional

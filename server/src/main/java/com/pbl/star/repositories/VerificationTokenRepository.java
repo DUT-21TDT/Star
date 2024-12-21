@@ -1,7 +1,7 @@
 package com.pbl.star.repositories;
 
-import com.pbl.star.entities.User;
-import com.pbl.star.entities.VerificationToken;
+import com.pbl.star.models.entities.User;
+import com.pbl.star.models.entities.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

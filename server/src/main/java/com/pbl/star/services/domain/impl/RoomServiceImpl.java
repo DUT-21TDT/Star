@@ -1,13 +1,13 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.room.RoomDetailsForAdminDTO;
-import com.pbl.star.dtos.query.room.RoomForAdminDTO;
-import com.pbl.star.dtos.query.room.RoomForUserDTO;
+import com.pbl.star.models.projections.room.RoomDetailsForAdmin;
+import com.pbl.star.models.projections.room.RoomForAdmin;
+import com.pbl.star.models.projections.room.RoomForUser;
 import com.pbl.star.dtos.request.room.CreateRoomParams;
-import com.pbl.star.entities.Room;
+import com.pbl.star.models.entities.Room;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
-import com.pbl.star.mapper.RoomCreationMapper;
+import com.pbl.star.mapper.room.RoomEntityMapper;
 import com.pbl.star.repositories.RoomRepository;
 import com.pbl.star.services.domain.RoomService;
 import com.pbl.star.utils.AuthUtil;
@@ -25,8 +25,8 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
 
     @Override
-    public RoomDetailsForAdminDTO getRoomDetails(String roomId) {
-        RoomDetailsForAdminDTO roomDetails = roomRepository.getRoomDetails(roomId);
+    public RoomDetailsForAdmin getRoomDetails(String roomId) {
+        RoomDetailsForAdmin roomDetails = roomRepository.getRoomDetails(roomId);
 
         if (roomDetails == null) {
             throw new EntityNotFoundException("Room with id " + roomId + " does not exist");
@@ -36,12 +36,12 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomForAdminDTO> getRoomsOverview() {
+    public List<RoomForAdmin> getRoomsOverview() {
         return roomRepository.getRoomsOverview();
     }
 
     @Override
-    public List<RoomForUserDTO> getRoomsOverviewForUser() {
+    public List<RoomForUser> getRoomsOverviewForUser() {
         String userId = AuthUtil.getCurrentUser().getId();
         return roomRepository.getRoomsOverviewForUser(userId);
     }
@@ -54,7 +54,7 @@ public class RoomServiceImpl implements RoomService {
             throw new EntityConflictException("Room with name '" + params.getName() + "' already exists");
         }
 
-        RoomCreationMapper roomCreationMapper = Mappers.getMapper(RoomCreationMapper.class);
+        RoomEntityMapper roomCreationMapper = Mappers.getMapper(RoomEntityMapper.class);
         Room room = roomCreationMapper.toEntity(params);
         room.setCreatedAt(Instant.now());
 

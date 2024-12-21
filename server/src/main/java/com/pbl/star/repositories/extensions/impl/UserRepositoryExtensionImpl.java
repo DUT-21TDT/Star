@@ -1,11 +1,11 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.user.*;
-import com.pbl.star.entities.User;
+import com.pbl.star.models.entities.User;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.FollowStatus;
 import com.pbl.star.enums.Gender;
 import com.pbl.star.enums.SortDirection;
+import com.pbl.star.models.projections.user.*;
 import com.pbl.star.repositories.extensions.UserRepositoryExtension;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
@@ -169,7 +169,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
     }
 
     @Override
-    public PersonalInformation getPersonalInformation(String userId) {
+    public DetailsUserInfo getPersonalInformation(String userId) {
         String jpql = "SELECT u.email, u.username, u.firstName, u.lastName, u.bio, u.avatarUrl, u.dateOfBirth, u.gender, u.registerAt, u.privateProfile " +
                 "FROM User u " +
                 "WHERE u.id = :userId and u.status = 'ACTIVE'";
@@ -179,7 +179,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
 
         try {
             Object[] result = query.getSingleResult();
-            return PersonalInformation.builder()
+            return DetailsUserInfo.builder()
                     .email((String) result[0])
                     .username((String) result[1])
                     .firstName((String) result[2])
@@ -239,14 +239,14 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
     }
 
     @Override
-    public Page<OnDashboardProfileDTO> findUsersAsAdmin(Pageable pageable,
-                                                        String keyword,
-                                                        AccountStatus status,
-                                                        String sortBy,
-                                                        SortDirection direction) {
+    public Page<OnDashboardProfile> findUsersAsAdmin(Pageable pageable,
+                                                     String keyword,
+                                                     AccountStatus status,
+                                                     String sortBy,
+                                                     SortDirection direction) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<OnDashboardProfileDTO> criteriaQuery = criteriaBuilder.createQuery(OnDashboardProfileDTO.class);
+        CriteriaQuery<OnDashboardProfile> criteriaQuery = criteriaBuilder.createQuery(OnDashboardProfile.class);
         Root<User> root = criteriaQuery.from(User.class);
 
         // List to store predicates (conditions)
@@ -281,7 +281,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
         }
 
         criteriaQuery.select(criteriaBuilder.construct(
-                OnDashboardProfileDTO.class,
+                OnDashboardProfile.class,
                 root.get("id"),
                 root.get("username"),
                 root.get("avatarUrl"),
@@ -293,7 +293,7 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
         ));
 
         // Fetch the paginated results
-        List<OnDashboardProfileDTO> users = entityManager.createQuery(criteriaQuery)
+        List<OnDashboardProfile> users = entityManager.createQuery(criteriaQuery)
                 .setFirstResult((int) pageable.getOffset()) // Starting position
                 .setMaxResults(pageable.getPageSize()) // Number of records to fetch
                 .getResultList();

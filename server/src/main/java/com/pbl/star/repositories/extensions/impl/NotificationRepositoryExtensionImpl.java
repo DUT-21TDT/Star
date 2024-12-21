@@ -1,7 +1,7 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.notification.NotificationActorDTO;
-import com.pbl.star.dtos.query.notification.NotificationForUserDTO;
+import com.pbl.star.models.projections.notification.NotificationActor;
+import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.enums.ArtifactType;
 import com.pbl.star.enums.NotificationType;
 import com.pbl.star.repositories.extensions.NotificationRepositoryExtension;
@@ -19,7 +19,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
     private EntityManager entityManager;
 
     @Override
-    public List<NotificationForUserDTO> getNotifications(int limit, Instant after, String userId) {
+    public List<NotificationForUser> getNotifications(int limit, Instant after, String userId) {
 
         String sql = "SELECT n.notification_id, " +
                 "           nob.notification_type, nob.artifact_id, nob.artifact_type, nob.is_read," +
@@ -56,14 +56,14 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
         List<Object[]> resultList = query.getResultList();
 
         return resultList.stream()
-                .map(row -> NotificationForUserDTO.builder()
+                .map(row -> NotificationForUser.builder()
                         .id((String) row[0])
                         .type(NotificationType.valueOf((String) row[1]))
                         .artifactId((String) row[2])
                         .artifactType(ArtifactType.valueOf((String) row[3]))
                         .isRead((Boolean) row[4])
                         .numberOfActors(((Long) row[7]).intValue())
-                        .lastActor(NotificationActorDTO.builder()
+                        .lastActor(NotificationActor.builder()
                                 .id((String) row[5])
                                 .username((String) row[8])
                                 .avatarUrl((String) row[9])

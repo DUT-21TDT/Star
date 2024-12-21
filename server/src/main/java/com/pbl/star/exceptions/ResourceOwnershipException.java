@@ -4,4 +4,7 @@ public class ResourceOwnershipException extends ApiErrorException {
     public ResourceOwnershipException(String message) {
         super(message);
     }
+    public ResourceOwnershipException(String message, String errorCode) {
+        super(message, errorCode);
+    }
 }

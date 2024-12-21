@@ -9,10 +9,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@FieldMatch(first = "newPassword", second = "confirmNewPassword",
-        message = "Passwords must match")
-@DifferentFrom(first = "oldPassword", second = "newPassword",
-        message = "New password must not be the same as the old password")
+@FieldMatch(first = "newPassword", second = "confirmNewPassword", message = "Passwords must match")
+@DifferentFrom(first = "oldPassword", second = "newPassword", message = "New password must not be the same as the old password")
 public class ChangePasswordParams {
     @NotBlank(message = "Old password is required")
     private String oldPassword;

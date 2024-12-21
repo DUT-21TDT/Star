@@ -1,6 +1,6 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.user.OnInteractProfile;
+import com.pbl.star.models.projections.user.OnInteractProfile;
 import com.pbl.star.enums.FollowStatus;
 import com.pbl.star.enums.InteractType;
 import com.pbl.star.repositories.extensions.PostLikeRepositoryExtension;

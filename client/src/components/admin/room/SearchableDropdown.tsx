@@ -96,7 +96,7 @@ const SearchableDropdown: React.FC<IProps> = (props: IProps) => {
 
     try {
       await Promise.all(
-        selectedUsers.map((user) => addModeratorToRoom(roomId, user.username))
+        selectedUsers.map((user) => addModeratorToRoom(roomId, user.userId))
       );
 
       await refetchMods();

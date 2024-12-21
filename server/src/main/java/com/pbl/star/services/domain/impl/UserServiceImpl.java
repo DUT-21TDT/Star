@@ -1,11 +1,10 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.user.*;
 import com.pbl.star.dtos.request.user.AdminGetUsersParams;
 import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
-import com.pbl.star.dtos.query.user.OnWallProfile;
-import com.pbl.star.entities.User;
+import com.pbl.star.models.projections.user.*;
+import com.pbl.star.models.entities.User;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.Gender;
 import com.pbl.star.enums.SortDirection;
@@ -39,7 +38,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
-    public Optional<GeneralInformation> getGeneralInformation(String userId) {
+    public Optional<BasicUserInfo> getGeneralInformation(String userId) {
         return userRepository.getGeneralInformationById(userId);
     }
 
@@ -61,8 +60,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PersonalInformation getPersonalInformation(String userId) {
-        PersonalInformation personalInformation = userRepository.getPersonalInformation(userId);
+    public DetailsUserInfo getPersonalInformation(String userId) {
+        DetailsUserInfo personalInformation = userRepository.getPersonalInformation(userId);
         if (personalInformation == null) {
             throw new EntityNotFoundException("User not found");
         }
@@ -131,7 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<OnDashboardProfileDTO> getUsersAsAdmin(AdminGetUsersParams params) {
+    public Page<OnDashboardProfile> getUsersAsAdmin(AdminGetUsersParams params) {
 
         Pageable pageable = PageRequest.of(params.getPage(), params.getSize());
 

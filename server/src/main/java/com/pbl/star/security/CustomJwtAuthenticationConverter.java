@@ -1,6 +1,6 @@
 package com.pbl.star.security;
 
-import com.pbl.star.dtos.query.user.GeneralInformation;
+import com.pbl.star.models.projections.user.BasicUserInfo;
 import com.pbl.star.services.domain.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
@@ -25,7 +25,7 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
         // Extract user information from the JWT
         String userId = jwt.getClaimAsString("sub");
 
-        GeneralInformation user = userService.getGeneralInformation(userId).orElseThrow(
+        BasicUserInfo user = userService.getGeneralInformation(userId).orElseThrow(
                 () -> new UsernameNotFoundException("User not found")
         );
 

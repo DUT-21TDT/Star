@@ -7,4 +7,7 @@ public class EntityNotFoundException extends ApiErrorException {
     public EntityNotFoundException(String message) {
         super(message);
     }
+    public EntityNotFoundException(String message, String errorCode) {
+        super(message, errorCode);
+    }
 }

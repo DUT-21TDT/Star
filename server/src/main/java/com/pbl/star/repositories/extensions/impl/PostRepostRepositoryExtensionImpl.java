@@ -1,7 +1,7 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.post.PostForUserDTO;
-import com.pbl.star.dtos.query.post.RepostOnWallDTO;
+import com.pbl.star.models.projections.post.PostForUser;
+import com.pbl.star.models.projections.post.RepostOnWall;
 import com.pbl.star.repositories.extensions.PostRepostRepositoryExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -15,7 +15,7 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
     private EntityManager entityManager;
 
     @Override
-    public List<RepostOnWallDTO> findRepostsOnWallAsUser(int limit, Instant after, String currentUserId, String targetUserId) {
+    public List<RepostOnWall> findRepostsOnWallAsUser(int limit, Instant after, String currentUserId, String targetUserId) {
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
                 "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
                 "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
@@ -52,7 +52,7 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
 
         return resultList.stream().map(
                 row -> {
-                    PostForUserDTO post = PostForUserDTO.builder()
+                    PostForUser post = PostForUser.builder()
                             .id((String) row[0])
                             .idOfCreator((String) row[1])
                             .usernameOfCreator((String) row[2])
@@ -69,7 +69,7 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
                             .nameOfRoom((String) row[13])
                             .build();
 
-                    return RepostOnWallDTO.builder()
+                    return RepostOnWall.builder()
                             .repostedPost(post)
                             .repostedAt((Instant) row[14])
                             .repostedByUsername((String) row[15])

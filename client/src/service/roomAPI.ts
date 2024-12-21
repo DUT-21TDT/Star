@@ -19,12 +19,10 @@ const getRoomDetails = async (id: string) => {
 }
 
 const createRoom = async (data: DataCreateRoom) => {
-  const fomData = new FormData();
-  fomData.append("name", data.name);
-  if (data.description) {
-    fomData.append("description", data.description || "");
-  }
-  const response = await instance.post("/admin/rooms", fomData);
+  const response = await instance.post("/admin/rooms", {
+    name: data.name,
+    description: data.description || "",
+  });
   return response.data;
 };
 
@@ -63,9 +61,9 @@ const getModeratorsOfRoom = async (roomId: string) => {
   return response.data;
 }
 
-const addModeratorToRoom = async (roomId: string, username: string) => {
+const addModeratorToRoom = async (roomId: string, userId: string) => {
   const response = await instance.post(`/admin/rooms/${roomId}/moderators`, {
-    username,
+    userId,
   });
   return response.data;
 }

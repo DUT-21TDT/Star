@@ -1,6 +1,6 @@
 package com.pbl.star.utils;
 
-import com.pbl.star.dtos.query.user.OnSuggestionProfile;
+import com.pbl.star.models.projections.user.OnSuggestionProfile;
 
 import java.util.ArrayList;
 import java.util.List;

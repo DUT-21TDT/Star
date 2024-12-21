@@ -1,6 +1,6 @@
 package com.pbl.star.repositories;
 
-import com.pbl.star.entities.Notification;
+import com.pbl.star.models.entities.Notification;
 import com.pbl.star.repositories.extensions.NotificationRepositoryExtension;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,6 +1,6 @@
 package com.pbl.star.repositories;
 
-import com.pbl.star.entities.Following;
+import com.pbl.star.models.entities.Following;
 import com.pbl.star.enums.FollowRequestStatus;
 import com.pbl.star.repositories.extensions.FollowingRepositoryExtension;
 import org.springframework.data.jpa.repository.JpaRepository;

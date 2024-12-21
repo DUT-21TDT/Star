@@ -20,12 +20,12 @@ interface IEditProfile {
   privateProfile?: boolean;
 }
 const createNewUser = async (data: IUser_SignUp) => {
-  const response = await instance.post("/auth/signup", data);
+  const response = await instance.post("/auth/sign-up", data);
   return response.data;
 };
 const confirmAccount = async (token: string | null) => {
   if (token != null) {
-    const response = await instance.get(`/auth/confirm-signup?token=${token}`);
+    const response = await instance.get(`/auth/confirm-sign-up?token=${token}`);
     return response.data;
   }
 };

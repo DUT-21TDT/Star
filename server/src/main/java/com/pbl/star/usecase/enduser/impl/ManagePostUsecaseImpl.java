@@ -1,7 +1,7 @@
 package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.request.post.CreatePostParams;
-import com.pbl.star.entities.Post;
+import com.pbl.star.models.entities.Post;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.external.NotificationProducer;

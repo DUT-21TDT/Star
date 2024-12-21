@@ -1,6 +1,6 @@
 package com.pbl.star.services.external.impl;
 
-import com.pbl.star.entities.VerificationToken;
+import com.pbl.star.models.entities.VerificationToken;
 import com.pbl.star.services.external.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;

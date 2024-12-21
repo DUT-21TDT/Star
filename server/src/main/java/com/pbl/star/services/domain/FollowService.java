@@ -1,11 +1,12 @@
 package com.pbl.star.services.domain;
 
-import com.pbl.star.dtos.query.follow.FollowSectionCount;
-import com.pbl.star.dtos.query.user.OnFollowProfile;
-import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
-import com.pbl.star.dtos.query.user.OnSuggestionProfile;
+import com.pbl.star.models.projections.follow.FollowCount;
+import com.pbl.star.models.projections.user.OnFollowProfile;
+import com.pbl.star.models.projections.user.OnFollowRequestProfile;
+import com.pbl.star.models.projections.user.OnSuggestionProfile;
 import com.pbl.star.dtos.response.CustomSlice;
-import com.pbl.star.entities.Following;
+import com.pbl.star.dtos.response.follow.FollowCountResponse;
+import com.pbl.star.models.entities.Following;
 import com.pbl.star.enums.FollowRequestAction;
 
 import java.time.Instant;
@@ -19,6 +20,6 @@ public interface FollowService {
     CustomSlice<OnFollowProfile> getFollowingsOfUser(String currentUserId, String targetUserId, int limit, Instant after);
     CustomSlice<OnFollowProfile> getFollowersOfUser(String currentUserId, String targetUserId, int limit, Instant after);
     CustomSlice<OnFollowRequestProfile> getFollowRequestsOfUser(String userId, int limit, Instant after);
-    FollowSectionCount countFollowSection(String currentUserId, String targetUserId);
+    FollowCount countFollowSection(String currentUserId, String targetUserId);
     List<OnSuggestionProfile> suggestFollow(String currentUserId, int limit);
 }

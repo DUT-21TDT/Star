@@ -1,6 +1,6 @@
 package com.pbl.star.repositories;
 
-import com.pbl.star.entities.UserRoom;
+import com.pbl.star.models.entities.UserRoom;
 import com.pbl.star.enums.RoomRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

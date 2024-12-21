@@ -1,6 +1,6 @@
 package com.pbl.star.repositories.extensions;
 
-import com.pbl.star.dtos.query.user.OnInteractProfile;
+import com.pbl.star.models.projections.user.OnInteractProfile;
 
 import java.time.Instant;
 import java.util.List;

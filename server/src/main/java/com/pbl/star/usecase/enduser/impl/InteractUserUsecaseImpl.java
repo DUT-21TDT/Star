@@ -1,13 +1,15 @@
 package com.pbl.star.usecase.enduser.impl;
 
-import com.pbl.star.dtos.query.follow.FollowSectionCount;
-import com.pbl.star.dtos.query.user.OnFollowProfile;
-import com.pbl.star.dtos.query.user.OnFollowRequestProfile;
-import com.pbl.star.dtos.query.user.OnSearchProfile;
+import com.pbl.star.dtos.response.follow.FollowCountResponse;
+import com.pbl.star.dtos.response.user.OnFollowProfileResponse;
+import com.pbl.star.dtos.response.user.OnFollowReqProfileResponse;
+import com.pbl.star.dtos.response.user.OnSearchProfileResponse;
+import com.pbl.star.dtos.response.user.OnWallProfileResponse;
+import com.pbl.star.mapper.follow.FollowDTOMapper;
+import com.pbl.star.mapper.user.UserDTOMapper;
 import com.pbl.star.dtos.response.CustomSlice;
-import com.pbl.star.dtos.response.user.FollowResponse;
-import com.pbl.star.dtos.query.user.OnWallProfile;
-import com.pbl.star.entities.Following;
+import com.pbl.star.dtos.response.follow.FollowResponse;
+import com.pbl.star.models.entities.Following;
 import com.pbl.star.enums.FollowRequestAction;
 import com.pbl.star.enums.FollowRequestStatus;
 import com.pbl.star.enums.FollowStatus;
@@ -31,34 +33,41 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
 
     private final NotificationProducer notificationProducer;
 
+    private final UserDTOMapper userMapper;
+    private final FollowDTOMapper followMapper;
+
     @Override
-    public Slice<OnSearchProfile> searchUsers(String keyword, int limit, String afterId) {
+    public Slice<OnSearchProfileResponse> searchUsers(String keyword, int limit, String afterId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return userService.searchUsers(currentUserId, keyword, limit, afterId);
+        return userService.searchUsers(currentUserId, keyword, limit, afterId)
+                .map(userMapper::toDTO);
     }
 
     @Override
-    public OnWallProfile getProfileOnWall(String userId) {
+    public OnWallProfileResponse getProfileOnWall(String userId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return userService.getProfileOnWall(currentUserId, userId);
+        return userMapper.toDTO(userService.getProfileOnWall(currentUserId, userId));
     }
 
     @Override
-    public CustomSlice<OnFollowProfile> getFollowers(String userId, int limit, Instant after) {
+    public CustomSlice<OnFollowProfileResponse> getFollowers(String userId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return followService.getFollowersOfUser(currentUserId, userId, limit, after);
+        return followService.getFollowersOfUser(currentUserId, userId, limit, after)
+                .map(userMapper::toDTO);
     }
 
     @Override
-    public CustomSlice<OnFollowProfile> getFollowings(String userId, int limit, Instant after) {
+    public CustomSlice<OnFollowProfileResponse> getFollowings(String userId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return followService.getFollowingsOfUser(currentUserId, userId, limit, after);
+        return followService.getFollowingsOfUser(currentUserId, userId, limit, after)
+                .map(userMapper::toDTO);
     }
 
     @Override
-    public CustomSlice<OnFollowRequestProfile> getFollowRequests(int limit, Instant after) {
+    public CustomSlice<OnFollowReqProfileResponse> getFollowRequests(int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return followService.getFollowRequestsOfUser(currentUserId, limit, after);
+        return followService.getFollowRequestsOfUser(currentUserId, limit, after)
+                .map(userMapper::toDTO);
     }
 
     @Override
@@ -115,8 +124,8 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     }
 
     @Override
-    public FollowSectionCount countFollowSection(String userId) {
+    public FollowCountResponse countFollowSection(String userId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return followService.countFollowSection(currentUserId, userId);
+        return followMapper.toDTO(followService.countFollowSection(currentUserId, userId));
     }
 }

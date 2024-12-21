@@ -1,9 +1,9 @@
 package com.pbl.star.services.domain;
 
-import com.pbl.star.dtos.response.post.PostInteractionList;
-import com.pbl.star.entities.Post;
-import com.pbl.star.entities.PostLike;
-import com.pbl.star.entities.PostRepost;
+import com.pbl.star.dtos.response.post.PostInteractionListResponse;
+import com.pbl.star.models.entities.Post;
+import com.pbl.star.models.entities.PostLike;
+import com.pbl.star.models.entities.PostRepost;
 import com.pbl.star.enums.InteractType;
 import com.pbl.star.enums.PostStatus;
 
@@ -16,5 +16,5 @@ public interface PostInteractionService {
     void deleteRepostPost(String userId, String postId);
     Post moderatePostStatus(String postId, PostStatus status, String moderatorId);
     void unmoderatePostStatus(String postId, String moderatorId);
-    PostInteractionList getActorProfilesOfPost(String currentUserId, String postId, InteractType type, int limit, Instant after);
+    PostInteractionListResponse getActorProfilesOfPost(String currentUserId, String postId, InteractType type, int limit, Instant after);
 }

@@ -1,10 +1,13 @@
 package com.pbl.star.usecase.enduser.impl;
 
-import com.pbl.star.dtos.query.user.GeneralInformation;
-import com.pbl.star.dtos.query.user.PersonalInformation;
+import com.pbl.star.dtos.response.user.BasicUserInfoResponse;
+import com.pbl.star.dtos.response.user.DetailsUserInfoResponse;
+import com.pbl.star.mapper.user.UserDTOMapper;
+import com.pbl.star.models.projections.user.BasicUserInfo;
+import com.pbl.star.models.projections.user.DetailsUserInfo;
 import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
-import com.pbl.star.entities.User;
+import com.pbl.star.models.entities.User;
 import com.pbl.star.services.domain.FollowService;
 import com.pbl.star.services.domain.UserService;
 import com.pbl.star.usecase.enduser.ManageProfileUsecase;
@@ -19,19 +22,20 @@ public class ManageProfileUsecaseImpl implements ManageProfileUsecase {
     private final UserService userService;
     private final FollowService followService;
 
+    private final UserDTOMapper userMapper;
     @Override
-    public GeneralInformation getGeneralInformation() {
-        return AuthUtil.getCurrentUser();
+    public BasicUserInfoResponse getGeneralInformation() {
+        return userMapper.toDTO(AuthUtil.getCurrentUser());
     }
 
     @Override
-    public PersonalInformation getPersonalInformation() {
+    public DetailsUserInfoResponse getPersonalInformation() {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return userService.getPersonalInformation(currentUserId);
+        return userMapper.toDTO(userService.getPersonalInformation(currentUserId));
     }
 
     @Override
-    public GeneralInformation updatePersonalInformation(UpdateProfileParams updateProfileParams) {
+    public BasicUserInfoResponse updatePersonalInformation(UpdateProfileParams updateProfileParams) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
         User currentUser = userService.getUserById(currentUserId);
@@ -44,7 +48,7 @@ public class ManageProfileUsecaseImpl implements ManageProfileUsecase {
             acceptAllFollowRequests();
         }
 
-        return new GeneralInformation(updatedUser);
+        return userMapper.toDTO(new BasicUserInfo(updatedUser));
     }
 
     private void acceptAllFollowRequests() {

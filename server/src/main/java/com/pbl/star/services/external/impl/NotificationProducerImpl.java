@@ -1,9 +1,9 @@
 package com.pbl.star.services.external.impl;
 
-import com.pbl.star.entities.Following;
-import com.pbl.star.entities.Post;
-import com.pbl.star.entities.PostLike;
-import com.pbl.star.entities.PostRepost;
+import com.pbl.star.models.entities.Following;
+import com.pbl.star.models.entities.Post;
+import com.pbl.star.models.entities.PostLike;
+import com.pbl.star.models.entities.PostRepost;
 import com.pbl.star.events.activity.FollowUserEvent;
 import com.pbl.star.events.activity.InteractPostEvent;
 import com.pbl.star.events.activity.ModeratePostEvent;

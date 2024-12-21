@@ -2,10 +2,10 @@ package com.pbl.star.controllers.admin;
 
 import com.pbl.star.dtos.request.room.CreateRoomParams;
 import com.pbl.star.usecase.admin.AdminManageRoomUsecase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,7 +13,6 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/rooms")
-@Validated
 public class AdminRoomController {
 
     private final AdminManageRoomUsecase roomManageUsecase;
@@ -32,7 +31,7 @@ public class AdminRoomController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> createRoom(@ModelAttribute CreateRoomParams params) {
+    public ResponseEntity<?> createRoom(@RequestBody @Valid CreateRoomParams params) {
         String roomId = roomManageUsecase.createRoom(params);
         return ResponseEntity.ok(Map.of("id", roomId));
     }
@@ -46,7 +45,9 @@ public class AdminRoomController {
 
     @PatchMapping("/{roomId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateRoom(@PathVariable String roomId, @ModelAttribute CreateRoomParams params) {
+    public ResponseEntity<?> updateRoom(@PathVariable String roomId,
+                                        @RequestBody @Valid CreateRoomParams params
+    ) {
         roomManageUsecase.updateRoom(roomId, params);
         return ResponseEntity.ok().build();
     }

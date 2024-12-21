@@ -116,7 +116,7 @@ const router = createBrowserRouter(
       ],
     },
     {
-      path: "/signup",
+      path: "/sign-up",
       element: (
         <ProtectedRouteAuth>
           <SignUp />
@@ -134,7 +134,7 @@ const router = createBrowserRouter(
       errorElement: <NotFound />,
     },
     {
-      path: "/confirm-signup",
+      path: "/confirm-sign-up",
       element: <Confirm />,
       errorElement: <NotFound />,
     },

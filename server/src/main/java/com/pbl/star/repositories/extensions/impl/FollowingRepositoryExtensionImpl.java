@@ -1,8 +1,8 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.follow.FollowSectionCount;
-import com.pbl.star.dtos.query.user.*;
+import com.pbl.star.models.projections.follow.FollowCount;
 import com.pbl.star.enums.FollowStatus;
+import com.pbl.star.models.projections.user.*;
 import com.pbl.star.repositories.extensions.FollowingRepositoryExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -215,7 +215,7 @@ public class FollowingRepositoryExtensionImpl implements FollowingRepositoryExte
 //    }
 
     @Override
-    public FollowSectionCount countFollowSection(String currentUserId, String targetUserId) {
+    public FollowCount countFollowSection(String currentUserId, String targetUserId) {
 
         String jpql;
         boolean isCurrentUser = currentUserId.equals(targetUserId);
@@ -237,7 +237,7 @@ public class FollowingRepositoryExtensionImpl implements FollowingRepositoryExte
 
         Object[] result = query.getSingleResult();
 
-        return FollowSectionCount.builder()
+        return FollowCount.builder()
                 .followingsCount(((Long) result[0]).intValue())
                 .followersCount(((Long) result[1]).intValue())
                 .followRequestsCount(

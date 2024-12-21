@@ -1,30 +1,28 @@
 package com.pbl.star.controllers.enduser;
 
+import com.pbl.star.dtos.request.follow.FollowParams;
 import com.pbl.star.usecase.enduser.InteractUserUsecase;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-@Validated
 public class FollowController {
 
     private final InteractUserUsecase interactUserUsecase;
 
     @PostMapping("/me/followings")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> followUser(@RequestBody Map<String, String> requestBody) {
-        String userId = requestBody.getOrDefault("userId", "");
-        return ResponseEntity.ok(interactUserUsecase.followUser(userId));
+    public ResponseEntity<?> followUser(@RequestBody @Valid FollowParams followParams) {
+        return ResponseEntity.ok(interactUserUsecase.followUser(followParams.getUserId()));
     }
 
     @DeleteMapping("/me/followings/{userId}")

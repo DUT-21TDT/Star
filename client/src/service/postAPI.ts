@@ -122,11 +122,10 @@ const replyPost = async (
   imageFileNames: string[]
 ) => {
   const data = {
-    parentPostId,
     content,
     imageFileNames,
   };
-  const response = await instance.post(`/posts`, data);
+  const response = await instance.post(`/posts/${parentPostId}/replies`, data);
   return response.data;
 };
 

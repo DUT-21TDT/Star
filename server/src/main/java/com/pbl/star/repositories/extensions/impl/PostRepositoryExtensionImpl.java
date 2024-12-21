@@ -1,9 +1,9 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.post.PendingPostForUserDTO;
-import com.pbl.star.dtos.query.post.PostForModDTO;
-import com.pbl.star.dtos.query.post.PostForUserDTO;
-import com.pbl.star.dtos.query.post.ReplyOnWallDTO;
+import com.pbl.star.models.projections.post.PendingPostForUser;
+import com.pbl.star.models.projections.post.PostForMod;
+import com.pbl.star.models.projections.post.PostForUser;
+import com.pbl.star.models.projections.post.ReplyOnWall;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.repositories.extensions.PostRepositoryExtension;
 import com.pbl.star.utils.AuthUtil;
@@ -22,7 +22,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public List<PostForUserDTO> findExistPostsOfUsersByStatusAsUser(int limit, Instant after, PostStatus status, List<String> userIds) {
+    public List<PostForUser> findExistPostsOfUsersByStatusAsUser(int limit, Instant after, PostStatus status, List<String> userIds) {
 
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
@@ -48,7 +48,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public List<PostForUserDTO> findExistPostsInRoomsByStatusAsUser(int limit, Instant after, PostStatus
+    public List<PostForUser> findExistPostsInRoomsByStatusAsUser(int limit, Instant after, PostStatus
             status, List<String> roomIds) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
 
@@ -106,8 +106,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         return sql + "ORDER BY p.created_at DESC, p.post_id DESC ";
     }
 
-    private PostForUserDTO toPostForUserDTO(Object[] source) {
-        return PostForUserDTO.builder()
+    private PostForUser toPostForUserDTO(Object[] source) {
+        return PostForUser.builder()
                 .id((String) source[0])
                 .idOfCreator((String) source[1])
                 .usernameOfCreator((String) source[2])
@@ -126,7 +126,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public Optional<PostForUserDTO> findExistPostByIdAsUser(String currentUserId, String postId) {
+    public Optional<PostForUser> findExistPostByIdAsUser(String currentUserId, String postId) {
 
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
                 "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
@@ -150,7 +150,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         Object[] result = (Object[]) query.getResultStream().findFirst().orElse(null);
 
         return result == null ? Optional.empty() : Optional.of(
-                PostForUserDTO.builder()
+                PostForUser.builder()
                         .id((String) result[0])
                         .idOfCreator((String) result[1])
                         .usernameOfCreator((String) result[2])
@@ -171,7 +171,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public List<PostForUserDTO> findExistRepliesOfPostAsUser(int limit, Instant after, String currentUserId, String postId) {
+    public List<PostForUser> findExistRepliesOfPostAsUser(int limit, Instant after, String currentUserId, String postId) {
 
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
                 "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
@@ -202,7 +202,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         List<Object[]> resultList = query.getResultList();
 
         return resultList.stream()
-                .map(row -> (PostForUserDTO) PostForUserDTO.builder()
+                .map(row -> (PostForUser) PostForUser.builder()
                         .id((String) row[0])
                         .idOfCreator((String) row[1])
                         .usernameOfCreator((String) row[2])
@@ -225,7 +225,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public List<ReplyOnWallDTO> findExistRepliesOnWallAsUser(int limit, Instant after, String currentUserId, String targetUserId) {
+    public List<ReplyOnWall> findExistRepliesOnWallAsUser(int limit, Instant after, String currentUserId, String targetUserId) {
         String sql = "SELECT r.post_id, r.user_id, r.username, r.avatar_url, r.created_at, r.content, r.parent_post_id, " +
                 "           r.post_image_urls, r.number_of_likes, r.number_of_comments, r.number_of_reposts, r.is_liked, r.is_reposted, " +
                 "           p.post_id, p.user_id, p.username, p.avatar_url, p.created_at, p.content, p.parent_post_id," +
@@ -327,10 +327,10 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
         List<Object[]> resultList = query.getResultList();
 
-        List<ReplyOnWallDTO> replies = new ArrayList<>();
+        List<ReplyOnWall> replies = new ArrayList<>();
 
         for (Object[] row : resultList) {
-            PostForUserDTO reply = PostForUserDTO.builder()
+            PostForUser reply = PostForUser.builder()
                     .id((String) row[0])
                     .idOfCreator((String) row[1])
                     .usernameOfCreator((String) row[2])
@@ -347,7 +347,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                     .build();
 
             if (row[13] == null) {
-                replies.add(ReplyOnWallDTO.builder()
+                replies.add(ReplyOnWall.builder()
                         .reply(reply)
                         .parentPost(null)
                         .build()
@@ -355,7 +355,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 continue;
             }
 
-            PostForUserDTO parentPost = PostForUserDTO.builder()
+            PostForUser parentPost = PostForUser.builder()
                     .id((String) row[13])
                     .idOfCreator((String) row[14])
                     .usernameOfCreator((String) row[15])
@@ -373,7 +373,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                     .nameOfRoom((String) row[27])
                     .build();
 
-            replies.add(ReplyOnWallDTO.builder()
+            replies.add(ReplyOnWall.builder()
                     .reply(reply)
                     .parentPost(parentPost)
                     .build()
@@ -384,7 +384,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public List<PendingPostForUserDTO> findExistPendingPostsOfUser(int limit, Instant after, String userId) {
+    public List<PendingPostForUser> findExistPendingPostsOfUser(int limit, Instant after, String userId) {
 
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, p.status, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
@@ -412,7 +412,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         List<Object[]> resultList = query.getResultList();
 
         return resultList.stream()
-                .map(row -> (PendingPostForUserDTO) PendingPostForUserDTO.builder()
+                .map(row -> (PendingPostForUser) PendingPostForUser.builder()
                         .id((String) row[0])
                         .idOfCreator((String) row[1])
                         .usernameOfCreator((String) row[2])
@@ -460,7 +460,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 //    }
 
     @Override
-    public List<PostForModDTO> findExistPostsInRoomByStatusAsMod(int limit, Instant after, PostStatus status, String roomId) {
+    public List<PostForMod> findExistPostsInRoomByStatusAsMod(int limit, Instant after, PostStatus status, String roomId) {
 
         String sql = getPostForModQuery(after, status);
 
@@ -478,7 +478,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         List<Object[]> resultList = query.getResultList();
 
         return resultList.stream()
-                .map(row -> (PostForModDTO) PostForModDTO.builder()
+                .map(row -> (PostForMod) PostForMod.builder()
                         .id((String) row[0])
                         .idOfCreator((String) row[1])
                         .usernameOfCreator((String) row[2])

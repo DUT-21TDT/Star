@@ -4,6 +4,7 @@ import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
 import com.pbl.star.usecase.enduser.ManageProfileUsecase;
 import com.pbl.star.usecase.enduser.InteractUserUsecase;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-@Validated
 public class UserController {
 
     private final InteractUserUsecase interactUserUsecase;
@@ -25,7 +25,8 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> searchUsers(@RequestParam String keyword,
                                          @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
-                                         @RequestParam(required = false) String afterId) {
+                                         @RequestParam(required = false) String afterId
+    ) {
         return ResponseEntity.ok(interactUserUsecase.searchUsers(keyword, limit, afterId));
     }
 
@@ -47,13 +48,13 @@ public class UserController {
 
     @PatchMapping("/me/personal-information")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> updatePersonalInformation(@ModelAttribute UpdateProfileParams updateProfileParams) {
+    public ResponseEntity<?> updatePersonalInformation(@ModelAttribute @Valid UpdateProfileParams updateProfileParams) {
         return ResponseEntity.ok(manageProfileUsecase.updatePersonalInformation(updateProfileParams));
     }
 
     @PutMapping("/me/password")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> updatePassword(@RequestBody ChangePasswordParams changePasswordParams) {
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid ChangePasswordParams changePasswordParams) {
         manageProfileUsecase.changePassword(changePasswordParams);
         return ResponseEntity.ok().build();
     }

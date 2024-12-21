@@ -1,7 +1,7 @@
 package com.pbl.star.events.auth.listeners;
 
-import com.pbl.star.entities.User;
-import com.pbl.star.entities.VerificationToken;
+import com.pbl.star.models.entities.User;
+import com.pbl.star.models.entities.VerificationToken;
 import com.pbl.star.events.auth.OnSignUpCompleteEvent;
 import com.pbl.star.services.domain.VerificationTokenService;
 import com.pbl.star.services.external.EmailService;

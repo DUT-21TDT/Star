@@ -1,7 +1,8 @@
 package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.dtos.request.image.PostPresignedUrlsParams;
-import com.pbl.star.usecase.common.ImageUploadUsecase;
+import com.pbl.star.usecase.shared.ImageUploadUsecase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class ImageController {
     }
 
     @PostMapping("/post-presigned-urls")
-    public ResponseEntity<?> createPostPresignedUrls(@RequestBody PostPresignedUrlsParams params) {
+    public ResponseEntity<?> createPostPresignedUrls(@RequestBody @Valid PostPresignedUrlsParams params) {
         return ResponseEntity.ok(imageUploadUsecase.postPresignedUrls(params.getFileNames()));
     }
 }

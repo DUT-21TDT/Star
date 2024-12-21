@@ -1,7 +1,9 @@
 package com.pbl.star.usecase.moderator.impl;
 
-import com.pbl.star.dtos.query.post.PostForModDTO;
-import com.pbl.star.entities.Post;
+import com.pbl.star.dtos.response.post.PostForModResponse;
+import com.pbl.star.mapper.post.PostDTOMapper;
+import com.pbl.star.models.projections.post.PostForMod;
+import com.pbl.star.models.entities.Post;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.ModeratorAccessException;
 import com.pbl.star.services.domain.PostInteractionService;
@@ -26,14 +28,17 @@ public class ModeratePostUsecaseImpl implements ModeratePostUsecase {
 
     private final NotificationProducer notificationProducer;
 
+    private final PostDTOMapper postMapper;
+
     @Override
-    public Slice<PostForModDTO> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after) {
+    public Slice<PostForModResponse> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after) {
         String userId = AuthUtil.getCurrentUser().getId();
         if (!userRoomService.isModeratorOfRoom(userId, roomId)) {
             throw new ModeratorAccessException("User is not a moderator of the room");
         }
 
-        return postService.getPostsInRoomAsMod(roomId, status, limit, after);
+        return postService.getPostsInRoomAsMod(roomId, status, limit, after)
+                .map(postMapper::toDTO);
     }
 
     @Override

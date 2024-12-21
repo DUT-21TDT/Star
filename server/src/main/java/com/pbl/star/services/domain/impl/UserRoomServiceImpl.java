@@ -1,8 +1,7 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.user.UserInRoom;
-import com.pbl.star.entities.User;
-import com.pbl.star.entities.UserRoom;
+import com.pbl.star.models.projections.user.UserInRoom;
+import com.pbl.star.models.entities.UserRoom;
 import com.pbl.star.enums.RoomRole;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
@@ -83,17 +82,6 @@ public class UserRoomServiceImpl implements UserRoomService {
 
         userRoom.setRole(RoomRole.MODERATOR);
         userRoomRepository.save(userRoom);
-    }
-
-    @Override
-    @Transactional
-    public void addModeratorToRoomByUsername(@NonNull String username,
-                                             @NonNull String roomId) {
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User with username '" + username + "' not found"));
-
-        addModeratorToRoom(user.getId(), roomId);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.pbl.star.repositories;
 
-import com.pbl.star.entities.PostRepost;
+import com.pbl.star.models.entities.PostRepost;
 import com.pbl.star.repositories.extensions.PostRepostRepositoryExtension;
 import org.springframework.data.jpa.repository.JpaRepository;
 

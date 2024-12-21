@@ -1,8 +1,10 @@
 package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.dtos.request.post.CreatePostParams;
+import com.pbl.star.dtos.request.post.CreateReplyParams;
 import com.pbl.star.usecase.enduser.InteractPostUsecase;
 import com.pbl.star.usecase.enduser.ManagePostUsecase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,18 +23,17 @@ public class PostController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> createPost(@RequestBody CreatePostParams createPostParams) {
+    public ResponseEntity<?> createPost(@RequestBody @Valid CreatePostParams createPostParams) {
+        String newPostId = postManageUsecase.createPost(createPostParams);
+        return ResponseEntity.ok(Map.of("id", newPostId));
+    }
 
-        String newPostId;
-
-        if (createPostParams.getParentPostId() == null) {
-            newPostId = postManageUsecase.createPost(createPostParams);
-        }
-
-        else {
-            newPostId = postInteractUsecase.replyPost(createPostParams);
-        }
-
+    @PostMapping("/{postId}/replies")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> replyPost(@PathVariable String postId,
+                                       @RequestBody @Valid CreateReplyParams createReplyParams
+    ) {
+        String newPostId = postInteractUsecase.replyPost(postId, createReplyParams);
         return ResponseEntity.ok(Map.of("id", newPostId));
     }
 

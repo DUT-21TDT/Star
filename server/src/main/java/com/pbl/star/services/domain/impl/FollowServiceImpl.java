@@ -1,9 +1,8 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.follow.FollowSectionCount;
-import com.pbl.star.dtos.query.user.*;
+import com.pbl.star.models.projections.follow.FollowCount;
 import com.pbl.star.dtos.response.CustomSlice;
-import com.pbl.star.entities.Following;
+import com.pbl.star.models.entities.Following;
 import com.pbl.star.enums.FollowRequestAction;
 import com.pbl.star.enums.FollowRequestStatus;
 import com.pbl.star.enums.SuggestType;
@@ -11,6 +10,7 @@ import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.IllegalRequestArgumentException;
 import com.pbl.star.exceptions.ResourceOwnershipException;
+import com.pbl.star.models.projections.user.*;
 import com.pbl.star.repositories.FollowingRepository;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.services.domain.FollowService;
@@ -169,7 +169,7 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public FollowSectionCount countFollowSection(String currentUserId, String targetUserId) {
+    public FollowCount countFollowSection(String currentUserId, String targetUserId) {
 
         if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
             throw new ResourceOwnershipException("User has private profile");

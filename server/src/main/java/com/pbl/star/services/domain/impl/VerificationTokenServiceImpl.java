@@ -1,7 +1,7 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.entities.User;
-import com.pbl.star.entities.VerificationToken;
+import com.pbl.star.models.entities.User;
+import com.pbl.star.models.entities.VerificationToken;
 import com.pbl.star.repositories.VerificationTokenRepository;
 import com.pbl.star.services.domain.VerificationTokenService;
 import lombok.RequiredArgsConstructor;

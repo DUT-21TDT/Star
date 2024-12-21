@@ -1,9 +1,9 @@
 package com.pbl.star.usecase.enduser.impl;
 
-import com.pbl.star.dtos.request.post.CreatePostParams;
-import com.pbl.star.entities.Post;
-import com.pbl.star.entities.PostLike;
-import com.pbl.star.entities.PostRepost;
+import com.pbl.star.dtos.request.post.CreateReplyParams;
+import com.pbl.star.models.entities.Post;
+import com.pbl.star.models.entities.PostLike;
+import com.pbl.star.models.entities.PostRepost;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.external.NotificationProducer;
@@ -39,9 +39,9 @@ public class InteractPostUsecaseImpl implements InteractPostUsecase {
     }
 
     @Override
-    public String replyPost(CreatePostParams createReplyParams) {
+    public String replyPost(String postId, CreateReplyParams createReplyParams) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        Post savedReply = postService.createReply(currentUserId, createReplyParams);
+        Post savedReply = postService.createReply(currentUserId, postId, createReplyParams);
 
         notificationProducer.pushReplyPostMessage(savedReply);
 

@@ -1,16 +1,16 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.dtos.query.post.*;
 import com.pbl.star.dtos.request.post.CreatePostParams;
+import com.pbl.star.dtos.request.post.CreateReplyParams;
 import com.pbl.star.dtos.response.CustomSlice;
-import com.pbl.star.entities.Post;
-import com.pbl.star.entities.PostImage;
+import com.pbl.star.models.entities.Post;
+import com.pbl.star.models.entities.PostImage;
 import com.pbl.star.enums.FollowRequestStatus;
 import com.pbl.star.enums.PostStatus;
-import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.ResourceOwnershipException;
-import com.pbl.star.mapper.PostCreationMapper;
+import com.pbl.star.mapper.post.PostEntityMapper;
+import com.pbl.star.models.projections.post.*;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.helper.ResourceAccessControl;
@@ -50,7 +50,7 @@ public class PostServiceImpl implements PostService {
 
         List<String> imageFileNames = createPostParams.getImageFileNames();
 
-        PostCreationMapper postCreationMapper = Mappers.getMapper(PostCreationMapper.class);
+        PostEntityMapper postCreationMapper = Mappers.getMapper(PostEntityMapper.class);
         Post post = postCreationMapper.toEntity(createPostParams);
 
         if (!userRoomRepository.existsByUserIdAndRoomId(userId, post.getRoomId())) {
@@ -88,70 +88,70 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostForUserDTO getPostById(String currentUserId, String postId) {
+    public PostForUser getPostById(String currentUserId, String postId) {
         return postRepository.findExistPostByIdAsUser(currentUserId, postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
     }
 
     @Override
-    public Slice<PostForUserDTO> getPostsOnUserWall(String currentUserId, String targetUserId, int limit, Instant after) {
+    public Slice<PostForUser> getPostsOnUserWall(String currentUserId, String targetUserId, int limit, Instant after) {
 
         if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
             throw new ResourceOwnershipException("User have private profile");
         }
 
-        List<PostForUserDTO> postsList = postRepository.findExistPostsOfUsersByStatusAsUser(limit + 1, after, PostStatus.APPROVED, List.of(targetUserId));
+        List<PostForUser> postsList = postRepository.findExistPostsOfUsersByStatusAsUser(limit + 1, after, PostStatus.APPROVED, List.of(targetUserId));
 
         return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
-    public Slice<PendingPostForUserDTO> getPendingPostsByUser(String currentUserId, int limit, Instant after) {
-        List<PendingPostForUserDTO> postsList = postRepository.findExistPendingPostsOfUser(limit + 1, after, currentUserId);
+    public Slice<PendingPostForUser> getPendingPostsByUser(String currentUserId, int limit, Instant after) {
+        List<PendingPostForUser> postsList = postRepository.findExistPendingPostsOfUser(limit + 1, after, currentUserId);
         return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
-    public Slice<PostForUserDTO> getPostsOnNewsfeed(String userId, int limit, Instant after) {
+    public Slice<PostForUser> getPostsOnNewsfeed(String userId, int limit, Instant after) {
         List<String> joinedRoomIds = userRoomRepository.findRoomIdsByUserId(userId);
 
         if (joinedRoomIds.isEmpty()) {
             return new SliceImpl<>(new ArrayList<>());  // Empty slice
         }
 
-        List<PostForUserDTO> postsList = postRepository.findExistPostsInRoomsByStatusAsUser(limit + 1, after, PostStatus.APPROVED, joinedRoomIds);
+        List<PostForUser> postsList = postRepository.findExistPostsInRoomsByStatusAsUser(limit + 1, after, PostStatus.APPROVED, joinedRoomIds);
         return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
-    public Slice<PostForUserDTO> getPostsOfFollowingUsers(String currentUserId, int limit, Instant after) {
+    public Slice<PostForUser> getPostsOfFollowingUsers(String currentUserId, int limit, Instant after) {
         List<String> followingUserIds = followingRepository.findFolloweeIdsByFollowerIdAndStatus(currentUserId, FollowRequestStatus.ACCEPTED);
 
         if (followingUserIds.isEmpty()) {
             return new SliceImpl<>(new ArrayList<>());  // Empty slice
         }
 
-        List<PostForUserDTO> posts = postRepository.findExistPostsOfUsersByStatusAsUser(limit + 1, after, PostStatus.APPROVED, followingUserIds);
+        List<PostForUser> posts = postRepository.findExistPostsOfUsersByStatusAsUser(limit + 1, after, PostStatus.APPROVED, followingUserIds);
         return SliceTransfer.trimToSlice(posts, limit);
     }
 
     @Override
-    public Slice<PostForUserDTO> getPostsInRoom(String roomId, PostStatus status, int limit, Instant after) {
+    public Slice<PostForUser> getPostsInRoom(String roomId, PostStatus status, int limit, Instant after) {
         if (!roomRepository.existsById(roomId)) {
             throw new EntityNotFoundException("Room does not exist");
         }
 
-        List<PostForUserDTO> postsList = postRepository.findExistPostsInRoomsByStatusAsUser(limit + 1, after, status, List.of(roomId));
+        List<PostForUser> postsList = postRepository.findExistPostsInRoomsByStatusAsUser(limit + 1, after, status, List.of(roomId));
         return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
-    public Slice<PostForModDTO> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after) {
+    public Slice<PostForMod> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after) {
         if (!roomRepository.existsById(roomId)) {
             throw new EntityNotFoundException("Room does not exist");
         }
 
-        List<PostForModDTO> postsList = postRepository.findExistPostsInRoomByStatusAsMod(limit + 1, after, status, roomId);
+        List<PostForMod> postsList = postRepository.findExistPostsInRoomByStatusAsMod(limit + 1, after, status, roomId);
         return SliceTransfer.trimToSlice(postsList, limit);
     }
 
@@ -172,17 +172,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Post createReply(String userId, CreatePostParams createReplyParams) {
+    public Post createReply(String userId, String parentPostId, CreateReplyParams createReplyParams) {
 
         CreatePostValidator.validateCreateReplyRequiredFields(createReplyParams);
 
         List<String> imageFileNames = createReplyParams.getImageFileNames();
-        if (imageFileNames != null && imageFileNames.size() > 20) {
-            throw new EntityConflictException("Number of images exceeds the limit");
-        }
 
-        Post parentPost = postRepository.findExistPostById(createReplyParams.getParentPostId())
-                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+        Post parentPost = postRepository.findExistPostById(parentPostId)
+                .orElseThrow(() -> new EntityNotFoundException("Parent post does not exist"));
 
         if (!userRoomRepository.existsByUserIdAndRoomId(userId, parentPost.getRoomId())) {
             throw new EntityNotFoundException("Room does not exist, or " +
@@ -209,11 +206,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public CustomSlice<PostForUserDTO> getReplies(String userId, String postId, int limit, Instant after) {
-        List<PostForUserDTO> repliesList = postRepository.findExistRepliesOfPostAsUser(limit + 1, after, userId, postId);
-        Slice<PostForUserDTO> replies = SliceTransfer.trimToSlice(repliesList, limit);
+    public CustomSlice<PostForUser> getReplies(String userId, String postId, int limit, Instant after) {
+        List<PostForUser> repliesList = postRepository.findExistRepliesOfPostAsUser(limit + 1, after, userId, postId);
+        Slice<PostForUser> replies = SliceTransfer.trimToSlice(repliesList, limit);
 
-        CustomSlice<PostForUserDTO> repliesPage = new CustomSlice<>(replies);
+        CustomSlice<PostForUser> repliesPage = new CustomSlice<>(replies);
 
         if (after == null) {
             repliesPage.setTotalElements(postRepository.countExistRepliesOfPost(postId));
@@ -223,24 +220,24 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Slice<ReplyOnWallDTO> getRepliesOnWall(String currentUserId, String targetUserId, int limit, Instant after) {
+    public Slice<ReplyOnWall> getRepliesOnWall(String currentUserId, String targetUserId, int limit, Instant after) {
 
         if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
             throw new ResourceOwnershipException("User have private profile");
         }
 
-        List<ReplyOnWallDTO> postsList = postRepository.findExistRepliesOnWallAsUser(limit + 1, after, currentUserId, targetUserId);
+        List<ReplyOnWall> postsList = postRepository.findExistRepliesOnWallAsUser(limit + 1, after, currentUserId, targetUserId);
         return SliceTransfer.trimToSlice(postsList, limit);
     }
 
     @Override
-    public Slice<RepostOnWallDTO> getRepostsOnWall(String currentUserId, String targetUserId, int limit, Instant after) {
+    public Slice<RepostOnWall> getRepostsOnWall(String currentUserId, String targetUserId, int limit, Instant after) {
 
         if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
             throw new ResourceOwnershipException("User have private profile");
         }
 
-        List<RepostOnWallDTO> repostsList = postRepostRepository.findRepostsOnWallAsUser(limit + 1, after, currentUserId, targetUserId);
+        List<RepostOnWall> repostsList = postRepostRepository.findRepostsOnWallAsUser(limit + 1, after, currentUserId, targetUserId);
         return SliceTransfer.trimToSlice(repostsList, limit);
     }
 }

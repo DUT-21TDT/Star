@@ -1,9 +1,9 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.dtos.query.room.RoomDetailsForAdminDTO;
-import com.pbl.star.dtos.query.room.RoomForAdminDTO;
-import com.pbl.star.dtos.query.room.RoomForUserDTO;
-import com.pbl.star.dtos.query.user.UserInRoom;
+import com.pbl.star.models.projections.room.RoomDetailsForAdmin;
+import com.pbl.star.models.projections.room.RoomForAdmin;
+import com.pbl.star.models.projections.room.RoomForUser;
+import com.pbl.star.models.projections.user.UserInRoom;
 import com.pbl.star.repositories.extensions.RoomRepositoryExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -18,7 +18,7 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
     private EntityManager entityManager;
 
     @Override
-    public List<RoomForAdminDTO> getRoomsOverview() {
+    public List<RoomForAdmin> getRoomsOverview() {
         String jpql = "SELECT r.id, r.name, r.description, r.createdAt, " +
                 "(SELECT COUNT(*) " +
                 "FROM UserRoom ur " +
@@ -27,7 +27,7 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
 
         TypedQuery<Object[]> query = entityManager.createQuery(jpql, Object[].class);
         return query.getResultList().stream()
-                .map(row -> (RoomForAdminDTO) RoomForAdminDTO.builder()
+                .map(row -> (RoomForAdmin) RoomForAdmin.builder()
                         .id((String) row[0])
                         .name((String) row[1])
                         .description((String) row[2])
@@ -38,7 +38,7 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
     }
 
     @Override
-    public RoomDetailsForAdminDTO getRoomDetails(String roomId) {
+    public RoomDetailsForAdmin getRoomDetails(String roomId) {
         String jpql = "SELECT r.id, r.name, r.description, r.createdAt, " +
                 "(SELECT COUNT(*) " +
                 "FROM UserRoom ur " +
@@ -58,7 +58,7 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
             return null;
         }
 
-        return RoomDetailsForAdminDTO.builder()
+        return RoomDetailsForAdmin.builder()
                 .id((String) result[0])
                 .name((String) result[1])
                 .description((String) result[2])
@@ -96,7 +96,7 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
     }
 
     @Override
-    public List<RoomForUserDTO> getRoomsOverviewForUser(String userId) {
+    public List<RoomForUser> getRoomsOverviewForUser(String userId) {
 
         String jpql = "SELECT r.id, r.name, r.description, r.createdAt, " +
                 "(SELECT COUNT(urAll.userId) FROM UserRoom urAll WHERE urAll.roomId = r.id) AS participantsCount, " +
@@ -114,7 +114,7 @@ public class RoomRepositoryExtensionImpl implements RoomRepositoryExtension {
         query.setParameter("userId", userId);
 
         return query.getResultList().stream()
-                .map(row -> (RoomForUserDTO) RoomForUserDTO.builder()
+                .map(row -> (RoomForUser) RoomForUser.builder()
                         .id((String) row[0])
                         .name((String) row[1])
                         .description((String) row[2])

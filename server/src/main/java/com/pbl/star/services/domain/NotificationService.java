@@ -1,13 +1,13 @@
 package com.pbl.star.services.domain;
 
-import com.pbl.star.dtos.query.notification.NotificationForUserDTO;
+import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.enums.NotificationType;
 import org.springframework.data.domain.Slice;
 
 import java.time.Instant;
 
 public interface NotificationService {
-    Slice<NotificationForUserDTO> getNotifications(String userId, int limit, Instant after);
+    Slice<NotificationForUser> getNotifications(String userId, int limit, Instant after);
 
     /**
      * Create notification records for interact post.

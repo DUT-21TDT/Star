@@ -3,6 +3,7 @@ package com.pbl.star.controllers.moderator;
 import com.pbl.star.dtos.request.post.ModeratePostParams;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.usecase.moderator.ModeratePostUsecase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +18,7 @@ public class ModPostController {
 
     @PatchMapping("/{postId}/status")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> moderatePost(@PathVariable String postId, @RequestBody ModeratePostParams moderatePostParams) {
+    public ResponseEntity<?> moderatePost(@PathVariable String postId, @RequestBody @Valid ModeratePostParams moderatePostParams) {
 
         PostStatus newStatus = moderatePostParams.getStatus();
 

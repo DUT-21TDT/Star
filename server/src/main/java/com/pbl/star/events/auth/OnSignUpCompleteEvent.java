@@ -1,6 +1,6 @@
 package com.pbl.star.events.auth;
 
-import com.pbl.star.entities.User;
+import com.pbl.star.models.entities.User;
 import lombok.*;
 import org.springframework.context.ApplicationEvent;
 

@@ -20,7 +20,8 @@ public class NotificationController {
     private final ManageNotificationUsecase manageNotificationUsecase;
     @GetMapping
     public ResponseEntity<?> getNotifications(@RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
-                                              @RequestParam(required = false) Instant after) {
+                                              @RequestParam(required = false) Instant after
+    ) {
         return ResponseEntity.ok(manageNotificationUsecase.getNotifications(limit, after));
     }
 }
