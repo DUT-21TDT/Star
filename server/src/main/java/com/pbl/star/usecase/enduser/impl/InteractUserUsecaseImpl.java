@@ -1,18 +1,19 @@
 package com.pbl.star.usecase.enduser.impl;
 
+import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.dtos.response.follow.FollowCountResponse;
+import com.pbl.star.dtos.response.follow.FollowResponse;
 import com.pbl.star.dtos.response.user.OnFollowProfileResponse;
 import com.pbl.star.dtos.response.user.OnFollowReqProfileResponse;
 import com.pbl.star.dtos.response.user.OnSearchProfileResponse;
 import com.pbl.star.dtos.response.user.OnWallProfileResponse;
-import com.pbl.star.mapper.follow.FollowDTOMapper;
-import com.pbl.star.mapper.user.UserDTOMapper;
-import com.pbl.star.dtos.response.CustomSlice;
-import com.pbl.star.dtos.response.follow.FollowResponse;
-import com.pbl.star.models.entities.Following;
 import com.pbl.star.enums.FollowRequestAction;
 import com.pbl.star.enums.FollowRequestStatus;
 import com.pbl.star.enums.FollowStatus;
+import com.pbl.star.mapper.follow.FollowDTOMapper;
+import com.pbl.star.mapper.user.UserDTOMapper;
+import com.pbl.star.models.entities.Following;
+import com.pbl.star.models.projections.user.OnWallProfile;
 import com.pbl.star.services.domain.FollowService;
 import com.pbl.star.services.domain.UserService;
 import com.pbl.star.services.external.NotificationProducer;
@@ -46,7 +47,8 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     @Override
     public OnWallProfileResponse getProfileOnWall(String userId) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return userMapper.toDTO(userService.getProfileOnWall(currentUserId, userId));
+        OnWallProfile profile = userService.getProfileOnWall(currentUserId, userId);
+        return userMapper.toDTO(profile);
     }
 
     @Override

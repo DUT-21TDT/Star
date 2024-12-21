@@ -2,8 +2,9 @@ package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.dtos.request.user.ChangePasswordParams;
 import com.pbl.star.dtos.request.user.UpdateProfileParams;
-import com.pbl.star.usecase.enduser.ManageProfileUsecase;
+import com.pbl.star.dtos.response.user.OnWallProfileResponse;
 import com.pbl.star.usecase.enduser.InteractUserUsecase;
+import com.pbl.star.usecase.enduser.ManageProfileUsecase;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/users")
@@ -31,7 +31,8 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getPublicProfile(@PathVariable String userId) {
-        return ResponseEntity.ok(interactUserUsecase.getProfileOnWall(userId));
+        OnWallProfileResponse onWallProfileResponse = interactUserUsecase.getProfileOnWall(userId);
+        return ResponseEntity.ok(onWallProfileResponse);
     }
 
     @GetMapping("/me")

@@ -1,8 +1,9 @@
 package com.pbl.star.models.projections.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pbl.star.enums.FollowStatus;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -10,8 +11,6 @@ import lombok.*;
 public class OnWallProfile {
     private OnWallProfileUser publicProfile;
 
-    @JsonProperty("isCurrentUser")
     private boolean isCurrentUser;
-
     private FollowStatus followStatus;
 }

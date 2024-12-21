@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -68,6 +69,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse("BAD_REQUEST", errorMessage)
+        );
+    }
+
+    @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
+    public ResponseEntity<?> handleMethodArgumentTypeMismatchException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse("BAD_REQUEST", e.getMessage())
         );
     }
 

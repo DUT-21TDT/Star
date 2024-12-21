@@ -20,7 +20,7 @@ public class ModPostController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> moderatePost(@PathVariable String postId, @RequestBody @Valid ModeratePostParams moderatePostParams) {
 
-        PostStatus newStatus = moderatePostParams.getStatus();
+        PostStatus newStatus = PostStatus.valueOf(moderatePostParams.getStatus());
 
         if (newStatus == PostStatus.APPROVED) {
             postManageUsecase.approvePost(postId);

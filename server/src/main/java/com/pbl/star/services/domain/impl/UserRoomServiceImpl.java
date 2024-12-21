@@ -1,10 +1,10 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.models.projections.user.UserInRoom;
-import com.pbl.star.models.entities.UserRoom;
 import com.pbl.star.enums.RoomRole;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
+import com.pbl.star.models.entities.UserRoom;
+import com.pbl.star.models.projections.user.UserInRoom;
 import com.pbl.star.repositories.RoomRepository;
 import com.pbl.star.repositories.UserRepository;
 import com.pbl.star.repositories.UserRoomRepository;
@@ -110,10 +110,5 @@ public class UserRoomServiceImpl implements UserRoomService {
     @Override
     public List<UserInRoom> getMembers(@NonNull String roomId, String keyword) {
         return userRepository.findUsersInRoom(roomId, keyword);
-    }
-
-    @Override
-    public List<String> getModeratorIds(@NonNull String roomId) {
-        return userRoomRepository.findModeratorIdsByRoomId(roomId);
     }
 }
