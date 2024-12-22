@@ -58,4 +58,10 @@ public class Post {
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @Column(name = "is_hidden")
+    private boolean isHidden;
+
+    @Column(name = "hide_at")
+    private Instant hideAt;
 }

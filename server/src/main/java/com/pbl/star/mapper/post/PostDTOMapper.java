@@ -14,4 +14,6 @@ public abstract class PostDTOMapper {
     public abstract RepostOnWallResponse toDTO(RepostOnWall post);
     public abstract PendingPostForUserResponse toDTO(PendingPostForUser post);
     public abstract PostForModResponse toDTO(PostForMod post);
+    @Mapping(source = "hidden", target = "isHidden")
+    public abstract PostForAdminResponse toDTO(PostForAdmin post);
 }

@@ -1,16 +1,17 @@
 package com.pbl.star.repositories.extensions;
 
-import com.pbl.star.models.projections.post.PendingPostForUser;
-import com.pbl.star.models.projections.post.PostForMod;
-import com.pbl.star.models.projections.post.PostForUser;
-import com.pbl.star.models.projections.post.ReplyOnWall;
+import com.pbl.star.dtos.request.post.FilterPostParams;
 import com.pbl.star.enums.PostStatus;
+import com.pbl.star.models.projections.post.*;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 public interface PostRepositoryExtension {
+    List<PostForAdmin> findExistPostsAsAdmin(Pageable pageable, FilterPostParams filter);
+    long countExistPostsAsAdmin(FilterPostParams filter);
     List<PostForUser> findExistPostsOfUsersByStatusAsUser(int limit, Instant after, PostStatus status, List<String> userIds);
     List<PostForUser> findExistPostsInRoomsByStatusAsUser(int limit, Instant after, PostStatus status, List<String> roomIds);
     Optional<PostForUser> findExistPostByIdAsUser(String currentUserId, String postId);

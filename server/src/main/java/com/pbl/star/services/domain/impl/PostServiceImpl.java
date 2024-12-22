@@ -2,25 +2,25 @@ package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.request.post.CreateReplyParams;
+import com.pbl.star.dtos.request.post.FilterPostParams;
 import com.pbl.star.dtos.response.CustomSlice;
-import com.pbl.star.models.entities.Post;
-import com.pbl.star.models.entities.PostImage;
 import com.pbl.star.enums.FollowRequestStatus;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.ResourceOwnershipException;
 import com.pbl.star.mapper.post.PostEntityMapper;
+import com.pbl.star.models.entities.Post;
+import com.pbl.star.models.entities.PostImage;
 import com.pbl.star.models.projections.post.*;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.helper.ResourceAccessControl;
+import com.pbl.star.utils.ImageUtil;
 import com.pbl.star.utils.SliceTransfer;
 import com.pbl.star.validators.CreatePostValidator;
-import com.pbl.star.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,6 +91,21 @@ public class PostServiceImpl implements PostService {
     public PostForUser getPostById(String currentUserId, String postId) {
         return postRepository.findExistPostByIdAsUser(currentUserId, postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+    }
+
+    @Override
+    public Page<PostForAdmin> getPostsAsAdmin(int page, int size, FilterPostParams filter) {
+
+        if (filter == null) {
+            filter = new FilterPostParams();
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<PostForAdmin> postsList = postRepository.findExistPostsAsAdmin(pageable, filter);
+        long totalElements = postRepository.countExistPostsAsAdmin(filter);
+
+        return new PageImpl<>(postsList, pageable, totalElements);
     }
 
     @Override

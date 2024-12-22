@@ -1,15 +1,14 @@
 package com.pbl.star.repositories.extensions.impl;
 
-import com.pbl.star.models.projections.post.PendingPostForUser;
-import com.pbl.star.models.projections.post.PostForMod;
-import com.pbl.star.models.projections.post.PostForUser;
-import com.pbl.star.models.projections.post.ReplyOnWall;
+import com.pbl.star.dtos.request.post.FilterPostParams;
 import com.pbl.star.enums.PostStatus;
+import com.pbl.star.models.projections.post.*;
 import com.pbl.star.repositories.extensions.PostRepositoryExtension;
 import com.pbl.star.utils.AuthUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -20,6 +19,149 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Override
+    public List<PostForAdmin> findExistPostsAsAdmin(Pageable pageable, FilterPostParams filter) {
+
+        String fType = filter.getType();
+        String fRoomId = filter.getRoomId();
+        String fUsername = filter.getUsername();
+        String fContent = filter.getContent();
+        PostStatus fStatus = filter.getStatus();
+        Boolean fIsHidden = filter.getIsHidden();
+        Instant fAfter = filter.getAfter();
+
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+
+        String sql = "SELECT p.post_id, p.user_id, p.parent_post_id, u1.username, u1.avatar_url, p.room_id, r.name," +
+                "p.created_at, p.content, " +
+                "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
+                "p.status, p.violence_score, p.moderated_by, u2.username, p.moderated_at, p.is_hidden, p.hide_at " +
+                "FROM post p " +
+                "INNER JOIN \"user\" u1 " +
+                "ON p.user_id = u1.user_id " +
+                "LEFT JOIN \"user\" u2 " +
+                "ON p.moderated_by = u2.user_id " +
+                "INNER JOIN room r " +
+                "ON p.room_id = r.room_id " +
+                "WHERE p.is_deleted = FALSE " +
+                (fType == null ? "" : "AND p.parent_post_id " + (fType.equals("POST") ? "is null " : "is not null ")) +
+                (fRoomId == null ? "" : "AND p.room_id = :roomId ") +
+                (fUsername == null ? "" : "AND u1.username ILIKE :username ") +
+                (fContent == null ? "" : "AND p.content ILIKE :content ") +
+                (fStatus == null ? "" : "AND p.status = :status ") +
+                (fIsHidden == null ? "" : "AND p.is_hidden = :isHidden ") +
+                (fAfter == null ? "" : "AND p.created_at < :after ") +
+                "ORDER BY p.created_at DESC, p.post_id DESC ";
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+
+        query.setFirstResult(page * size)
+                .setMaxResults(size);
+
+        if (fRoomId != null) {
+            query.setParameter("roomId", fRoomId);
+        }
+
+        if (fUsername != null) {
+            query.setParameter("username", "%" + fUsername + "%");
+        }
+
+        if (fContent != null) {
+            query.setParameter("content", "%" + fContent + "%");
+        }
+
+        if (fStatus != null) {
+            query.setParameter("status", fStatus);
+        }
+
+        if (fIsHidden != null) {
+            query.setParameter("isHidden", fIsHidden);
+        }
+
+        if (fAfter != null) {
+            query.setParameter("after", fAfter);
+        }
+
+        List<Object[]> resultList = query.getResultList();
+
+        return resultList.stream()
+                .map(row -> (PostForAdmin) PostForAdmin.builder()
+                        .id((String) row[0])
+                        .idOfCreator((String) row[1])
+                        .idOfParentPost((String) row[2])
+                        .usernameOfCreator((String) row[3])
+                        .avatarUrlOfCreator((String) row[4])
+                        .idOfRoom((String) row[5])
+                        .nameOfRoom((String) row[6])
+                        .createdAt((Instant) row[7])
+                        .content((String) row[8])
+                        .postImageUrls(row[9] == null ? null : List.of(((String) row[9]).split(",")))
+                        .status(PostStatus.valueOf((String) row[10]))
+                        .violenceScore((Integer) row[11])
+                        .idOfModerator((String) row[12])
+                        .usernameOfModerator((String) row[13])
+                        .moderatedAt((Instant) row[14])
+                        .isHidden((boolean) row[15])
+                        .hideAt((Instant) row[16])
+                        .build()
+                )
+                .toList();
+    }
+
+    @Override
+    public long countExistPostsAsAdmin(FilterPostParams filter) {
+
+        String fType = filter.getType();
+        String fRoomId = filter.getRoomId();
+        String fUsername = filter.getUsername();
+        String fContent = filter.getContent();
+        PostStatus fStatus = filter.getStatus();
+        Boolean fIsHidden = filter.getIsHidden();
+        Instant fAfter = filter.getAfter();
+
+        String sql = "SELECT COUNT(*) " +
+                "FROM post p " +
+                "INNER JOIN \"user\" u1 " +
+                "ON p.user_id = u1.user_id " +
+                "WHERE p.is_deleted = FALSE " +
+                (fType == null ? "" : "AND p.parent_post_id " + (fType.equals("POST") ? "is null " : "is not null ")) +
+                (fRoomId == null ? "" : "AND p.room_id = :roomId ") +
+                (fUsername == null ? "" : "AND u1.username ILIKE :username ") +
+                (fContent == null ? "" : "AND p.content ILIKE :content ") +
+                (fStatus == null ? "" : "AND p.status = :status ") +
+                (fIsHidden == null ? "" : "AND p.is_hidden = :isHidden ") +
+                (fAfter == null ? "" : "AND p.created_at < :after ");
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        if (fRoomId != null) {
+            query.setParameter("roomId", fRoomId);
+        }
+
+        if (fUsername != null) {
+            query.setParameter("username", "%" + fUsername + "%");
+        }
+
+        if (fContent != null) {
+            query.setParameter("content", "%" + fContent + "%");
+        }
+
+        if (fStatus != null) {
+            query.setParameter("status", fStatus);
+        }
+
+        if (fIsHidden != null) {
+            query.setParameter("isHidden", fIsHidden);
+        }
+
+        if (fAfter != null) {
+            query.setParameter("after", fAfter);
+        }
+
+        return ((Number) query.getSingleResult()).longValue();
+    }
 
     @Override
     public List<PostForUser> findExistPostsOfUsersByStatusAsUser(int limit, Instant after, PostStatus status, List<String> userIds) {
