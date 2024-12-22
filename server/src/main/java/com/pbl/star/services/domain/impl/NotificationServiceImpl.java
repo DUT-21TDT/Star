@@ -1,9 +1,9 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.enums.ArtifactType;
 import com.pbl.star.enums.NotificationType;
 import com.pbl.star.models.entities.*;
+import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.utils.SliceTransfer;
@@ -36,20 +36,26 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public NotificationForUser getPushedNotification(String notificationObjId) {
+        return notificationRepository.getNotificationByNotificationObjectId(notificationObjId)
+                .orElse(null);
+    }
+
+    @Override
     @Transactional
-    public void createInteractPostNotification(String postId, String actorId, Instant timestamp, NotificationType notificationType) {
+    public Notification createInteractPostNotification(String postId, String actorId, Instant timestamp, NotificationType notificationType) {
 
         Post interactedPost = postRepository.findExistPostById(postId)
                 .orElse(null);
 
         if (interactedPost == null) {
-            return;
+            return null;
         }
 
         String receiverId = interactedPost.getUserId();
 
         if (actorId.equals(receiverId)) {
-            return;
+            return null;
         }
 
         String preview = getPostPreview(interactedPost.getContent());
@@ -98,8 +104,13 @@ public class NotificationServiceImpl implements NotificationService {
                     .notificationObjectId(savedNotificationObj.getId())
                     .receiverId(receiverId)
                     .build();
-            notificationRepository.save(notification);
+            return notificationRepository.save(notification);
         }
+
+        return Notification.builder()
+                .receiverId(receiverId)
+                .notificationObjectId(savedNotificationObj.getId())
+                .build();
     }
 
     @Override
@@ -117,7 +128,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationChangeRepository.deleteFirstByNotificationObjectIdAndActorId(notificationObj.getId(), actorId);
     }
 
-    public void createFollowUserNotification(String followingId, String followerId, String followeeId, Instant timestamp, NotificationType notificationType) {
+    public Notification createFollowUserNotification(String followingId, String followerId, String followeeId, Instant timestamp, NotificationType notificationType) {
         NotificationObject obj = NotificationObject.builder()
                 .notificationType(notificationType)
                 .ref(followingId)
@@ -141,7 +152,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .receiverId(followeeId)
                 .build();
 
-        notificationRepository.save(notification);
+        return notificationRepository.save(notification);
     }
 
     @Override
@@ -152,13 +163,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void createModeratePostNotification(String postId, Instant timestamp, NotificationType notificationType) {
+    public Notification createModeratePostNotification(String postId, Instant timestamp, NotificationType notificationType) {
 
         Post moderatedPost = postRepository.findExistPostById(postId)
                 .orElse(null);
 
         if (moderatedPost == null) {
-            return;
+            return null;
         }
 
         String receiverId = moderatedPost.getUserId();
@@ -208,8 +219,13 @@ public class NotificationServiceImpl implements NotificationService {
                     .notificationObjectId(savedNotificationObj.getId())
                     .receiverId(receiverId)
                     .build();
-            notificationRepository.save(notification);
+            return notificationRepository.save(notification);
         }
+
+        return Notification.builder()
+                .receiverId(receiverId)
+                .notificationObjectId(savedNotificationObj.getId())
+                .build();
     }
 
     private String getPostPreview(String content) {
@@ -222,19 +238,19 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void createNewPostNotification(String roomId, String actorId, Instant timestamp) {
+    public List<Notification> createNewPostNotification(String roomId, String actorId, Instant timestamp) {
 
         Room room = roomRepository.findById(roomId)
                 .orElse(null);
 
         if (room == null) {
-            return;
+            return null;
         }
 
         List<String> receivers = userRoomRepository.findModeratorIdsByRoomId(roomId);
 
         if (receivers.isEmpty()) {
-            return;
+            return null;
         }
 
         boolean isExistNotification = true;
@@ -278,14 +294,14 @@ public class NotificationServiceImpl implements NotificationService {
         notificationChangeRepository.save(notificationChange);
 
         if (!isExistNotification) {
-            NotificationObject finalSavedNotificationObj = savedNotificationObj;
+            NotificationObject tmpSavedNotificationObj = savedNotificationObj;
             List<Notification> notifications = receivers.stream()
                     .map(receiverId -> Notification.builder()
-                            .notificationObjectId(finalSavedNotificationObj.getId())
+                            .notificationObjectId(tmpSavedNotificationObj.getId())
                             .receiverId(receiverId)
                             .build())
                     .toList();
-            notificationRepository.saveAll(notifications);
+            return notificationRepository.saveAll(notifications);
         }
 
         else {
@@ -304,19 +320,27 @@ public class NotificationServiceImpl implements NotificationService {
                     .toList();
 
             if (newReceiverIds.isEmpty()) {
-                return;
+                return null;
             }
 
-            NotificationObject finalSavedNotificationObj = savedNotificationObj;
+            NotificationObject tmpSavedNotificationObj = savedNotificationObj;
             List<Notification> notifications = newReceiverIds.stream()
                     .map(receiverId -> Notification.builder()
-                            .notificationObjectId(finalSavedNotificationObj.getId())
+                            .notificationObjectId(tmpSavedNotificationObj.getId())
                             .receiverId(receiverId)
                             .build())
                     .toList();
 
             notificationRepository.saveAll(notifications);
         }
+
+        NotificationObject tmpSavedNotificationObj = savedNotificationObj;
+        return receivers.stream()
+                .map(receiverId -> Notification.builder()
+                        .notificationObjectId(tmpSavedNotificationObj.getId())
+                        .receiverId(receiverId)
+                        .build())
+                .toList();
     }
 
     @Override
