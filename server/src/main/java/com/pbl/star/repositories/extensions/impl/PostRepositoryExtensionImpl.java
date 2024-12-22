@@ -240,6 +240,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "INNER JOIN room r ON p.room_id = r.room_id " +
                 "WHERE p.is_deleted = FALSE " +
+                "AND p.is_hidden = FALSE " +
                 "AND p.parent_post_id is null ";
 
 
@@ -294,6 +295,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "INNER JOIN room r ON p.room_id = r.room_id " +
                 "WHERE p.is_deleted = false " +
+                "AND p.is_hidden = FALSE " +
                 "AND p.post_id = :postId ";
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
@@ -338,6 +340,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "FROM post p " +
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "WHERE p.is_deleted = false " +
+                "AND p.is_hidden = FALSE " +
                 "AND p.parent_post_id = :postId " +
                 "AND p.status = 'APPROVED' " +
                 (after == null ? "" : "AND p.created_at < :after ") +
@@ -423,6 +426,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   INNER JOIN \"user\" u0 ON p0.user_id = u0.user_id " +
                 "   WHERE p0.user_id = :targetUserId " +
                 "           AND p0.is_deleted = false " +
+                "           AND p0.is_hidden = FALSE " +
                 "           AND p0.parent_post_id is not null " +
                 (after == null ? "" : "AND p0.created_at < :after ") +
                 ") as r " +
@@ -466,6 +470,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   INNER JOIN \"user\" u1 ON p1.user_id = u1.user_id " +
                 "   INNER JOIN room r ON p1.room_id = r.room_id " +
                 "   WHERE p1.is_deleted = false " +
+                "   AND p1.is_hidden = FALSE " +
                 ") as p ON r.parent_post_id = p.post_id " +
                 "ORDER BY r.created_at DESC, r.post_id ";
 
@@ -548,6 +553,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "INNER JOIN room r ON p.room_id = r.room_id " +
                 "WHERE p.user_id = :userId " +
                 "AND p.is_deleted = false " +
+                "AND p.is_hidden = FALSE " +
                 "AND p.status = 'PENDING' " +
                 "AND p.parent_post_id is null " +
                 (after == null ? "" : "AND p.created_at < :after ") +
@@ -663,6 +669,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "LEFT JOIN \"user\" u1 ON p.moderated_by = u1.user_id " +
                 "WHERE p.room_id = :roomId " +
                 "AND p.is_deleted = false " +
+                "AND p.is_hidden = FALSE " +
                 "AND p.parent_post_id is null ";
 
         if (status != null) {

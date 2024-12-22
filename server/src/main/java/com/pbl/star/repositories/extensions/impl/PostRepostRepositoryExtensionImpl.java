@@ -35,6 +35,7 @@ public class PostRepostRepositoryExtensionImpl implements PostRepostRepositoryEx
                 "ON p.room_id = r.room_id " +
                 "WHERE pr.user_id = :targetUserId " +
                 "AND p.is_deleted = FALSE " +
+                "AND p.is_hidden = FALSE " +
                 (after != null ? "AND pr.repost_at < :after " : "") +
                 "ORDER BY pr.repost_at DESC, pr.post_repost_id";
 
