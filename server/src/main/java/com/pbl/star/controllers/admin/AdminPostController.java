@@ -22,4 +22,16 @@ public class AdminPostController {
     {
         return ResponseEntity.ok(adminManagePostUsecase.getAllPosts(page, size, filter));
     }
+
+    @PatchMapping("/{postId}/hide")
+    public ResponseEntity<?> hidePost(@PathVariable String postId) {
+        adminManagePostUsecase.hidePost(postId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{postId}/unhide")
+    public ResponseEntity<?> unhidePost(@PathVariable String postId) {
+        adminManagePostUsecase.unhidePost(postId);
+        return ResponseEntity.ok().build();
+    }
 }

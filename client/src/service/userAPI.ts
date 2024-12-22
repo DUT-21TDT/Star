@@ -1,4 +1,4 @@
-import { instance, instanceAuth } from "../utils/customizeAxios";
+import {instance, instanceAuth} from "../utils/customizeAxios";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -245,6 +245,16 @@ const blockAndUnblockUser = async (
   }
 };
 
+const blockUser = async (userId: string) => {
+  const response = await instance.patch(`/admin/users/${userId}/block`);
+  return response.data;
+}
+
+const unblockUser = async (userId: string) => {
+  const response = await instance.patch(`/admin/users/${userId}/unblock`);
+  return response.data;
+}
+
 const getMembersInRoom = async (roomId: string, searchTerm: string) => {
   const response = await instance.get(`/admin/rooms/${roomId}/members`, {
     params: {
@@ -313,5 +323,7 @@ export {
   getAllUsers,
   fetchAllUsers,
   blockAndUnblockUser,
+  blockUser,
+  unblockUser,
   userChangePassword,
 };

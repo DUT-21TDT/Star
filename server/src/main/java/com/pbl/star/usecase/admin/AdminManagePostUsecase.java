@@ -6,4 +6,6 @@ import org.springframework.data.domain.Page;
 
 public interface AdminManagePostUsecase {
     Page<PostForAdminResponse> getAllPosts(int page, int size, FilterPostParams filter);
+    void hidePost(String postId);
+    void unhidePost(String postId);
 }

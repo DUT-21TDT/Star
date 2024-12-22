@@ -1,7 +1,6 @@
 package com.pbl.star.controllers.admin;
 
 import com.pbl.star.dtos.request.user.AdminGetUsersParams;
-import com.pbl.star.dtos.request.user.ChangeUserStatusParams;
 import com.pbl.star.usecase.admin.AdminManageUserUsecase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,18 +21,17 @@ public class AdminUserController {
         return ResponseEntity.ok(manageUserUsecase.getAllUsers(params));
     }
 
-    @PatchMapping("/{userId}/status")
+    @PatchMapping("/{userId}/block")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> changeUserStatus(@PathVariable String userId,
-                                              @RequestBody @Valid ChangeUserStatusParams params
-    ) {
-        String status = params.getStatus();
+    public ResponseEntity<?> blockUser(@PathVariable String userId) {
+        manageUserUsecase.blockUser(userId);
+        return ResponseEntity.ok().build();
+    }
 
-        if (status.equalsIgnoreCase("block")) {
-            manageUserUsecase.blockUser(userId);
-        } else if (status.equalsIgnoreCase("unblock")) {
-            manageUserUsecase.unblockUser(userId);
-        }
+    @PatchMapping("/{userId}/unblock")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> unblockUser(@PathVariable String userId) {
+        manageUserUsecase.unblockUser(userId);
         return ResponseEntity.ok().build();
     }
 }

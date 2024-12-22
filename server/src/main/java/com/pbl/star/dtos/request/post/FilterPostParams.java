@@ -11,6 +11,8 @@ import java.time.Instant;
 @Getter
 @Setter
 public class FilterPostParams {
+    // By post id
+    private String postId;
     // By type
     @Pattern(regexp = "^(?i)(POST|REPLY)$")
     private String type;

@@ -1,22 +1,10 @@
-import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Space,
-  Table,
-  Popconfirm,
-  message,
-  Tag,
-  Input,
-  Select,
-} from "antd";
-import type { TableProps } from "antd";
+import React, {useEffect, useState} from "react";
+import type {TableProps} from "antd";
+import {Button, Input, message, Popconfirm, Select, Space, Table, Tag,} from "antd";
 import HeaderTableUser from "./header-table-user";
-import {
-  fetchAllUsers,
-  blockAndUnblockUser,
-} from "../../../service/userAPI.ts";
-import { LockFilled, SearchOutlined, UnlockFilled } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import {blockUser, fetchAllUsers, unblockUser,} from "../../../service/userAPI.ts";
+import {LockFilled, SearchOutlined, UnlockFilled} from "@ant-design/icons";
+import {useNavigate} from "react-router-dom";
 import "../../../assets/css/table-select-paginate.css";
 import dayjs from "dayjs";
 
@@ -96,7 +84,12 @@ const User: React.FC = () => {
     );
 
     try {
-      const response = await blockAndUnblockUser(record.id, newStatus);
+      let response;
+      if (newStatus === "block") {
+        response = await blockUser(record.id);
+      } else {
+        response = await unblockUser(record.id);
+      }
 
       // Check HTTP status
       if (response) {
@@ -125,8 +118,7 @@ const User: React.FC = () => {
       );
 
       message.error(
-        `Failed to update block state for "${record.username}": ${
-          (error as Error).message
+        `Failed to update block state for "${record.username}": ${(error as Error).message
         }`
       );
     }

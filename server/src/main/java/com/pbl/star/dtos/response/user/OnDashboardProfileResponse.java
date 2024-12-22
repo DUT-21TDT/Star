@@ -19,4 +19,6 @@ public class OnDashboardProfileResponse {
     private String email;
     private Gender gender;
     private Instant registerAt;
+
+    private Integer numberOfReports = 999;
 }

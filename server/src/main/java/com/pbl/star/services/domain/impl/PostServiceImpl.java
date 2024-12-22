@@ -255,4 +255,20 @@ public class PostServiceImpl implements PostService {
         List<RepostOnWall> repostsList = postRepostRepository.findRepostsOnWallAsUser(limit + 1, after, currentUserId, targetUserId);
         return SliceTransfer.trimToSlice(repostsList, limit);
     }
+
+    @Override
+    public void updateHideStatus(String postId, boolean hide) {
+        Post post = postRepository.findExistPostById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+
+        post.setHidden(hide);
+
+        if (hide) {
+            post.setHideAt(Instant.now());
+        } else {
+            post.setHideAt(null);
+        }
+
+        postRepository.save(post);
+    }
 }

@@ -23,6 +23,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     @Override
     public List<PostForAdmin> findExistPostsAsAdmin(Pageable pageable, FilterPostParams filter) {
 
+        String fPostId = filter.getPostId();
         String fType = filter.getType();
         String fRoomId = filter.getRoomId();
         String fUsername = filter.getUsername();
@@ -46,6 +47,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "INNER JOIN room r " +
                 "ON p.room_id = r.room_id " +
                 "WHERE p.is_deleted = FALSE " +
+                (fPostId == null ? "" : "AND p.post_id = :postId ") +
                 (fType == null ? "" : "AND p.parent_post_id " + (fType.equals("POST") ? "is null " : "is not null ")) +
                 (fRoomId == null ? "" : "AND p.room_id = :roomId ") +
                 (fUsername == null ? "" : "AND u1.username ILIKE :username ") +
@@ -59,6 +61,10 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
         query.setFirstResult(page * size)
                 .setMaxResults(size);
+
+        if (fPostId != null) {
+            query.setParameter("postId", fPostId);
+        }
 
         if (fRoomId != null) {
             query.setParameter("roomId", fRoomId);
@@ -113,6 +119,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     @Override
     public long countExistPostsAsAdmin(FilterPostParams filter) {
 
+        String fPostId = filter.getPostId();
         String fType = filter.getType();
         String fRoomId = filter.getRoomId();
         String fUsername = filter.getUsername();
@@ -126,6 +133,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "INNER JOIN \"user\" u1 " +
                 "ON p.user_id = u1.user_id " +
                 "WHERE p.is_deleted = FALSE " +
+                (fPostId == null ? "" : "AND p.post_id = :postId ") +
                 (fType == null ? "" : "AND p.parent_post_id " + (fType.equals("POST") ? "is null " : "is not null ")) +
                 (fRoomId == null ? "" : "AND p.room_id = :roomId ") +
                 (fUsername == null ? "" : "AND u1.username ILIKE :username ") +
@@ -135,6 +143,10 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 (fAfter == null ? "" : "AND p.created_at < :after ");
 
         Query query = entityManager.createNativeQuery(sql);
+
+        if (fPostId != null) {
+            query.setParameter("postId", fPostId);
+        }
 
         if (fRoomId != null) {
             query.setParameter("roomId", fRoomId);

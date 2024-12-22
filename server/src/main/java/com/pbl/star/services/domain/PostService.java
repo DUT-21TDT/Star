@@ -27,4 +27,5 @@ public interface PostService {
     CustomSlice<PostForUser> getReplies(String userId, String postId, int limit, Instant after);
     Slice<ReplyOnWall> getRepliesOnWall(String currentUserId, String targetUserId, int limit, Instant after);
     Slice<RepostOnWall> getRepostsOnWall(String currentUserId, String targetUserId, int limit, Instant after);
+    void updateHideStatus(String postId, boolean hide);
 }

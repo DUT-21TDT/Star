@@ -22,4 +22,14 @@ public class AdminManagePostUsecaseImpl implements AdminManagePostUsecase {
         return postService.getPostsAsAdmin(page, size, filter)
                 .map(postMapper::toDTO);
     }
+
+    @Override
+    public void hidePost(String postId) {
+        postService.updateHideStatus(postId, true);
+    }
+
+    @Override
+    public void unhidePost(String postId) {
+        postService.updateHideStatus(postId, false);
+    }
 }
