@@ -134,7 +134,7 @@ const router = createBrowserRouter(
       errorElement: <NotFound />,
     },
     {
-      path: "/confirm-sign-up",
+      path: "/confirm-signup",
       element: <Confirm />,
       errorElement: <NotFound />,
     },
