@@ -40,7 +40,7 @@ const Callback: React.FC = () => {
           username: res?.username,
           role: res?.role || "USER",
           status: res?.status || "INACTIVE",
-          avatarUrl: res?.avatarUrl || ""
+          avatarUrl: res?.avatarUrl || "",
         });
 
         //store user data in redux
@@ -48,9 +48,11 @@ const Callback: React.FC = () => {
           storeInformationUser({
             id: res?.id,
             username: res?.username,
+            firstName: res?.firstName || "",
+            lastName: res?.lastName || "",
             role: res?.role || "USER",
             status: res?.status || "INACTIVE",
-            avatarUrl: res?.avatarUrl || ""
+            avatarUrl: res?.avatarUrl || "",
           })
         );
       });

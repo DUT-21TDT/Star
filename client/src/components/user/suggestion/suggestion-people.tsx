@@ -36,7 +36,9 @@ interface ISuggestionItem {
 }
 
 const SuggestionPeopleOnNewFeed = () => {
-  const { username, avatarUrl } = useAppSelector((state) => state.user);
+  const { username, avatarUrl, firstName, lastName } = useAppSelector(
+    (state) => state.user
+  );
   const { data } = useGetListSuggestion();
   const navgiate = useNavigate();
 
@@ -97,14 +99,13 @@ const SuggestionPeopleOnNewFeed = () => {
                 textOverflow: "ellipsis",
               }}
             >
-              {/* {firstName || lastName ? (
+              {firstName || lastName ? (
                 <div className="text-[14px] text-gray-500">
                   {`${firstName || ""} ${lastName || ""}`}
                 </div>
               ) : (
                 <div className="text-[14px] text-gray-500">{username}</div>
-              )} */}
-              {username}
+              )}
             </p>
           </div>
           <p

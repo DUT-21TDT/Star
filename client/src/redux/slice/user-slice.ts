@@ -3,8 +3,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface IUser {
   id?: string;
   username?: string;
-  firstname?: string;
-  lastname?: string;
+  firstName?: string;
+  lastName?: string;
   role?: string;
   status?: string;
   avatarUrl?: string;
@@ -15,8 +15,8 @@ interface IUser {
 const initialState: IUser = {
   id: "",
   username: "",
-  firstname: "",
-  lastname: "",
+  firstName: "",
+  lastName: "",
   role: "",
   status: "",
   avatarUrl: "",
