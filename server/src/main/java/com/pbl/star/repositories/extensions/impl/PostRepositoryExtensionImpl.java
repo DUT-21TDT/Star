@@ -79,7 +79,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         }
 
         if (fStatus != null) {
-            query.setParameter("status", fStatus);
+            query.setParameter("status", fStatus.name());
         }
 
         if (fIsHidden != null) {
@@ -161,7 +161,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         }
 
         if (fStatus != null) {
-            query.setParameter("status", fStatus);
+            query.setParameter("status", fStatus.name());
         }
 
         if (fIsHidden != null) {
