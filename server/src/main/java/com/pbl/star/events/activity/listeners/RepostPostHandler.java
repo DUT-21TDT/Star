@@ -51,7 +51,7 @@ public class RepostPostHandler implements UserActivityHandler {
         if (noti != null) {
             NotificationForUser pushedNoti = notificationService.getPushedNotification(noti.getNotificationObjectId());
             NotificationForUserResponse pushedNotiRes = mapper.toDTO(pushedNoti);
-            sseManager.sendNotification(noti.getId(), pushedNotiRes);
+            sseManager.sendNotification(noti.getReceiverId(), pushedNotiRes);
         }
     }
 

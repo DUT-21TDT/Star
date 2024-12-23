@@ -48,7 +48,7 @@ public class NewPendingPostHandler implements UserActivityHandler {
         for (Notification noti : notis) {
             NotificationForUser pushedNoti = notificationService.getPushedNotification(noti.getNotificationObjectId());
             NotificationForUserResponse pushedNotiRes = mapper.toDTO(pushedNoti);
-            sseManager.sendNotification(noti.getId(), pushedNotiRes);
+            sseManager.sendNotification(noti.getReceiverId(), pushedNotiRes);
         }
     }
 

@@ -6,6 +6,7 @@ import com.pbl.star.models.projections.notification.NotificationActor;
 import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.repositories.extensions.NotificationRepositoryExtension;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
@@ -100,9 +101,10 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query.setParameter("notificationObjId", notificationObjId);
 
-        Object[] result = (Object[]) query.getSingleResult();
-
-        if (result == null) {
+        Object[] result;
+        try {
+            result = (Object[]) query.getSingleResult();
+        } catch (NoResultException e) {
             return Optional.empty();
         }
 
