@@ -16,6 +16,7 @@ interface PeopleType {
   numberOfFollowers: number;
   username: string;
   followStatus: string;
+  numberOfReports: number | null;
 }
 
 const User: React.FC = () => {
@@ -290,7 +291,7 @@ const User: React.FC = () => {
             )}
           </Popconfirm>
           <Tag color="red" bordered style={{ borderRadius: "10px" }}>
-            99 reports
+            {record.numberOfReports || 0} reports
           </Tag>
         </Space>
       ),
