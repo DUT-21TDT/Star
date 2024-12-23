@@ -11,6 +11,8 @@ import lombok.Setter;
 public class BasicUserInfo {
     private String id;
     private String username;
+    private String firstName;
+    private String lastName;
     private String avatarUrl;
     private UserRole role;
     private AccountStatus status;
@@ -19,6 +21,8 @@ public class BasicUserInfo {
     public BasicUserInfo(String id, String username, String avatarUrl, UserRole role, AccountStatus status, String password) {
         this.id = id;
         this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.avatarUrl = avatarUrl;
         this.role = role;
         this.status = status;
@@ -28,6 +32,8 @@ public class BasicUserInfo {
     public BasicUserInfo(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
         this.avatarUrl = user.getAvatarUrl();
         this.role = user.getRole();
         this.status = user.getStatus();

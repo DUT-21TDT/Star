@@ -1,14 +1,14 @@
-import {RouterProvider} from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import router from "./router/router";
-import {ConfigProvider} from "antd";
-import {globalTheme} from "./utils/theme";
+import { ConfigProvider } from "antd";
+import { globalTheme } from "./utils/theme";
 import Cookies from "js-cookie";
-import {useEffect, useState} from "react";
-import {useAppDispatch} from "./redux/store/hook";
-import {getCurrentUser, handleRefreshToken} from "./service/userAPI";
-import {storeInformationUser} from "./redux/slice/user-slice";
+import { useEffect, useState } from "react";
+import { useAppDispatch } from "./redux/store/hook";
+import { getCurrentUser, handleRefreshToken } from "./service/userAPI";
+import { storeInformationUser } from "./redux/slice/user-slice";
 import "react-photo-view/dist/react-photo-view.css";
-import {Helmet, HelmetProvider} from "react-helmet-async";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -19,11 +19,12 @@ function App() {
   const fetchCurrentUser = async () => {
     try {
       const res = await getCurrentUser();
-
       dispatch(
         storeInformationUser({
           id: res?.id,
           username: res?.username,
+          firstName: res?.firstName || "",
+          lastName: res?.lastName || "",
           role: res?.role || "USER",
           status: res?.status || "INACTIVE",
           avatarUrl: res?.avatarUrl || "",
@@ -69,7 +70,7 @@ function App() {
             <title>Star</title>
           </Helmet>
           <ConfigProvider theme={globalTheme}>
-            <RouterProvider router={router}/>
+            <RouterProvider router={router} />
           </ConfigProvider>
         </HelmetProvider>
       }
