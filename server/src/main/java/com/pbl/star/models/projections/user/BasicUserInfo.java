@@ -1,8 +1,8 @@
 package com.pbl.star.models.projections.user;
 
-import com.pbl.star.models.entities.User;
 import com.pbl.star.enums.AccountStatus;
 import com.pbl.star.enums.UserRole;
+import com.pbl.star.models.entities.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +18,7 @@ public class BasicUserInfo {
     private AccountStatus status;
     private boolean hasPassword;
 
-    public BasicUserInfo(String id, String username, String avatarUrl, UserRole role, AccountStatus status, String password) {
+    public BasicUserInfo(String id, String username, String firstName, String lastName, String avatarUrl, UserRole role, AccountStatus status, String password) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
