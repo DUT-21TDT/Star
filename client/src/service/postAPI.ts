@@ -197,6 +197,62 @@ const getAllPostFollowingOnNewFeed = async (config: configTypeProfileWall) => {
   return response.data;
 };
 
+const getAllPostAdmin = async (
+  page: number,
+  size: number,
+  type?: string,
+  roomId?: number,
+  username?: string,
+  status?: string,
+  isHidden?: boolean
+) => {
+  const params: {
+    page: number;
+    size: number;
+    type?: string;
+    roomId?: number;
+    username?: string;
+    status?: string;
+    isHidden?: boolean;
+  } = {
+    page: page,
+    size: size,
+  };
+
+  if (type) {
+    params["type"] = type;
+  }
+
+  if (roomId) {
+    params["roomId"] = roomId;
+  }
+
+  if (username) {
+    params["username"] = username;
+  }
+
+  if (status) {
+    params["status"] = status;
+  }
+
+  if (isHidden !== undefined) {
+    params["isHidden"] = isHidden;
+  }
+
+  const response = await instance.get("/admin/posts", { params });
+  return response.data;
+};
+
+const hidePost = async (postId: string) => {
+  const response = await instance.patch(`/admin/posts/${postId}/hide`);
+  return response.data;
+};
+
+const unhidePost = async (postId: string) => {
+  const response = await instance.patch(`/admin/posts/${postId}/unhide`);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -217,4 +273,7 @@ export {
   deleteRepost,
   getRepostsOnWall,
   getAllPostFollowingOnNewFeed,
+  getAllPostAdmin,
+  hidePost,
+  unhidePost,
 };

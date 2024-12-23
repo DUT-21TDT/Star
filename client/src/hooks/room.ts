@@ -57,6 +57,26 @@ const useFetchAllRoom = () => {
   };
 };
 
+const useFetchAllRoomSelectBox = () => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchAllRoom(),
+    queryFn: getAllRoom,
+  });
+
+  let listData = Array.isArray(result.data)
+    ? result.data.map((item: DataType) => ({
+        value: item.id,
+        label: item.name,
+      }))
+    : []; // Ensure it's an array even if result.data is undefined or not iterable
+
+  listData = [{ value: 0, label: "All rooms" }, ...listData];
+
+  return {
+    dataRoom: listData,
+  };
+};
+
 const useGetRoomDetails = (id: string) => {
   const response = useQuery({
     queryKey: QUERY_KEY.getRoomDetails(id),
@@ -162,4 +182,5 @@ export {
   useLeaveRoomForUser,
   useAddModerator,
   useRemoveModerator,
+  useFetchAllRoomSelectBox,
 };
