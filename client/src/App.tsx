@@ -1,18 +1,34 @@
 import { RouterProvider } from "react-router-dom";
 import router from "./router/router";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, message } from "antd";
 import { globalTheme } from "./utils/theme";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "./redux/store/hook";
 import { getCurrentUser, handleRefreshToken } from "./service/userAPI";
 import { storeInformationUser } from "./redux/slice/user-slice";
 import "react-photo-view/dist/react-photo-view.css";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-
+import { EventSource } from "eventsource";
+interface INotificationType {
+  id: string;
+  type: string;
+  artifactId: string;
+  artifactType: string;
+  artifactPreview: string;
+  lastActor: {
+    id: string;
+    username: string;
+    avatarUrl: string;
+  };
+  numberOfActors: number;
+  changeAt: string;
+  read: boolean;
+}
 function App() {
   const dispatch = useAppDispatch();
   const access_token = Cookies.get("access_token") || null;
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   const [retry, setRetry] = useState(false);
 
@@ -55,6 +71,71 @@ function App() {
       }
     }
   };
+
+  const mapperMessageFromEventSource = (data: INotificationType) => {
+    const {
+      type,
+      lastActor: { username },
+    } = data;
+
+    switch (type) {
+      case "NEW_PENDING_POST":
+        return "You have a new pending post";
+      case "APPROVE_POST":
+        return "Your post has been approved";
+      case "REJECT_POST":
+        return "Your post has been rejected";
+      case "LIKE_POST":
+        return `${username} liked your post`;
+      case "REPLY_POST":
+        return `${username} replied to your post`;
+      case "REPOST_POST":
+        return `${username} reposted your post`;
+      case "FOLLOW":
+        return `${username} followed you`;
+      case "REQUEST_FOLLOW":
+        return `${username} sent you a follow request`;
+      case "ACCEPT_FOLLOW":
+        return "Your follow request has been accepted";
+      default:
+        return "You have a new notification";
+    }
+  };
+
+  useEffect(() => {
+    const eventSource = new EventSource(
+      `${import.meta.env.VITE_BACKEND_URL}/notifications/sse-stream`,
+      {
+        fetch: (input, init) =>
+          fetch(input, {
+            ...init,
+            headers: {
+              ...init?.headers,
+              Authorization: `Bearer ${Cookies.get("access_token")}`,
+            },
+          }),
+      }
+    );
+
+    eventSource.onmessage = (event) => {
+      if (event.data) {
+        message.info(mapperMessageFromEventSource(JSON.parse(event.data)));
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error(error);
+      eventSource.close();
+    };
+
+    eventSourceRef.current = eventSource;
+
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (access_token) {

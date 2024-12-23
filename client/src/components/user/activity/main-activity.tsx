@@ -1,13 +1,13 @@
-import {useQueryClient} from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import ActivityItem from "./activity-item";
-import {useEffect, useRef, useState} from "react";
-import {QUERY_KEY} from "../../../utils/queriesKey";
-import {useGetNotification} from "../../../hooks/notification";
-import {Spin} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
-import {debounce} from "lodash";
+import { useEffect, useRef, useState } from "react";
+import { QUERY_KEY } from "../../../utils/queriesKey";
+import { useGetNotification } from "../../../hooks/notification";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { debounce } from "lodash";
 import "../../../assets/css/activitiy.css";
-import {EventSource} from "eventsource";
+import { EventSource } from "eventsource";
 import Cookies from "js-cookie";
 
 interface INotificationType {
@@ -40,6 +40,7 @@ const MainContentActivity = () => {
     limit: 15,
     after: afterTime,
   });
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   const divRef = useRef(null);
 
@@ -72,25 +73,43 @@ const MainContentActivity = () => {
     };
   }, []);
 
-  const eventSource = new EventSource("http://localhost:8080/api/v1/notifications/sse-stream", {
-    fetch: (input, init) =>
-      fetch(input, {
-        ...init,
-        headers: {
-          ...init?.headers,
-          Authorization: `Bearer ${Cookies.get("access_token")}`,
-        },
-      }),
-  });
+  useEffect(() => {
+    const eventSource = new EventSource(
+      `${import.meta.env.VITE_BACKEND_URL}/notifications/sse-stream`,
+      {
+        fetch: (input, init) =>
+          fetch(input, {
+            ...init,
+            headers: {
+              ...init?.headers,
+              Authorization: `Bearer ${Cookies.get("access_token")}`,
+            },
+          }),
+      }
+    );
 
-  eventSource.onmessage = (event) => {
-    console.log(JSON.parse(event.data));
-  };
+    eventSource.onmessage = (event) => {
+      if (event.data) {
+        setAllNotifications((prevPosts) => [
+          JSON.parse(event.data),
+          ...prevPosts,
+        ]);
+      }
+    };
 
-  eventSource.onerror = (error) => {
-    console.log(error);
-    eventSource.close();
-  };
+    eventSource.onerror = (error) => {
+      console.error(error);
+      eventSource.close();
+    };
+
+    eventSourceRef.current = eventSource;
+
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
 
   if (isLoading && allNotifications.length === 0) {
     return (
