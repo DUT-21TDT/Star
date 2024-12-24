@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Space, Spin, Table, Popconfirm, message } from "antd";
+import { Button, Space, Spin, Table, Popconfirm, message, Popover } from "antd";
 import type { TableProps } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import HeaderTableRoom from "./header-table-room";
@@ -77,14 +77,16 @@ const Room: React.FC = () => {
       render: (_, record) => (
         <>
           <Space size="small">
-            <Button
-              icon={<EditOutlined />}
-              className="border-none"
-              onClick={() => {
-                setOpenModalEdit(true);
-                setDataEditRoom(record);
-              }}
-            />
+            <Popover content="Edit room" trigger="hover">
+              <Button
+                icon={<EditOutlined style={{ fontSize: "20px" }} />}
+                className="border-none"
+                onClick={() => {
+                  setOpenModalEdit(true);
+                  setDataEditRoom(record);
+                }}
+              />
+            </Popover>
             <Popconfirm
               title="Delete the room"
               description="Are you sure to delete this room?"
@@ -92,10 +94,17 @@ const Room: React.FC = () => {
               cancelText="No"
               placement="topRight"
             >
-              <Button
-                icon={<DeleteOutlined className="text-[red]" />}
-                className="border-none"
-              />
+              <Popover content="Delete room" trigger="hover">
+                <Button
+                  icon={
+                    <DeleteOutlined
+                      className="text-[red]"
+                      style={{ fontSize: "20px" }}
+                    />
+                  }
+                  className="border-none"
+                />
+              </Popover>
             </Popconfirm>
           </Space>
         </>
