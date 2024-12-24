@@ -1,10 +1,25 @@
-import React, {useEffect, useState} from "react";
-import type {TableProps} from "antd";
-import {Button, Input, message, Popconfirm, Select, Space, Table, Tag,} from "antd";
+import React, { useEffect, useState } from "react";
+import type { TableProps } from "antd";
+import {
+  Button,
+  Input,
+  message,
+  Modal,
+  Popconfirm,
+  Popover,
+  Select,
+  Space,
+  Table,
+  Tag,
+} from "antd";
 import HeaderTableUser from "./header-table-user";
-import {blockUser, fetchAllUsers, unblockUser,} from "../../../service/userAPI.ts";
-import {LockFilled, SearchOutlined, UnlockFilled} from "@ant-design/icons";
-import {useNavigate} from "react-router-dom";
+import {
+  blockUser,
+  fetchAllUsers,
+  unblockUser,
+} from "../../../service/userAPI.ts";
+import { LockFilled, SearchOutlined, UnlockFilled } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import "../../../assets/css/table-select-paginate.css";
 import dayjs from "dayjs";
 
@@ -119,7 +134,8 @@ const User: React.FC = () => {
       );
 
       message.error(
-        `Failed to update block state for "${record.username}": ${(error as Error).message
+        `Failed to update block state for "${record.username}": ${
+          (error as Error).message
         }`
       );
     }
@@ -278,21 +294,59 @@ const User: React.FC = () => {
             placement="topRight"
           >
             {userStatus !== "INACTIVE" && (
-              <Button
-                icon={
-                  userStatus === "BLOCKED" ? (
-                    <LockFilled className="text-red-500" />
-                  ) : (
-                    <UnlockFilled className="text-green-500" />
-                  )
+              <Popover
+                content={
+                  userStatus === "BLOCKED" ? "Unblock user" : "Block user"
                 }
-                className="border-none"
-              />
+              >
+                <Button
+                  icon={
+                    userStatus === "BLOCKED" ? (
+                      <LockFilled
+                        className="text-red-500"
+                        style={{ fontSize: "20px" }}
+                      />
+                    ) : (
+                      <UnlockFilled
+                        className="text-green-500"
+                        style={{ fontSize: "20px" }}
+                      />
+                    )
+                  }
+                  className="border-none"
+                />
+              </Popover>
             )}
           </Popconfirm>
-          <Tag color="red" bordered style={{ borderRadius: "10px" }}>
-            {record.numberOfReports || 0} reports
-          </Tag>
+          <Popover content="Report list" trigger="hover">
+            <Tag
+              color="red"
+              bordered
+              style={{ borderRadius: "10px", cursor: "pointer" }}
+              onClick={() => {
+                if (
+                  record.numberOfReports === null ||
+                  record.numberOfReports === 0
+                ) {
+                  message.info("No reports for this post");
+                } else {
+                  // Display modal with report details
+                  Modal.info({
+                    title: "Report Details",
+                    content: (
+                      <div>
+                        {/* Replace with actual report details */}
+                        <p>Report details for post {record.id}</p>
+                      </div>
+                    ),
+                    onOk() {},
+                  });
+                }
+              }}
+            >
+              {record.numberOfReports || 0} reports
+            </Tag>
+          </Popover>
         </Space>
       ),
     },

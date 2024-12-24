@@ -8,6 +8,7 @@ import {
   SearchOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import "../../../assets/css/table-select-paginate.css";
 import {
@@ -26,6 +27,7 @@ interface PostType {
   nameOfRoom: string;
   createdAt: string;
   content: string;
+  numberOfReports: number | null;
   postImageUrls: string[] | null;
   violenceScore: number;
   status: string;
@@ -131,9 +133,13 @@ const Post: React.FC = () => {
 
       // Notify user of success
       if (newStatus === false) {
-        message.success(`User "${record.id}" is now unhide!`);
+        message.success(
+          `Post ${record.id} of user ${record.usernameOfCreator} is now unhide!`
+        );
       } else {
-        message.warning(`User "${record.id}" is now hidden!`);
+        message.warning(
+          `Post ${record.id} of user ${record.usernameOfCreator} is now hidden!`
+        );
       }
     } catch (error) {
       console.error("Error updating user block state:", error);
@@ -284,12 +290,12 @@ const Post: React.FC = () => {
         );
       },
     },
-    {
-      title: "Violence Score",
-      dataIndex: "violenceScore",
-      key: "violenceScore",
-      render: (violenceScore) => violenceScore || "Haven't checked",
-    },
+    // {
+    //   title: "Violence Score",
+    //   dataIndex: "violenceScore",
+    //   key: "violenceScore",
+    //   render: (violenceScore) => violenceScore || "Haven't checked",
+    // },
     {
       title: "Created At",
       dataIndex: "createdAt",
@@ -302,7 +308,17 @@ const Post: React.FC = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <Tag color={status === "APPROVED" ? "green" : status === "PENDING" ? "blue" : "red"}>{status}</Tag>
+        <Tag
+          color={
+            status === "APPROVED"
+              ? "green"
+              : status === "PENDING"
+              ? "blue"
+              : "red"
+          }
+        >
+          {status}
+        </Tag>
       ),
     },
     {
@@ -318,40 +334,82 @@ const Post: React.FC = () => {
       render: (_, record) => (
         <div>
           <Space size="small">
-            <Popconfirm
-              title={
-                record.hidden === true ? "Unhide this post" : "Hide this post"
-              }
-              description={
-                record.hidden === true
-                  ? "Are you sure to unhide this post?"
-                  : "Are you sure to hide this post?"
-              }
-              onConfirm={() => handleToggleHide(record)}
-              cancelText="No"
-              placement="topRight"
+            <Popover
+              content={record.hidden === true ? "Unhide post" : "Hide post"}
+              trigger="hover"
             >
-              <Button
-                icon={
-                  record.hidden !== true ? (
-                    <EyeOutlined className="text-red-500" />
-                  ) : (
-                    <EyeInvisibleOutlined className="text-green-500" />
-                  )
+              <Popconfirm
+                title={
+                  record.hidden === true ? "Unhide this post" : "Hide this post"
                 }
-                className="border-none"
-              />
-            </Popconfirm>
+                description={
+                  record.hidden === true
+                    ? "Are you sure to unhide this post?"
+                    : "Are you sure to hide this post?"
+                }
+                onConfirm={() => handleToggleHide(record)}
+                cancelText="No"
+                placement="topRight"
+              >
+                <Button
+                  icon={
+                    record.hidden !== true ? (
+                      <EyeOutlined
+                        className="text-green-500"
+                        style={{ fontSize: "20px" }}
+                      />
+                    ) : (
+                      <EyeInvisibleOutlined
+                        className="text-red-500"
+                        style={{ fontSize: "20px" }}
+                      />
+                    )
+                  }
+                  className="border-none"
+                />
+              </Popconfirm>
+            </Popover>
+            <Popover content="View details" trigger="hover">
+              <a
+                onClick={() => {
+                  navigate(`/admin/posts/${record.id}`);
+                  window.scrollTo(0, 0);
+                }}
+              >
+                <UnorderedListOutlined style={{ fontSize: "20px" }} />
+              </a>
+            </Popover>
+            <Popover content="Report list" trigger="hover">
+              <Tag
+              color="red"
+              bordered
+              style={{
+                borderRadius: "10px",
+                marginBottom: "4px",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                if (record.numberOfReports === null || record.numberOfReports === 0) {
+                message.info("No reports for this post");
+                } else {
+                // Display modal with report details
+                Modal.info({
+                  title: "Report Details",
+                  content: (
+                  <div>
+                    {/* Replace with actual report details */}
+                    <p>Report details for post {record.id}</p>
+                  </div>
+                  ),
+                  onOk() {},
+                });
+                }
+              }}
+              >
+              {record.numberOfReports || 0} reports
+              </Tag>
+            </Popover>
           </Space>
-          | <span className="text-[#ccc]"></span>
-          <a
-            onClick={() => {
-              navigate(`/admin/posts/${record.id}`);
-              window.scrollTo(0, 0);
-            }}
-          >
-            View details
-          </a>
         </div>
       ),
     },
