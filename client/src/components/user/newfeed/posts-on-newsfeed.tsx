@@ -9,6 +9,7 @@ import RemoveDuplicatePost from "../../../utils/removeDuplicatePost";
 import CreatePost from "../profile/posts/create-post";
 import "../../../assets/css/newfeed.css";
 import { debounce } from "../../../utils/debounce";
+import { useNavigate } from "react-router-dom";
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -103,6 +104,8 @@ const PostsOnNewsFeed: React.FC = () => {
     };
   }, []);
 
+  const navigate = useNavigate();
+
   return (
     <>
       <div
@@ -183,6 +186,28 @@ const PostsOnNewsFeed: React.FC = () => {
                 />
               );
             })}
+
+          {allPosts &&
+            allPosts.length === 0 &&
+            !isLoading &&
+            dataPost.length === 0 && (
+              <div className="flex items-center justify-center mt-8">
+                <div
+                  className=" p-3 text-center"
+                  style={{
+                    color: "rgb(113,113,133)",
+                  }}
+                >
+                  Please join a room to start interacting.{" "}
+                  <button
+                    className="underline text-black-600 font-semibold"
+                    onClick={() => navigate("/room")}
+                  >
+                    Join now
+                  </button>
+                </div>
+              </div>
+            )}
         </div>
       </div>
     </>

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { endSession, revokeToken } from "../../../service/userAPI";
 import Cookies from "js-cookie";
 import { removeInformationUser } from "../../../redux/slice/user-slice";
+import default_avatar from "../../../assets/images/default_image.jpg";
 interface ISuggestionItem {
   userId: string;
   username: string;
@@ -73,7 +74,7 @@ const SuggestionPeopleOnNewFeed = () => {
             gap: "15px",
           }}
         >
-          <Avatar src={avatarUrl} size={45} />
+          <Avatar src={avatarUrl || default_avatar} size={45} />
           <div>
             <h4
               style={{
