@@ -6,6 +6,7 @@ import com.pbl.star.services.external.SSEManager;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Sinks;
 
@@ -30,7 +31,7 @@ public class SSEManagerImpl implements SSEManager {
         userConnections.remove(userId);
     }
 
-    public void sendNotification(String userId, NotificationForUserResponse notification) {
+    public void sendNotification(@NonNull String userId, NotificationForUserResponse notification) {
         Sinks.Many<String> sink = userConnections.get(userId);
 
         if (sink != null) {

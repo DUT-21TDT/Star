@@ -45,6 +45,10 @@ public class NewPendingPostHandler implements UserActivityHandler {
 
         List<Notification> notis = notificationService.createNewPostNotification(roomId, actorId, timestamp);
 
+        if (notis == null || notis.isEmpty()) {
+            return;
+        }
+
         for (Notification noti : notis) {
             NotificationForUser pushedNoti = notificationService.getPushedNotification(noti.getNotificationObjectId());
             NotificationForUserResponse pushedNotiRes = mapper.toDTO(pushedNoti);

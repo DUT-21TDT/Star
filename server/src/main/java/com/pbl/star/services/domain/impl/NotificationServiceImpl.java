@@ -319,19 +319,17 @@ public class NotificationServiceImpl implements NotificationService {
                     .filter(newReceiverId -> !oldReceiverIds.contains(newReceiverId))
                     .toList();
 
-            if (newReceiverIds.isEmpty()) {
-                return null;
+            if (!newReceiverIds.isEmpty()) {
+                NotificationObject tmpSavedNotificationObj = savedNotificationObj;
+                List<Notification> notifications = newReceiverIds.stream()
+                        .map(receiverId -> Notification.builder()
+                                .notificationObjectId(tmpSavedNotificationObj.getId())
+                                .receiverId(receiverId)
+                                .build())
+                        .toList();
+
+                notificationRepository.saveAll(notifications);
             }
-
-            NotificationObject tmpSavedNotificationObj = savedNotificationObj;
-            List<Notification> notifications = newReceiverIds.stream()
-                    .map(receiverId -> Notification.builder()
-                            .notificationObjectId(tmpSavedNotificationObj.getId())
-                            .receiverId(receiverId)
-                            .build())
-                    .toList();
-
-            notificationRepository.saveAll(notifications);
         }
 
         NotificationObject tmpSavedNotificationObj = savedNotificationObj;

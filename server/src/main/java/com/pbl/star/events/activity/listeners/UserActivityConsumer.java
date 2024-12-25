@@ -8,7 +8,6 @@ import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,10 +18,6 @@ import java.util.stream.Stream;
 
 @Component
 public class UserActivityConsumer {
-
-    private static final int RETRY_LIMIT = 3;
-
-
     // Map of routing keys to handlers
     private final Map<String, UserActivityHandler> handlers;
     private static final Logger logger = LoggerFactory.getLogger(NotificationProducerImpl.class);
@@ -37,15 +32,11 @@ public class UserActivityConsumer {
 
     // Delegate the handling of the message to the appropriate handler
     @RabbitListener(queues = RabbitMQConfig.USER_ACTIVITY_QUEUE)
-    public void handleUserActivity(Message message, @Header(required = false, name = "x-death") List<Map<String, Object>> xDeathHeader) {
+    public void handleUserActivity(Message message) {
 
-        int retryCount = 0;
-        if (xDeathHeader != null && !xDeathHeader.isEmpty()) {
-            Map<String, Object> deathDetails = xDeathHeader.getFirst();
-            retryCount = (int) deathDetails.get("count");
-        }
+        boolean hasRetried = message.getMessageProperties().getRedelivered();
 
-        if (retryCount > RETRY_LIMIT) {
+        if (hasRetried) {
             // Retry limit reached, send to DLQ
             throw new AmqpRejectAndDontRequeueException("Retry limit reached for message: " + message);
         }
