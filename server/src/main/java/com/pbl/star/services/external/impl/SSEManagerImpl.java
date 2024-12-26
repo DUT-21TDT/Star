@@ -36,6 +36,9 @@ public class SSEManagerImpl implements SSEManager {
 
         if (sink != null) {
             try {
+                if (notification == null) {
+                    sink.tryEmitNext("");
+                }
                 String jsonNotification = objectMapper.writeValueAsString(notification);
                 sink.tryEmitNext(jsonNotification);
             } catch (Exception e) {
