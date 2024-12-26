@@ -1,22 +1,19 @@
-import { Avatar, Popover } from "antd";
-import {
-  IconFollowed,
-  IconInformation,
-  IconLiked,
-  IconReposted,
-} from "./icon-activity";
-import React, { useState } from "react";
-import { timeAgo } from "../../../utils/convertTime";
+import {Avatar, Popover} from "antd";
+import {IconFollowed, IconInformation, IconLiked, IconReposted,} from "./icon-activity";
+import React, {useState} from "react";
+import {timeAgo} from "../../../utils/convertTime";
 import ContainerInformationUser from "../profile/posts/container-information-user";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import default_avatar from "../../../assets/images/default_image.jpg";
+import starLogo from "../../../assets/images/logo_no_background.png";
+
 interface INotificationType {
   id: string;
   type: string;
   artifactId: string;
   artifactType: string;
   artifactPreview: string;
-  lastActor: {
+  lastActor?: {
     id: string;
     username: string;
     avatarUrl: string;
@@ -39,7 +36,10 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
     artifactPreview,
   } = notification;
 
-  const { id: idOfLastActor, username, avatarUrl } = lastActor;
+  const idOfLastActor = lastActor ? lastActor.id : null;
+  const username = lastActor ? lastActor.username : null;
+  const avatarUrl = lastActor ? lastActor.avatarUrl : null;
+
   const [isPopoverVisibleUsername, setIsPopoverVisibleUsername] =
     useState(false);
   const [popoverContent, setPopoverContent] = useState<React.ReactNode>(
@@ -77,6 +77,31 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
     }
   };
 
+  const mapNotificationTypeToTitle = (type: string) => {
+    switch (type) {
+      case "NEW_PENDING_POST":
+        return `New pending post to review`;
+      case "APPROVE_POST":
+        return "Your post has been approved";
+      case "REJECT_POST":
+        return "Your post has been rejected";
+      case "LIKE_POST":
+        return `Liked your post`;
+      case "REPLY_POST":
+        return `Replied to your post`;
+      case "REPOST_POST":
+        return `Reposted your post`;
+      case "FOLLOW":
+        return `Followed you`;
+      case "REQUEST_FOLLOW":
+        return `Sent you a follow request`;
+      case "ACCEPT_FOLLOW":
+        return "Your follow request has been accepted";
+      default:
+        return "You have a new notification";
+    }
+  }
+
   const mapperMessageWithNotificationType = ({
     type,
   }: {
@@ -87,9 +112,9 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
       case "NEW_PENDING_POST":
         return `New pending post to review`;
       case "APPROVE_POST":
-        return "Your post has been approved";
+        return artifactPreview ? artifactPreview : "Your post has been approved";
       case "REJECT_POST":
-        return "Your post has been rejected";
+        return artifactPreview ? artifactPreview : "Your post has been rejected";
       case "LIKE_POST":
         return artifactPreview ? artifactPreview : `Liked your post`;
       case "REPLY_POST":
@@ -166,7 +191,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
           marginLeft: "20px",
         }}
       >
-        <Avatar size={45} src={avatarUrl || default_avatar} />
+        <Avatar size={45} src={lastActor ? (avatarUrl || default_avatar) : starLogo} />
         {mapperIconWithNotificationType(type)}
       </div>
       <div
@@ -180,33 +205,37 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
         }
       >
         <div>
-          <div
-            className="font-semibold"
-            style={{
-              cursor: "pointer",
-            }}
-            onClick={(e) => handleNavigateProfileUser(e, idOfLastActor)}
-          >
-            <Popover
-              content={popoverContent}
-              placement="bottomLeft"
-              trigger="hover"
-              overlayClassName="custom-popover"
-              arrow={false}
-              open={isPopoverVisibleUsername}
-              onOpenChange={handlePopoverUsernameVisibilityChange}
+          {lastActor && idOfLastActor ? (
+            <div
+              className="font-semibold"
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={(e) => handleNavigateProfileUser(e, idOfLastActor)}
             >
-              {username} {pluralSuffix} {""}
-              <span
-                style={{
-                  color: "#ababab",
-                  fontWeight: "400",
-                }}
+              <Popover
+                content={popoverContent}
+                placement="bottomLeft"
+                trigger="hover"
+                overlayClassName="custom-popover"
+                arrow={false}
+                open={isPopoverVisibleUsername}
+                onOpenChange={handlePopoverUsernameVisibilityChange}
               >
+                {username} {pluralSuffix} {""}
+                <span className="text-[#ababab] font-normal">
+                  {timeAgo(changeAt)}
+                </span>
+              </Popover>
+            </div>
+          ) : (
+            <div className="font-normal cursor-pointer">
+              {mapNotificationTypeToTitle(type)}{" "}
+              <span className="text-[#ababab] font-normal">
                 {timeAgo(changeAt)}
               </span>
-            </Popover>
-          </div>
+            </div>
+          )}
           <div
             style={{
               fontSize: "16px",

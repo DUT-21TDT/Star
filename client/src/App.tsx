@@ -1,22 +1,23 @@
-import { RouterProvider } from "react-router-dom";
+import {RouterProvider} from "react-router-dom";
 import router from "./router/router";
-import { ConfigProvider, message } from "antd";
-import { globalTheme } from "./utils/theme";
+import {ConfigProvider, message} from "antd";
+import {globalTheme} from "./utils/theme";
 import Cookies from "js-cookie";
-import { useEffect, useRef, useState } from "react";
-import { useAppDispatch } from "./redux/store/hook";
-import { getCurrentUser, handleRefreshToken } from "./service/userAPI";
-import { storeInformationUser } from "./redux/slice/user-slice";
+import {useEffect, useRef, useState} from "react";
+import {useAppDispatch} from "./redux/store/hook";
+import {getCurrentUser, handleRefreshToken} from "./service/userAPI";
+import {storeInformationUser} from "./redux/slice/user-slice";
 import "react-photo-view/dist/react-photo-view.css";
-import { Helmet, HelmetProvider } from "react-helmet-async";
-import { EventSource } from "eventsource";
+import {Helmet, HelmetProvider} from "react-helmet-async";
+import {EventSource} from "eventsource";
+
 interface INotificationType {
   id: string;
   type: string;
   artifactId: string;
   artifactType: string;
   artifactPreview: string;
-  lastActor: {
+  lastActor?: {
     id: string;
     username: string;
     avatarUrl: string;
@@ -73,10 +74,8 @@ function App() {
   };
 
   const mapperMessageFromEventSource = (data: INotificationType) => {
-    const {
-      type,
-      lastActor: { username },
-    } = data;
+    const { type, lastActor } = data;
+    const username = lastActor?.username || "Someone";
 
     switch (type) {
       case "NEW_PENDING_POST":

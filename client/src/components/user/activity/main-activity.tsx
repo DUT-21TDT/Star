@@ -1,13 +1,13 @@
-import { useQueryClient } from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 import ActivityItem from "./activity-item";
-import { useEffect, useRef, useState } from "react";
-import { QUERY_KEY } from "../../../utils/queriesKey";
-import { useGetNotification } from "../../../hooks/notification";
-import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import { debounce } from "lodash";
+import {useEffect, useRef, useState} from "react";
+import {QUERY_KEY} from "../../../utils/queriesKey";
+import {useGetNotification} from "../../../hooks/notification";
+import {Spin} from "antd";
+import {LoadingOutlined} from "@ant-design/icons";
+import {debounce} from "lodash";
 import "../../../assets/css/activitiy.css";
-import { EventSource } from "eventsource";
+import {EventSource} from "eventsource";
 import Cookies from "js-cookie";
 
 interface INotificationType {
@@ -16,7 +16,7 @@ interface INotificationType {
   artifactId: string;
   artifactType: string;
   artifactPreview: string;
-  lastActor: {
+  lastActor?: {
     id: string;
     username: string;
     avatarUrl: string;
