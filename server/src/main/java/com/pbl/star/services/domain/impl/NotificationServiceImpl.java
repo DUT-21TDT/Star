@@ -189,7 +189,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .notificationType(notificationType)
                     .ref(postId)
                     .artifactId(postId)
-                    .artifactType(ArtifactType.ROOM)
+                    .artifactType(ArtifactType.POST)
                     .artifactPreview(preview)
                     .isRead(false)
                     .build();
