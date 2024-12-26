@@ -40,7 +40,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
                 "   WHERE _nc.rn = 1" +
                 ") nc " +
                 "ON nob.notification_object_id = nc.notification_object_id " +
-                "INNER JOIN \"user\" u " +
+                "LEFT JOIN \"user\" u " +
                 "ON nc.actor_id = u.user_id " +
                 "WHERE n.receiver_id = :userId " +
                 (after != null ? "AND nc.change_at < :after " : "") +
@@ -64,7 +64,8 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
                         .artifactType(ArtifactType.valueOf((String) row[3]))
                         .isRead((Boolean) row[4])
                         .numberOfActors(((Long) row[7]).intValue())
-                        .lastActor(NotificationActor.builder()
+                        .lastActor(row[5] == null ? null :
+                                NotificationActor.builder()
                                 .id((String) row[5])
                                 .username((String) row[8])
                                 .avatarUrl((String) row[9])
