@@ -1,11 +1,19 @@
 import {Avatar, Popover} from "antd";
-import {IconFollowed, IconInformation, IconLiked, IconReposted,} from "./icon-activity";
+import {
+  IconApprove,
+  IconFollowed,
+  IconInformation,
+  IconLiked,
+  IconReject,
+  IconReply,
+  IconReposted,
+} from "./icon-activity";
 import React, {useState} from "react";
 import {timeAgo} from "../../../utils/convertTime";
 import ContainerInformationUser from "../profile/posts/container-information-user";
 import {useNavigate} from "react-router-dom";
 import default_avatar from "../../../assets/images/default_image.jpg";
-import starLogo from "../../../assets/images/logo_no_background.png";
+import starLogo from "../../../assets/images/starLogoWhite.svg";
 
 interface INotificationType {
   id: string;
@@ -66,51 +74,28 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
 
   const mapperIconWithNotificationType = (type: string) => {
     switch (type) {
-      case "FOLLOW || REQUEST_FOLLOW":
+      case "FOLLOW":
+      case "REQUEST_FOLLOW":
         return <IconFollowed />;
       case "LIKE_POST":
         return <IconLiked />;
       case "REPOST_POST":
         return <IconReposted />;
+      case "APPROVE_POST":
+        return <IconApprove />;
+      case "REJECT_POST":
+        return <IconReject />;
+      case "REPLY_POST":
+        return <IconReply />;
       default:
         return <IconInformation />;
     }
   };
 
-  const mapNotificationTypeToTitle = (type: string) => {
+  const mapperMessageWithNotificationType = (type: string) => {
     switch (type) {
       case "NEW_PENDING_POST":
-        return `New pending post to review`;
-      case "APPROVE_POST":
-        return "Your post has been approved";
-      case "REJECT_POST":
-        return "Your post has been rejected";
-      case "LIKE_POST":
-        return `Liked your post`;
-      case "REPLY_POST":
-        return `Replied to your post`;
-      case "REPOST_POST":
-        return `Reposted your post`;
-      case "FOLLOW":
-        return `Followed you`;
-      case "REQUEST_FOLLOW":
-        return `Sent you a follow request`;
-      case "ACCEPT_FOLLOW":
-        return "Your follow request has been accepted";
-      default:
-        return "You have a new notification";
-    }
-  }
-
-  const mapperMessageWithNotificationType = ({
-    type,
-  }: {
-    type: string;
-    numberOfActors: number;
-  }) => {
-    switch (type) {
-      case "NEW_PENDING_POST":
-        return `New pending post to review`;
+        return `Have posted in ${artifactPreview}`;
       case "APPROVE_POST":
         return artifactPreview ? artifactPreview : "Your post has been approved";
       case "REJECT_POST":
@@ -192,7 +177,9 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
         }}
       >
         <Avatar size={45} src={lastActor ? (avatarUrl || default_avatar) : starLogo} />
-        {mapperIconWithNotificationType(type)}
+        <div className="absolute -bottom-1.5 right-0 rounded-full">
+          {mapperIconWithNotificationType(type)}
+        </div>
       </div>
       <div
         className="flex items-center justify-between w-full pb-5"
@@ -229,8 +216,8 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
               </Popover>
             </div>
           ) : (
-            <div className="font-normal cursor-pointer">
-              {mapNotificationTypeToTitle(type)}{" "}
+            <div className="flex font-semibold cursor-pointer gap-1">
+              {"Moderators"}
               <span className="text-[#ababab] font-normal">
                 {timeAgo(changeAt)}
               </span>
@@ -248,7 +235,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
               textOverflow: "ellipsis",
             }}
           >
-            {mapperMessageWithNotificationType({ type, numberOfActors })}
+            {mapperMessageWithNotificationType(type)}
           </div>
         </div>
       </div>
