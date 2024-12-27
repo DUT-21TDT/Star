@@ -115,7 +115,8 @@ function App() {
       }
     };
 
-    eventSource.onerror = () => {
+    eventSource.onerror = (error) => {
+      console.error(error);
       eventSource.close();
     };
 
