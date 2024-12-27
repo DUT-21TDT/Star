@@ -9,7 +9,6 @@ import {getCurrentUser, handleRefreshToken} from "./service/userAPI";
 import {storeInformationUser} from "./redux/slice/user-slice";
 import "react-photo-view/dist/react-photo-view.css";
 import {Helmet, HelmetProvider} from "react-helmet-async";
-import ReconnectingEventSource from "reconnecting-eventsource";
 
 interface INotificationType {
   id: string;
@@ -110,7 +109,7 @@ function App() {
       return;
     }
 
-    const eventSource = new ReconnectingEventSource(
+    const eventSource = new EventSource(
       `${import.meta.env.VITE_BACKEND_URL}/notifications/sse-stream?userId=${id}`,
     );
 
@@ -129,6 +128,7 @@ function App() {
     eventSourceRef.current = eventSource;
 
     return () => {
+      console.log("Close event source");
       eventSource.close()
       // if (eventSourceRef.current) {
       //   eventSourceRef.current.close();
