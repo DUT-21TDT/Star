@@ -2,7 +2,6 @@ package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.services.external.SSEManager;
 import com.pbl.star.usecase.enduser.ManageNotificationUsecase;
-import com.pbl.star.utils.AuthUtil;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +35,7 @@ public class NotificationController {
 
     @GetMapping(value = "/sse-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @PreAuthorize("hasAuthority('USER')")
-    public Flux<String> streamNotifications() {
-        String userId = AuthUtil.getCurrentUser().getId();
+    public Flux<String> streamNotifications(@RequestParam String userId) {
         Sinks.Many<String> sink = sseManager.getUserSink(userId);
 
         return sink.asFlux()

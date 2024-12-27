@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/h2-console", "/h2-console/**").permitAll();
                     authorize.requestMatchers("auth/sign-up", "auth/confirm-sign-up").permitAll();
+                    authorize.requestMatchers("notifications/sse-stream").permitAll();
                     authorize.anyRequest().authenticated();
                 })
                 .oauth2ResourceServer(
