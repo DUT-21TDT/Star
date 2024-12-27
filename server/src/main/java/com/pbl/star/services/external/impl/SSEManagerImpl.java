@@ -40,7 +40,10 @@ public class SSEManagerImpl implements SSEManager {
                     sink.tryEmitNext("");
                 }
                 String jsonNotification = objectMapper.writeValueAsString(notification);
-                sink.tryEmitNext(jsonNotification);
+                Sinks.EmitResult result = sink.tryEmitNext(jsonNotification);
+                if (result.isFailure()) {
+                    logger.warn("Failed to emit notification to user {}: {}", userId, result);
+                }
             } catch (Exception e) {
                 logger.error("Error when sending notification to user " + userId, e);
             }

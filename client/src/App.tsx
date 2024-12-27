@@ -4,12 +4,11 @@ import {ConfigProvider, message} from "antd";
 import {globalTheme} from "./utils/theme";
 import Cookies from "js-cookie";
 import {useEffect, useRef, useState} from "react";
-import {useAppDispatch} from "./redux/store/hook";
+import {useAppDispatch, useAppSelector} from "./redux/store/hook";
 import {getCurrentUser, handleRefreshToken} from "./service/userAPI";
 import {storeInformationUser} from "./redux/slice/user-slice";
 import "react-photo-view/dist/react-photo-view.css";
 import {Helmet, HelmetProvider} from "react-helmet-async";
-import {EventSource} from "eventsource";
 
 interface INotificationType {
   id: string;
@@ -101,19 +100,13 @@ function App() {
     }
   };
 
+  const { id } = useAppSelector(
+    (state) => state.user
+  );
+
   useEffect(() => {
     const eventSource = new EventSource(
-      `${import.meta.env.VITE_BACKEND_URL}/notifications/sse-stream`,
-      {
-        fetch: (input, init) =>
-          fetch(input, {
-            ...init,
-            headers: {
-              ...init?.headers,
-              Authorization: `Bearer ${Cookies.get("access_token")}`,
-            },
-          }),
-      }
+      `${import.meta.env.VITE_BACKEND_URL}/notifications/sse-stream?userId=${id}`,
     );
 
     eventSource.onmessage = (event) => {
@@ -122,8 +115,7 @@ function App() {
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error(error);
+    eventSource.onerror = () => {
       eventSource.close();
     };
 
@@ -134,7 +126,7 @@ function App() {
         eventSourceRef.current.close();
       }
     };
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (access_token) {

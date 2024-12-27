@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
+import reactor.core.publisher.SignalType;
 
 import java.time.Instant;
 
@@ -35,10 +35,14 @@ public class NotificationController {
 
     @GetMapping(value = "/sse-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> streamNotifications(@RequestParam String userId) {
-        Sinks.Many<String> sink = sseManager.getUserSink(userId);
 
-        return sink.asFlux()
+        sseManager.removeUserSink(userId);
+        return sseManager.getUserSink(userId)
+                .asFlux()
                 .doFinally(signalType -> {
-                    sseManager.removeUserSink(userId);
+                    if (signalType == SignalType.CANCEL) {
+                        sseManager.removeUserSink(userId);
+                    }
                 });
-    }}
+    }
+}
