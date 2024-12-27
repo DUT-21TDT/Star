@@ -24,6 +24,7 @@ jobs:
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
       FRONTEND_PORT: ${{ secrets.FRONTEND_PORT_DEV }}
       BACKEND_PORT: ${{ secrets.BACKEND_PORT_DEV }}
+      BACKEND_PORT_2: ${{ secrets.BACKEND_PORT_2_DEV }}
       AUTH_PORT: ${{ secrets.AUTH_PORT_DEV }}
       DATABASE_PORT: ${{ secrets.DATABASE_PORT_DEV }}
       VOLUME_PATH: ${{ secrets.VOLUME_PATH_DEV }}
