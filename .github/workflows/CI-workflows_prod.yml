@@ -100,6 +100,7 @@ jobs:
           echo "SHA=${{ env.SHA }}" >> .env
           echo "FRONTEND_PORT=${{ env.FRONTEND_PORT }}" >> .env
           echo "BACKEND_PORT=${{ env.BACKEND_PORT }}" >> .env
+          echo "BACKEND_PORT_2=${{ env.BACKEND_PORT_2 }}" >> .env
           echo "AUTH_PORT=${{ env.AUTH_PORT }}" >> .env
           echo "DATABASE_PORT=${{ env.DATABASE_PORT }}" >> .env
           echo "AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }}" >> .env
