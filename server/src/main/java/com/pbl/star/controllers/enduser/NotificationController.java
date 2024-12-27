@@ -34,7 +34,6 @@ public class NotificationController {
     }
 
     @GetMapping(value = "/sse-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    @PreAuthorize("hasAuthority('USER')")
     public Flux<String> streamNotifications(@RequestParam String userId) {
         Sinks.Many<String> sink = sseManager.getUserSink(userId);
 
