@@ -24,7 +24,8 @@ public class SSEManagerImpl implements SSEManager {
     private final Map<String, Sinks.Many<String>> userConnections = new ConcurrentHashMap<>();
 
     public Sinks.Many<String> getUserSink(String userId) {
-        return userConnections.computeIfAbsent(userId, id -> Sinks.many().multicast().onBackpressureBuffer());
+        userConnections.put(userId, Sinks.many().multicast().onBackpressureBuffer());
+        return userConnections.get(userId);
     }
 
     public void removeUserSink(String userId) {
