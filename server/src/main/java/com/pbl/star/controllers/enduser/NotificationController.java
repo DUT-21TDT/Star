@@ -34,6 +34,6 @@ public class NotificationController {
 
     @GetMapping(value = "/sse-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> streamNotifications(@RequestParam String userId) {
-        return sseManager.getUserSink(userId).asFlux();
+        return sseManager.getUserFlux(userId);
     }
 }

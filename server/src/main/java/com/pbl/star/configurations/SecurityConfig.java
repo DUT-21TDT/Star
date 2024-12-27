@@ -40,7 +40,11 @@ public class SecurityConfig {
                         header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 )
                 .authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers("home", "auth/sign-up", "auth/confirm-sign-up", "notifications/sse-stream").permitAll();
+                    authorize.requestMatchers("home",
+                            "auth/sign-up",
+                            "auth/confirm-sign-up",
+                            "notifications/sse-stream",
+                            "/notifications/sse-stream").permitAll();
                     authorize.anyRequest().authenticated();
                 })
                 .oauth2ResourceServer(
