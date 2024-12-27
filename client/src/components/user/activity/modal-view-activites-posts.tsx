@@ -129,7 +129,6 @@ const StatCard: React.FC<StatCardProps> = ({
           }}
         >
           {count}{" "}
-          {label !== "Views" ? (
             <span>
               <svg
                 aria-label="Next"
@@ -139,14 +138,12 @@ const StatCard: React.FC<StatCardProps> = ({
                 width={16}
                 fill="none"
                 stroke="#000000"
+                opacity={label !== "Views" ? 1 : 0}
               >
                 <title>Next</title>
                 <polyline points="7.498 3 16.502 12 7.498 21"></polyline>
               </svg>
             </span>
-          ) : (
-            ""
-          )}
         </div>
       </div>
     </div>

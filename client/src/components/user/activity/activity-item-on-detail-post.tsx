@@ -1,17 +1,17 @@
-import { Avatar, Button, message, Popover } from "antd";
+import {Avatar, Button, message, Popover} from "antd";
 import {
-  IconFollowed,
   IconInformation,
   IconLiked,
+  IconReply,
   IconReposted,
 } from "./icon-activity";
-import React, { useEffect, useState } from "react";
-import { timeAgo } from "../../../utils/convertTime";
+import React, {useEffect, useState} from "react";
+import {timeAgo} from "../../../utils/convertTime";
 import ContainerInformationUser from "../profile/posts/container-information-user";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import default_avatar from "../../../assets/images/default_image.jpg";
-import { useFollowUser, useUnfollowUser } from "../../../hooks/user";
-import { useAppSelector } from "../../../redux/store/hook";
+import {useFollowUser, useUnfollowUser} from "../../../hooks/user";
+import {useAppSelector} from "../../../redux/store/hook";
 
 interface IActivityItemPostDetail {
   userId: string;
@@ -30,10 +30,11 @@ interface IProps {
     React.SetStateAction<IActivityItemPostDetail[]>
   >;
 }
+
 const ActivityItemOnPostDetail: React.FC<IProps> = ({
-  data,
-  setAllActivitiesOnDetailPost,
-}) => {
+                                                      data,
+                                                      setAllActivitiesOnDetailPost,
+                                                    }) => {
   const {
     userId,
     username,
@@ -98,19 +99,19 @@ const ActivityItemOnPostDetail: React.FC<IProps> = ({
 
   const mapperIconWithNotificationType = (type: string) => {
     switch (type) {
-      case "REPLY":
-        return <IconInformation />;
       case "LIKE":
         return <IconLiked />;
       case "REPOST":
         return <IconReposted />;
+      case "REPLY":
+        return <IconReply />;
       default:
-        return <IconFollowed />;
+        return <IconInformation />;
     }
   };
 
-  const { mutate: unfollowUser } = useUnfollowUser();
-  const { mutate: followUser } = useFollowUser();
+  const {mutate: unfollowUser} = useUnfollowUser();
+  const {mutate: followUser} = useFollowUser();
 
   const isCurrentPeopleItem =
     useAppSelector((state) => state.user.id) === userId;
@@ -122,7 +123,7 @@ const ActivityItemOnPostDetail: React.FC<IProps> = ({
         setAllActivitiesOnDetailPost((prev) =>
           prev.map((item) =>
             item.userId === userId
-              ? { ...item, followStatus: "NOT_FOLLOWING" }
+              ? {...item, followStatus: "NOT_FOLLOWING"}
               : item
           )
         );
@@ -141,7 +142,7 @@ const ActivityItemOnPostDetail: React.FC<IProps> = ({
           setAllActivitiesOnDetailPost((prev) =>
             prev.map((item) =>
               item.userId === userId
-                ? { ...item, followStatus: "FOLLOWING" }
+                ? {...item, followStatus: "FOLLOWING"}
                 : item
             )
           );
@@ -150,7 +151,7 @@ const ActivityItemOnPostDetail: React.FC<IProps> = ({
           setAllActivitiesOnDetailPost((prev) =>
             prev.map((item) =>
               item.userId === userId
-                ? { ...item, followStatus: "REQUESTED" }
+                ? {...item, followStatus: "REQUESTED"}
                 : item
             )
           );
@@ -176,8 +177,10 @@ const ActivityItemOnPostDetail: React.FC<IProps> = ({
           marginLeft: "20px",
         }}
       >
-        <Avatar size={45} src={avatarUrl || default_avatar} />
-        {mapperIconWithNotificationType(interactType)}
+        <Avatar size={45} src={avatarUrl || default_avatar}/>
+        <div className="absolute -bottom-1.5 right-0 rounded-full">
+          {mapperIconWithNotificationType(interactType)}
+        </div>
       </div>
       <div
         className="flex items-center justify-between w-full pb-5"
@@ -242,8 +245,8 @@ const ActivityItemOnPostDetail: React.FC<IProps> = ({
               currentFollowStatus === "FOLLOWING"
                 ? "#bdbdbd"
                 : currentFollowStatus === "REQUESTED"
-                ? "#9e9e9e"
-                : "black",
+                  ? "#9e9e9e"
+                  : "black",
             fontWeight: 500,
             width: "120px",
             borderRadius: "8px",
@@ -266,8 +269,8 @@ const ActivityItemOnPostDetail: React.FC<IProps> = ({
           {currentFollowStatus === "FOLLOWING"
             ? "Following"
             : currentFollowStatus === "REQUESTED"
-            ? "Requested"
-            : "Follow"}
+              ? "Requested"
+              : "Follow"}
         </Button>
       </div>
     </div>

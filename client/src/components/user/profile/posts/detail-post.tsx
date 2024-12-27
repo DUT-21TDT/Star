@@ -93,7 +93,7 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
           className=" text-[15px] text-[#c3c3c3] hover:cursor-pointer"
           onClick={() => setIsOpenModal(!isOpenModal)}
         >
-          View activity
+          View activities
         </div>
       </div>
       <ListReplyPost postId={postId} />
