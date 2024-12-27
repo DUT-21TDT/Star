@@ -37,11 +37,11 @@ interface ISuggestionItem {
 }
 
 const SuggestionPeopleOnNewFeed = () => {
-  const { username, avatarUrl, firstName, lastName } = useAppSelector(
+  const { id, username, avatarUrl, firstName, lastName } = useAppSelector(
     (state) => state.user
   );
   const { data } = useGetListSuggestion();
-  const navgiate = useNavigate();
+  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
   const handleLogout = async () => {
@@ -55,6 +55,14 @@ const SuggestionPeopleOnNewFeed = () => {
     window.location.href = "/login";
   };
 
+  const handleNavigateProfileUser = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (id) {
+      navigate(`/profile/${id}`);
+      window.scrollTo(0, 0);
+    }
+  };
+
   return (
     <div>
       <div
@@ -66,62 +74,62 @@ const SuggestionPeopleOnNewFeed = () => {
           padding: "15px 15px 0px 15px",
         }}
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "auto 1fr auto",
-            alignItems: "center",
-            gap: "15px",
-          }}
-        >
-          <Avatar src={avatarUrl || default_avatar} size={45} />
-          <div>
-            <h4
-              style={{
-                fontWeight: 500,
-                display: "-webkit-box",
-                WebkitLineClamp: 1,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {username}
-            </h4>
-            <p
-              style={{
-                fontSize: "14px",
-                fontWeight: 400,
-                color: "#8e8e8e",
-                display: "-webkit-box",
-                WebkitLineClamp: 1,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {firstName || lastName ? (
-                <div className="text-[14px] text-gray-500">
-                  {`${firstName || ""} ${lastName || ""}`}
-                </div>
-              ) : (
-                <div className="text-[14px] text-gray-500">{username}</div>
-              )}
-            </p>
+        <div className="flex items-center justify-between">
+          {/* User */}
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={handleNavigateProfileUser}
+          >
+            <Avatar src={avatarUrl || default_avatar} size={45} />
+            <div>
+              <h4
+                style={{
+                  fontWeight: 500,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 1,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {username}
+              </h4>
+              <p
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  color: "#8e8e8e",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 1,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {(firstName || lastName) ? (
+                  <div className="text-[14px] text-gray-500">
+                    {`${firstName || ""} ${lastName || ""}`}
+                  </div>
+                ) : (
+                  <div className="text-[14px] text-gray-500">{username}</div>
+                )}
+              </p>
+            </div>
           </div>
+          {/* Switch */}
           <p
             style={{
               fontSize: "14px",
               fontWeight: 500,
-              color: "black",
+              color: "#ff3040",
               cursor: "pointer",
             }}
             onClick={handleLogout}
           >
-            Switch
+            Log out
           </p>
         </div>
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-between py-1 mt-5">
           <h3
             style={{
               fontSize: "16px",
@@ -139,13 +147,13 @@ const SuggestionPeopleOnNewFeed = () => {
               cursor: "pointer",
             }}
             onClick={() => {
-              navgiate("/search");
+              navigate("/search");
             }}
           >
             See all
           </div>
         </div>
-        <div>
+        <div className="py-3 space-y-2">
           {data &&
             data.map((item: ISuggestionItem) => <SuggestionItem data={item} />)}
         </div>

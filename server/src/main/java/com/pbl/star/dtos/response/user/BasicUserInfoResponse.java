@@ -10,6 +10,8 @@ import lombok.Setter;
 public class BasicUserInfoResponse {
     private String id;
     private String username;
+    private String firstName;
+    private String lastName;
     private String avatarUrl;
     private UserRole role;
     private AccountStatus status;

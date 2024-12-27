@@ -130,19 +130,19 @@ const SuggestionItem: React.FC<IProps> = ({ data }) => {
         const { repName, count } = commonRoomRelation;
         return (
           `Connected through ${repName}'s room` +
-          (count > 1 ? ` + ${count - 1} More` : "")
+          (count > 1 ? ` + ${count - 1} more` : "")
         );
       }
       case "MUTUAL_FOLLOWING": {
         const { repName, count } = mutualFollowingRelation;
         return (
-          `Followed by ${repName}` + (count > 1 ? ` + ${count - 1} More` : "")
+          `Also follow ${repName}` + (count > 1 ? ` + ${count - 1} more` : "")
         );
       }
       case "MUTUAL_FRIEND": {
         const { repName, count } = mutualFriendRelation;
         return (
-          `Followed by ${repName}` + (count > 1 ? ` + ${count - 1} More` : "")
+          `Followed by ${repName}` + (count > 1 ? ` + ${count - 1} more` : "")
         );
       }
       default:
@@ -152,17 +152,13 @@ const SuggestionItem: React.FC<IProps> = ({ data }) => {
 
   return (
     <div
-      className="w-full flex items-start gap-3 my-3"
+      className="w-full flex items-start gap-3"
       style={{
         paddingBottom: "5px",
       }}
     >
-      <div
-        style={{
-          position: "relative",
-        }}
-      >
-        <Avatar size={45} src={avatarUrl || default_avatar} />
+      <div className="relative pt-0.5">
+        <Avatar size={40} src={avatarUrl || default_avatar} />
       </div>
       <div
         className="flex items-center justify-between w-full pb-5 gap-2"
@@ -170,9 +166,9 @@ const SuggestionItem: React.FC<IProps> = ({ data }) => {
           paddingBottom: "10px",
         }}
       >
-        <div>
+        <div className="items-center">
           <div
-            className="font-semibold"
+            className="font-semibold text-sm"
             style={{
               cursor: "pointer",
             }}
@@ -214,8 +210,8 @@ const SuggestionItem: React.FC<IProps> = ({ data }) => {
               currentFollowStatus === "FOLLOWING"
                 ? "#bdbdbd"
                 : currentFollowStatus === "REQUESTED"
-                ? "#9e9e9e"
-                : "black",
+                  ? "#9e9e9e"
+                  : "black",
             fontWeight: 500,
             flexShrink: 0,
             width: "80px",
@@ -238,8 +234,8 @@ const SuggestionItem: React.FC<IProps> = ({ data }) => {
           {currentFollowStatus === "FOLLOWING"
             ? "Following"
             : currentFollowStatus === "REQUESTED"
-            ? "Requested"
-            : "Follow"}
+              ? "Requested"
+              : "Follow"}
         </Button>
       </div>
     </div>

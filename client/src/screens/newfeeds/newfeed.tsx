@@ -239,7 +239,7 @@ const NewFeed = () => {
       </Helmet>
       <ConfigProvider theme={newFeedsTheme}>
         <div
-          className="w-full flex justify-center bg-[#fafafa] gap-8"
+          className="w-full flex justify-center bg-[#fafafa] gap-12"
           style={{
             minWidth: `${
               pinnedCount < 2

@@ -18,7 +18,7 @@ import default_avatar from "../../../assets/images/default_image.jpg";
 import { addPinPageToRedux } from "../../../redux/slice/user-slice";
 import optionPin from "../../../utils/optionPin";
 
-const SideBar: React.FC = () => {
+const MiniSidebar: React.FC = () => {
   const id = useAppSelector((state) => state.user.id);
   const avatarUrl = useAppSelector((state) => state.user.avatarUrl);
   const icons = [
@@ -160,7 +160,7 @@ const SideBar: React.FC = () => {
 
   return (
     <div
-      className=" w-[240px] h-[calc(100vh)] flex flex-col justify-start items-center pt-5 pb-5 pl-5 pr-2"
+      className=" w-[100px] h-[calc(100vh)] flex flex-col justify-start items-center pt-5 pb-5 pl-4 pr-4"
       style={{
         position: "fixed",
         zIndex: "10",
@@ -177,17 +177,16 @@ const SideBar: React.FC = () => {
       <div className="flex-grow flex flex-col items-start gap-4 w-full">
         {icons.map(
           ({
-            name,
-            component: IconComponent,
-            width,
-            height,
-            navigate: iconNavigate,
-            key,
-            displayText,
-          }) => (
+             name,
+             component: IconComponent,
+             width,
+             height,
+             navigate: iconNavigate,
+             key,
+           }) => (
             <div
               key={name}
-              className="div-hover w-full flex items-center justify-start gap-2"
+              className="div-hover w-full items-center justify-center"
               onClick={() => {
                 if (name === "plus") {
                   setOpenModalCreatePost(true);
@@ -212,10 +211,6 @@ const SideBar: React.FC = () => {
                   />
                 )}{" "}
               </div>
-
-              <span className={`text-base ${activeIcon === name ? 'text-black font-bold ' : 'text-gray-500 font-semibold'}`}>
-                {displayText}
-              </span>
             </div>
           )
         )}
@@ -236,20 +231,14 @@ const SideBar: React.FC = () => {
         >
           <div className="div-hover w-full flex items-center justify-start pl-3 gap-4">
             <PinIcon width="28" height="28" />
-            <span className={`text-base ${activeIcon === "pin" ? 'text-black font-bold ' : 'text-gray-500 font-semibold'}`}>
-              Pin
-            </span>
           </div>
         </Dropdown>
         <div className="div-hover w-full flex items-center justify-start pl-3 gap-4">
           <MenuIcon width="30" height="30"/>
-          <span className={`text-base ${activeIcon === "pin" ? 'text-black font-bold ' : 'text-gray-500 font-semibold'}`}>
-            More
-          </span>
         </div>
       </div>
     </div>
   );
 };
 
-export default SideBar;
+export default MiniSidebar;

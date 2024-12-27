@@ -27,3 +27,21 @@
   stroke: black;
   cursor: pointer;
 }
+
+@media (min-width: 1320px) {
+  .sidebar {
+    display: block;
+  }
+  .mini-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 1319px) {
+  .sidebar {
+    display: none;
+  }
+  .mini-sidebar {
+    display: block;
+  }
+}
