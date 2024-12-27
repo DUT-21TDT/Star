@@ -2,7 +2,6 @@ import { Avatar } from "antd";
 import { useAppDispatch, useAppSelector } from "../../../redux/store/hook";
 import { useGetListSuggestion } from "../../../hooks/suggestion";
 import SuggestionItem from "./suggestion-item";
-import react from "../../../assets/images/QR.svg";
 import { useNavigate } from "react-router-dom";
 import { endSession, revokeToken } from "../../../service/userAPI";
 import Cookies from "js-cookie";
@@ -35,6 +34,76 @@ interface ISuggestionItem {
   suggestType: string;
   totalRelationScore: number;
 }
+
+const FooterLinks = () => {
+  const linkStyle = {
+    textDecoration: "none",
+    fontWeight: "500",
+    color: "#8e8e8e",
+    fontSize: "14px",
+  };
+
+  const spanStyle = {
+    margin: "0 5px",
+    color: "#aaa",
+  };
+
+  return (
+    <div
+      style={{
+        textAlign: "left",
+        fontSize: "12px",
+        color: "#aaa",
+        lineHeight: "1.5",
+        width: "400px",
+        wordWrap: "break-word",
+        marginTop: "12px",
+        marginBottom: "12px",
+        paddingLeft: "4px",
+      }}
+    >
+      <a href="#" style={linkStyle}>
+        About
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        Help
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        Press
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        API
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        Jobs
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        Privacy
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        Terms
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        Locations
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        Language
+      </a>
+      <span style={spanStyle}>·</span>
+      <a href="#" style={linkStyle}>
+        Contact
+      </a>
+    </div>
+  );
+};
 
 const SuggestionPeopleOnNewFeed = () => {
   const { id, username, avatarUrl, firstName, lastName } = useAppSelector(
@@ -106,7 +175,7 @@ const SuggestionPeopleOnNewFeed = () => {
                   textOverflow: "ellipsis",
                 }}
               >
-                {(firstName || lastName) ? (
+                {firstName || lastName ? (
                   <div className="text-[14px] text-gray-500">
                     {`${firstName || ""} ${lastName || ""}`}
                   </div>
@@ -158,56 +227,19 @@ const SuggestionPeopleOnNewFeed = () => {
             data.map((item: ISuggestionItem) => <SuggestionItem data={item} />)}
         </div>
       </div>
-      <div>
-        <div
-          style={{
-            padding: "5px",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "16px",
-              fontWeight: 500,
-              color: "#8e8e8e",
-            }}
-          >
-            Download mobile app
-          </p>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "white",
-              width: "150px",
-              height: "150px",
-              borderRadius: "20px",
-              marginTop: "5px",
-            }}
-          >
-            <img
-              src={react}
-              alt="qr"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-                objectPosition: "center",
-              }}
-            />
-          </div>
-        </div>
-        <div
-          style={{
-            marginTop: "8px",
-            fontWeight: "500",
-            color: "#8e8e8e",
-            fontSize: "14px",
-            paddingRight: "10px",
-          }}
-        >
-          © 2024 STAR FROM WAD
-        </div>
+
+      <FooterLinks />
+      <div
+        style={{
+          marginTop: "8px",
+          fontWeight: "500",
+          color: "#8e8e8e",
+          fontSize: "14px",
+          paddingRight: "10px",
+          paddingLeft: "4px",
+        }}
+      >
+        © 2024 STAR FROM WAD
       </div>
     </div>
   );

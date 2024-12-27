@@ -134,7 +134,7 @@ const ModalEditProfile: React.FC<IProps> = ({ openModal, setOpenModal }) => {
       email: formValues.email,
       avatarFileName: avatarFileName ? `avatar/${avatarFileName}` : "",
       dateOfBirth: formValues?.dateofbirth?.format("DD/MM/YYYY") || null,
-      gender: formValues.gender,
+      gender: formValues?.gender || null,
       privateProfile,
     };
     if (!dataEdit.username) {

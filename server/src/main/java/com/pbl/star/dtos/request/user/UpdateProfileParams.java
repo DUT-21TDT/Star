@@ -24,7 +24,7 @@ public class UpdateProfileParams {
     private String avatarFileName;
     private String dateOfBirth;
 
-    @Pattern(regexp = "^(MALE|FEMALE)$", message = "Gender must be either MALE or FEMALE")
+    @Pattern(regexp = "^(MALE|FEMALE)?$", message = "Gender must be either MALE or FEMALE")
     private String gender;
 
     @NotNull(message = "Private profile cannot be null")

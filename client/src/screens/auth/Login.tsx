@@ -1,6 +1,6 @@
 import React from "react";
 import imageSignup from "../../assets/images/login.webp";
-import { ConfigProvider, Divider, message, QRCode } from "antd";
+import { ConfigProvider, Divider, message } from "antd";
 import { Link } from "react-router-dom";
 import { LoginTheme } from "../../utils/theme";
 import "../../assets/css/login.css";
@@ -110,13 +110,6 @@ const Login: React.FC = () => {
           </div>
           <Divider style={{ color: "#bdbdbd" }}>or</Divider>
           <GoogleLoginButton />
-        </div>
-        <div className="w-[250px] h-[250px] absolute right-0 bottom-0 p-5 flex flex-col items-center justify-center gap-2">
-          <div className="text-[13px] text-gray-400 font-normal">
-            Scan to get the app
-          </div>
-
-          <QRCode type="canvas" value="https://ant.design/" />
         </div>
       </div>
     </ConfigProvider>

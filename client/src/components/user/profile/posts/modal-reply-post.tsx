@@ -138,8 +138,11 @@ const ModalReplyPost: React.FC<IProps> = ({
         message.success("Reply this post successfully");
         setCommentCount((prev: number) => prev + 1);
       },
-      onError: () => {
-        message.error("Reply this post failed. Please try again later");
+      onError: (error) => {
+        console.error(error);
+        message.error(
+          "Room does not exist, or you are not a member of the room"
+        );
         setLoading(false);
       },
     });

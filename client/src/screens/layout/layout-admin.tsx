@@ -5,7 +5,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import HeaderAdmin from "../../components/admin/layout-admin/header-admin";
 import {
   CreditCardOutlined,
-  HomeOutlined,
   UserOutlined,
   DeploymentUnitOutlined,
 } from "@ant-design/icons";
@@ -23,22 +22,21 @@ const LayoutAdmin = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const urls = ["", "users", "posts", "rooms"];
+  const urls = ["users", "posts", "rooms"];
 
   //Add env variable to get the current key from the url
   const currentKey =
     urls.findIndex(
       (url) => url && location.pathname.startsWith(`/admin/${url}`)
     ) + 1;
-  const label = ["Dashboard", "User", "Post", "Room"];
+  const label = ["User", "Post", "Room"];
   const icons = [
-    <HomeOutlined />,
     <UserOutlined />,
     <CreditCardOutlined />,
     <DeploymentUnitOutlined />,
   ];
 
-  const items = Array.from({ length: 4 }, (_, i) => ({
+  const items = Array.from({ length: 3 }, (_, i) => ({
     key: `${i + 1}`,
     icon: icons[i],
     label: label[i],
