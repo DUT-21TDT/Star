@@ -9,6 +9,7 @@ import {getCurrentUser, handleRefreshToken} from "./service/userAPI";
 import {storeInformationUser} from "./redux/slice/user-slice";
 import "react-photo-view/dist/react-photo-view.css";
 import {Helmet, HelmetProvider} from "react-helmet-async";
+import ReconnectingEventSource from "reconnecting-eventsource";
 
 interface INotificationType {
   id: string;
@@ -105,11 +106,16 @@ function App() {
   );
 
   useEffect(() => {
-    const eventSource = new EventSource(
+    if (!id) {
+      return;
+    }
+
+    const eventSource = new ReconnectingEventSource(
       `${import.meta.env.VITE_BACKEND_URL}/notifications/sse-stream?userId=${id}`,
     );
 
     eventSource.onmessage = (event) => {
+      console.log("New message:", event.data);
       if (event.data) {
         message.info(mapperMessageFromEventSource(JSON.parse(event.data)));
       }
@@ -123,9 +129,10 @@ function App() {
     eventSourceRef.current = eventSource;
 
     return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
+      eventSource.close()
+      // if (eventSourceRef.current) {
+      //   eventSourceRef.current.close();
+      // }
     };
   }, [id]);
 
