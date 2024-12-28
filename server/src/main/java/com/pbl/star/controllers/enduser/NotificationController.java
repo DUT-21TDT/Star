@@ -33,7 +33,12 @@ public class NotificationController {
     }
 
     @GetMapping(value = "/sse-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> streamNotifications(@RequestParam String userId) {
-        return sseManager.getUserFlux(userId);
+    public ResponseEntity<Flux<String>> streamNotifications(@RequestParam String userId) {
+        Flux<String> stream = sseManager.getUserFlux(userId);
+
+        return ResponseEntity.ok()
+                .header("Transfer-Encoding", "identity") // Đảm bảo Transfer-Encoding là identity
+                .header("Cache-Control", "no-store") // Ngăn caching, phù hợp cho SSE
+                .body(stream);
     }
 }
