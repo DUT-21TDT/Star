@@ -116,7 +116,7 @@ function App() {
     eventSource.onmessage = (event) => {
       console.log("New message:", event.data);
       if (event.data) {
-        message.info(mapperMessageFromEventSource(JSON.parse(event.data)));
+        message.info(mapperMessageFromEventSource(JSON.parse(event.data.substring(6))));
       }
     };
 

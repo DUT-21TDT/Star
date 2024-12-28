@@ -6,5 +6,6 @@ import reactor.core.publisher.Flux;
 
 public interface SSEManager {
     Flux<String> getUserFlux(String userId);
+    void removeUser(String userId);
     void sendNotification(@NonNull String userId, NotificationForUserResponse notification);
 }

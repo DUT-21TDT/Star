@@ -29,16 +29,21 @@ public class SSEManagerImpl implements SSEManager {
             emitter.onDispose(() -> subscribers.remove(userId));
         });    }
 
+    @Override
+    public void removeUser(String userId) {
+        subscribers.remove(userId);
+    }
+
     public void sendNotification(@NonNull String userId, NotificationForUserResponse notification) {
         FluxSink<String> flux = subscribers.get(userId);
 
         if (flux != null) {
             try {
                 if (notification == null) {
-                    flux.next("");
+                    flux.next(": keep-alive\n\n"); // Send a comment as keep-alive signal
                 }
                 String jsonNotification = objectMapper.writeValueAsString(notification);
-                flux.next(jsonNotification);
+                flux.next("data: " + jsonNotification + "\n\n");
             } catch (Exception e) {
                 logger.error("Error when sending notification to user " + userId, e);
             }

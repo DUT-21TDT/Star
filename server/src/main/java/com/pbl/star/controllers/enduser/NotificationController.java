@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.SignalType;
 
 import java.time.Instant;
 
@@ -34,7 +35,12 @@ public class NotificationController {
 
     @GetMapping(value = "/sse-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<Flux<String>> streamNotifications(@RequestParam String userId) {
-        Flux<String> stream = sseManager.getUserFlux(userId);
+        Flux<String> stream = sseManager.getUserFlux(userId)
+                .doFinally(signalType -> {
+                    if (signalType == SignalType.CANCEL) {
+                        sseManager.removeUser(userId);
+                    }
+                });
 
         return ResponseEntity.ok()
                 .header("Transfer-Encoding", "identity") // Đảm bảo Transfer-Encoding là identity
