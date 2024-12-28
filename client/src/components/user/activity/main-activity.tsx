@@ -7,8 +7,6 @@ import {Spin} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import {debounce} from "lodash";
 import "../../../assets/css/activitiy.css";
-import {EventSource} from "eventsource";
-import Cookies from "js-cookie";
 
 interface INotificationType {
   id: string;
@@ -40,7 +38,7 @@ const MainContentActivity = () => {
     limit: 15,
     after: afterTime,
   });
-  const eventSourceRef = useRef<EventSource | null>(null);
+  // const eventSourceRef = useRef<EventSource | null>(null);
 
   const divRef = useRef(null);
 
@@ -73,43 +71,43 @@ const MainContentActivity = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const eventSource = new EventSource(
-      `${import.meta.env.VITE_BACKEND_URL}/notifications/sse-stream`,
-      {
-        fetch: (input, init) =>
-          fetch(input, {
-            ...init,
-            headers: {
-              ...init?.headers,
-              Authorization: `Bearer ${Cookies.get("access_token")}`,
-            },
-          }),
-      }
-    );
-
-    eventSource.onmessage = (event) => {
-      if (event.data) {
-        setAllNotifications((prevPosts) => [
-          JSON.parse(event.data),
-          ...prevPosts,
-        ]);
-      }
-    };
-
-    eventSource.onerror = (error) => {
-      console.error(error);
-      eventSource.close();
-    };
-
-    eventSourceRef.current = eventSource;
-
-    return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   const eventSource = new EventSource(
+  //     `${import.meta.env.VITE_BACKEND_URL}/notifications/sse-stream`,
+  //     {
+  //       fetch: (input, init) =>
+  //         fetch(input, {
+  //           ...init,
+  //           headers: {
+  //             ...init?.headers,
+  //             Authorization: `Bearer ${Cookies.get("access_token")}`,
+  //           },
+  //         }),
+  //     }
+  //   );
+  //
+  //   eventSource.onmessage = (event) => {
+  //     if (event.data) {
+  //       setAllNotifications((prevPosts) => [
+  //         JSON.parse(event.data),
+  //         ...prevPosts,
+  //       ]);
+  //     }
+  //   };
+  //
+  //   eventSource.onerror = (error) => {
+  //     console.error(error);
+  //     eventSource.close();
+  //   };
+  //
+  //   eventSourceRef.current = eventSource;
+  //
+  //   return () => {
+  //     if (eventSourceRef.current) {
+  //       eventSourceRef.current.close();
+  //     }
+  //   };
+  // }, []);
 
   if (isLoading && allNotifications.length === 0) {
     return (
