@@ -121,6 +121,7 @@ const MiniSidebar: React.FC = () => {
       ),
       onClick: () => {
         dispatch(addPinPageToRedux(optionPin.ROOM));
+        navigate("/");
       },
     },
     {
@@ -132,6 +133,7 @@ const MiniSidebar: React.FC = () => {
       ),
       onClick: () => {
         dispatch(addPinPageToRedux(optionPin.PROFILE));
+        navigate("/");
       },
     },
     {
@@ -143,6 +145,7 @@ const MiniSidebar: React.FC = () => {
       ),
       onClick: () => {
         dispatch(addPinPageToRedux(optionPin.PEOPLE));
+        navigate("/");
       },
     },
     {
@@ -154,6 +157,7 @@ const MiniSidebar: React.FC = () => {
       ),
       onClick: () => {
         dispatch(addPinPageToRedux(optionPin.ACTIVITY));
+        navigate("/");
       },
     },
   ];
@@ -177,13 +181,13 @@ const MiniSidebar: React.FC = () => {
       <div className="flex-grow flex flex-col items-start gap-4 w-full">
         {icons.map(
           ({
-             name,
-             component: IconComponent,
-             width,
-             height,
-             navigate: iconNavigate,
-             key,
-           }) => (
+            name,
+            component: IconComponent,
+            width,
+            height,
+            navigate: iconNavigate,
+            key,
+          }) => (
             <div
               key={name}
               className="div-hover w-full items-center justify-center"
@@ -234,7 +238,7 @@ const MiniSidebar: React.FC = () => {
           </div>
         </Dropdown>
         <div className="div-hover w-full flex items-center justify-start pl-3 gap-4">
-          <MenuIcon width="30" height="30"/>
+          <MenuIcon width="30" height="30" />
         </div>
       </div>
     </div>

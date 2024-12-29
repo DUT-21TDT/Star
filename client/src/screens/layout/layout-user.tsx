@@ -9,7 +9,7 @@ const LayoutUser: React.FC = () => {
   const isUserRoute = window.location.pathname.startsWith(
     `${import.meta.env.VITE_BASE_URL}`
   );
-  const { role, status } = useAppSelector((state) => state.user);
+  const { role, status, pin } = useAppSelector((state) => state.user);
 
   if (status === "INACTIVE") {
     return <VerifyEmail />;
@@ -17,17 +17,20 @@ const LayoutUser: React.FC = () => {
   return (
     <>
       {isUserRoute && role === "USER" && (
-        <div className="flex gap-5 bg-[#fafafa]" style={{minHeight: "100vh", maxHeight: "100%"}}>
+        <div
+          className="flex gap-5 bg-[#fafafa]"
+          style={{ minHeight: "100vh", maxHeight: "100%" }}
+        >
           <div className="sidebar">
-            <Sidebar/>
+            {pin && pin.length === 0 ? <Sidebar /> : <MiniSidebar />}
           </div>
           <div className="mini-sidebar">
-            <MiniSidebar/>
+            <MiniSidebar />
           </div>
-          <Outlet/>
+          <Outlet />
         </div>
       )}
-      {isUserRoute && role === "ADMIN" && <NotPermitted/>}
+      {isUserRoute && role === "ADMIN" && <NotPermitted />}
     </>
   );
 };

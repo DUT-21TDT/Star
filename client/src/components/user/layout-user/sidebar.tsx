@@ -121,6 +121,7 @@ const SideBar: React.FC = () => {
       ),
       onClick: () => {
         dispatch(addPinPageToRedux(optionPin.ROOM));
+        navigate("/");
       },
     },
     {
@@ -132,6 +133,7 @@ const SideBar: React.FC = () => {
       ),
       onClick: () => {
         dispatch(addPinPageToRedux(optionPin.PROFILE));
+        navigate("/");
       },
     },
     {
@@ -143,6 +145,7 @@ const SideBar: React.FC = () => {
       ),
       onClick: () => {
         dispatch(addPinPageToRedux(optionPin.PEOPLE));
+        navigate("/");
       },
     },
     {
@@ -154,6 +157,7 @@ const SideBar: React.FC = () => {
       ),
       onClick: () => {
         dispatch(addPinPageToRedux(optionPin.ACTIVITY));
+        navigate("/");
       },
     },
   ];
@@ -213,7 +217,13 @@ const SideBar: React.FC = () => {
                 )}{" "}
               </div>
 
-              <span className={`text-base ${activeIcon === name ? 'text-black font-bold ' : 'text-gray-500 font-semibold'}`}>
+              <span
+                className={`text-base ${
+                  activeIcon === name
+                    ? "text-black font-bold "
+                    : "text-gray-500 font-semibold"
+                }`}
+              >
                 {displayText}
               </span>
             </div>
@@ -236,14 +246,26 @@ const SideBar: React.FC = () => {
         >
           <div className="div-hover w-full flex items-center justify-start pl-3 gap-4">
             <PinIcon width="28" height="28" />
-            <span className={`text-base ${activeIcon === "pin" ? 'text-black font-bold ' : 'text-gray-500 font-semibold'}`}>
+            <span
+              className={`text-base ${
+                activeIcon === "pin"
+                  ? "text-black font-bold "
+                  : "text-gray-500 font-semibold"
+              }`}
+            >
               Pin
             </span>
           </div>
         </Dropdown>
         <div className="div-hover w-full flex items-center justify-start pl-3 gap-4">
-          <MenuIcon width="30" height="30"/>
-          <span className={`text-base ${activeIcon === "pin" ? 'text-black font-bold ' : 'text-gray-500 font-semibold'}`}>
+          <MenuIcon width="30" height="30" />
+          <span
+            className={`text-base ${
+              activeIcon === "pin"
+                ? "text-black font-bold "
+                : "text-gray-500 font-semibold"
+            }`}
+          >
             More
           </span>
         </div>
