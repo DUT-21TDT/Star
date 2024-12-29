@@ -1,4 +1,4 @@
-import { instance } from "../utils/customizeAxios";
+import {instance} from "../utils/customizeAxios";
 
 interface DataCreateRoom {
   name: string;
@@ -32,12 +32,10 @@ const deleteRoom = async (id: string) => {
 };
 
 const editRoom = async (data: DataEditRoom) => {
-  const formData = new FormData();
-  formData.append("name", data.name);
-  if (data.description) {
-    formData.append("description", data.description || "");
-  }
-  const response = await instance.patch(`/admin/rooms/${data.id}`, formData);
+  const response = await instance.patch(`/admin/rooms/${data.id}`, {
+    name: data.name,
+    description: data.description || "",
+  });
   return response.data;
 };
 
