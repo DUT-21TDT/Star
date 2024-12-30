@@ -1,11 +1,11 @@
-import {useQueryClient} from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import ActivityItem from "./activity-item";
-import {useEffect, useRef, useState} from "react";
-import {QUERY_KEY} from "../../../utils/queriesKey";
-import {useGetNotification} from "../../../hooks/notification";
-import {Spin} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
-import {debounce} from "lodash";
+import { useEffect, useRef, useState } from "react";
+import { QUERY_KEY } from "../../../utils/queriesKey";
+import { useGetNotification } from "../../../hooks/notification";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { debounce } from "lodash";
 import "../../../assets/css/activitiy.css";
 
 interface INotificationType {
@@ -42,12 +42,30 @@ const MainContentActivity = () => {
 
   const divRef = useRef(null);
 
+  // useEffect(() => {
+  //   if (dataNotification && dataNotification.length > 0) {
+  //     setAllNotifications((prevPosts: INotificationType[]) => [
+  //       ...prevPosts,
+  //       ...dataNotification,
+  //     ]);
+  //   }
+  // }, [dataNotification]);
+
   useEffect(() => {
     if (dataNotification && dataNotification.length > 0) {
-      setAllNotifications((prevPosts: INotificationType[]) => [
-        ...prevPosts,
-        ...dataNotification,
-      ]);
+      setAllNotifications((prevPosts: INotificationType[]) => {
+        const combinedNotifications = [...prevPosts, ...dataNotification];
+        const uniqueNotifications = Array.from(
+          new Map(
+            combinedNotifications.map((notification) => [
+              `${notification.type}-${notification.artifactId}-${notification.artifactType}-${notification.changeAt}`,
+              notification,
+            ])
+          ).values()
+        );
+
+        return uniqueNotifications;
+      });
     }
   }, [dataNotification]);
 

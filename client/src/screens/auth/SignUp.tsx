@@ -1,7 +1,7 @@
 import React from "react";
 import imageSignup from "../../assets/images/login.webp";
 import type { FormInstance } from "antd";
-import { Button, Divider, Form, Input, QRCode, message } from "antd";
+import { Button, Divider, Form, Input, message } from "antd";
 import { usePostNewUser } from "../../hooks/user";
 import { ConfigProvider } from "antd";
 import { SignUpTheme } from "../../utils/theme";
@@ -245,13 +245,13 @@ const SignUp: React.FC = () => {
           <Divider style={{ color: "#bdbdbd" }}>or</Divider>
           <GoogleLoginButton />
         </div>
-        <div className="w-[250px] h-[250px] absolute right-0 bottom-0 p-5 flex flex-col items-center justify-center gap-2">
+        {/* <div className="w-[250px] h-[250px] absolute right-0 bottom-0 p-5 flex flex-col items-center justify-center gap-2">
           <div className="text-[13px] text-gray-400 font-normal">
             Scan to get the app
           </div>
 
           <QRCode type="canvas" value="https://ant.design/" />
-        </div>
+        </div> */}
       </div>
     </ConfigProvider>
   );

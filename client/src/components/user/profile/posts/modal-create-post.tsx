@@ -247,7 +247,7 @@ const ModalCreatePost: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
             maxLength={3000}
           />
           <div
-            className="embla mt-3 mb-4"
+            className="embla mt-6 mb-4"
             ref={emblaRef}
             style={{ overflow: "hidden", maxHeight: "400px" }}
           >
