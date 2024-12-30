@@ -654,6 +654,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .idOfModerator((String) row[10])
                         .usernameOfModerator((String) row[11])
                         .moderatedAt((Instant) row[12])
+                        .numberOfReports(((Long) row[13]).intValue())
                         .build()
                 )
                 .toList();
@@ -663,7 +664,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
 
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, p.status, p.violence_score, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.room_id, p.moderated_by, u1.username, p.moderated_at " +
+                "p.room_id, p.moderated_by, u1.username, p.moderated_at, " +
+                "(SELECT COUNT(*) FROM post_report pr WHERE pr.post_id = p.post_id) AS number_of_reports " +
                 "FROM post p " +
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "LEFT JOIN \"user\" u1 ON p.moderated_by = u1.user_id " +

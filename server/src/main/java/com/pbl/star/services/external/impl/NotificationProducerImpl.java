@@ -1,13 +1,10 @@
 package com.pbl.star.services.external.impl;
 
-import com.pbl.star.models.entities.Following;
-import com.pbl.star.models.entities.Post;
-import com.pbl.star.models.entities.PostLike;
-import com.pbl.star.models.entities.PostRepost;
 import com.pbl.star.events.activity.FollowUserEvent;
 import com.pbl.star.events.activity.InteractPostEvent;
 import com.pbl.star.events.activity.ModeratePostEvent;
 import com.pbl.star.events.activity.NewPendingPostEvent;
+import com.pbl.star.models.entities.*;
 import com.pbl.star.services.external.NotificationProducer;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -100,6 +97,20 @@ public class NotificationProducerImpl implements NotificationProducer {
             rabbitTemplate.convertAndSend("notification_exchange", "notification.UNDO_repost_post", event);
         } catch (Exception e) {
             logger.error("Failed to push undo repost post event to notification service", e);
+        }
+    }
+
+    @Override
+    public void pushReportPostMessage(PostReport postReport) {
+        InteractPostEvent event = new InteractPostEvent();
+        event.setTimestamp(postReport.getReportAt());
+        event.setPostId(postReport.getPostId());
+        event.setActorId(postReport.getUserId());
+
+        try {
+            rabbitTemplate.convertAndSend("notification_exchange", "notification.report_post", event);
+        } catch (Exception e) {
+            logger.error("Failed to push report post event to notification service", e);
         }
     }
 

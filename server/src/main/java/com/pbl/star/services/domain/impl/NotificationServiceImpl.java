@@ -2,6 +2,8 @@ package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.enums.ArtifactType;
 import com.pbl.star.enums.NotificationType;
+import com.pbl.star.exceptions.EntityNotFoundException;
+import com.pbl.star.exceptions.ResourceOwnershipException;
 import com.pbl.star.models.entities.*;
 import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.repositories.*;
@@ -36,6 +38,23 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public void markAsRead(String userId, String notificationId) {
+        Notification noti = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
+
+        if (!noti.getReceiverId().equals(userId)) {
+            throw new ResourceOwnershipException("Notification does not belong to the user");
+        }
+
+        if (noti.isRead()) {
+            return;
+        }
+
+        noti.setRead(true);
+        notificationRepository.save(noti);
+    }
+
+    @Override
     public NotificationForUser getPushedNotification(String notificationObjId) {
         return notificationRepository.getNotificationByNotificationObjectId(notificationObjId)
                 .orElse(null);
@@ -66,9 +85,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationObject savedNotificationObj;
 
         if (notificationObjOpt.isPresent()) {
-            NotificationObject notificationObj = notificationObjOpt.get();
-            notificationObj.setRead(false);
-            savedNotificationObj = notificationObjectRepository.save(notificationObj);
+            savedNotificationObj = notificationObjOpt.get();
         } else {
             NotificationObject obj = NotificationObject.builder()
                     .notificationType(notificationType)
@@ -76,18 +93,14 @@ public class NotificationServiceImpl implements NotificationService {
                     .artifactId(postId)
                     .artifactType(ArtifactType.POST)
                     .artifactPreview(preview)
-                    .isRead(false)
                     .build();
             try {
                 isExistNotification = false;
                 savedNotificationObj = notificationObjectRepository.save(obj);
             } catch (DataIntegrityViolationException e) {
-                NotificationObject existedObj = notificationObjectRepository.findByNotificationTypeAndRef(notificationType, postId)
+                savedNotificationObj = notificationObjectRepository.findByNotificationTypeAndRef(notificationType, postId)
                         .orElseThrow(() -> new RuntimeException("Failed to resolve race condition"));
-                existedObj.setRead(false);
-
                 isExistNotification = true;
-                savedNotificationObj = notificationObjectRepository.save(existedObj);
             }
         }
 
@@ -103,14 +116,20 @@ public class NotificationServiceImpl implements NotificationService {
             Notification notification = Notification.builder()
                     .notificationObjectId(savedNotificationObj.getId())
                     .receiverId(receiverId)
+                    .isRead(false)
                     .build();
             return notificationRepository.save(notification);
         }
 
-        return Notification.builder()
-                .receiverId(receiverId)
-                .notificationObjectId(savedNotificationObj.getId())
-                .build();
+        Notification notification = notificationRepository.findByNotificationObjectId(savedNotificationObj.getId())
+                .orElse(null);
+
+        if (notification != null) {
+            notification.setRead(false);
+            return notificationRepository.save(notification);
+        }
+
+        return null;
     }
 
     @Override
@@ -134,7 +153,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .ref(followingId)
                 .artifactId(followerId)
                 .artifactType(ArtifactType.USER)
-                .isRead(false)
                 .build();
 
         NotificationObject savedNotificationObj = notificationObjectRepository.save(obj);
@@ -181,9 +199,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationObject savedNotificationObj;
 
         if (notificationObjOpt.isPresent()) {
-            NotificationObject notificationObj = notificationObjOpt.get();
-            notificationObj.setRead(false);
-            savedNotificationObj = notificationObjectRepository.save(notificationObj);
+            savedNotificationObj = notificationObjOpt.get();
         } else {
             NotificationObject obj = NotificationObject.builder()
                     .notificationType(notificationType)
@@ -191,18 +207,15 @@ public class NotificationServiceImpl implements NotificationService {
                     .artifactId(postId)
                     .artifactType(ArtifactType.POST)
                     .artifactPreview(preview)
-                    .isRead(false)
                     .build();
             try {
                 isExistNotification = false;
                 savedNotificationObj = notificationObjectRepository.save(obj);
             } catch (DataIntegrityViolationException e) {
-                NotificationObject existedObj = notificationObjectRepository.findByNotificationTypeAndRef(notificationType, postId)
+                savedNotificationObj = notificationObjectRepository.findByNotificationTypeAndRef(notificationType, postId)
                         .orElseThrow(() -> new RuntimeException("Failed to resolve race condition"));
-                existedObj.setRead(false);
 
                 isExistNotification = true;
-                savedNotificationObj = notificationObjectRepository.save(existedObj);
             }
         }
 
@@ -260,9 +273,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationObject savedNotificationObj;
 
         if (notificationObjOpt.isPresent()) {
-            NotificationObject notificationObj = notificationObjOpt.get();
-            notificationObj.setRead(false);
-            savedNotificationObj = notificationObjectRepository.save(notificationObj);
+            savedNotificationObj = notificationObjOpt.get();
         } else {
             NotificationObject obj = NotificationObject.builder()
                     .notificationType(NotificationType.NEW_PENDING_POST)
@@ -270,18 +281,15 @@ public class NotificationServiceImpl implements NotificationService {
                     .artifactId(roomId)
                     .artifactType(ArtifactType.ROOM)
                     .artifactPreview(room.getName())
-                    .isRead(false)
                     .build();
             try {
                 isExistNotification = false;
                 savedNotificationObj = notificationObjectRepository.save(obj);
             } catch (DataIntegrityViolationException e) {
-                NotificationObject existedObj = notificationObjectRepository.findByNotificationTypeAndRef(NotificationType.NEW_PENDING_POST, roomId)
+                savedNotificationObj = notificationObjectRepository.findByNotificationTypeAndRef(NotificationType.NEW_PENDING_POST, roomId)
                         .orElseThrow(() -> new RuntimeException("Failed to resolve race condition"));
-                existedObj.setRead(false);
 
                 isExistNotification = true;
-                savedNotificationObj = notificationObjectRepository.save(existedObj);
             }
         }
 
@@ -299,16 +307,18 @@ public class NotificationServiceImpl implements NotificationService {
                     .map(receiverId -> Notification.builder()
                             .notificationObjectId(tmpSavedNotificationObj.getId())
                             .receiverId(receiverId)
+                            .isRead(false)
                             .build())
                     .toList();
             return notificationRepository.saveAll(notifications);
-        }
-
-        else {
-            List<String> oldReceiverIds = notificationRepository.findReceiverIdsByNotificationObjectId(savedNotificationObj.getId());
+        } else {
+            List<Notification> oldNotifications = notificationRepository.findNotificationsByNotificationObjectId(savedNotificationObj.getId());
+            List<String> oldReceivers = oldNotifications.stream()
+                    .map(Notification::getReceiverId)
+                    .toList();
             // Remove old receiver
-            List<String> removedReceiverIds = oldReceiverIds.stream()
-                    .filter(oldReceiverId -> !receivers.contains(oldReceiverId))
+            List<String> removedReceiverIds = oldReceivers.stream()
+                    .filter(receiverId -> !receivers.contains(receiverId))
                     .toList();
 
             if (!removedReceiverIds.isEmpty()) {
@@ -316,29 +326,29 @@ public class NotificationServiceImpl implements NotificationService {
             }
 
             List<String> newReceiverIds = receivers.stream()
-                    .filter(newReceiverId -> !oldReceiverIds.contains(newReceiverId))
+                    .filter(newReceiverId -> !oldReceivers.contains(newReceiverId))
                     .toList();
 
-            if (!newReceiverIds.isEmpty()) {
-                NotificationObject tmpSavedNotificationObj = savedNotificationObj;
-                List<Notification> notifications = newReceiverIds.stream()
-                        .map(receiverId -> Notification.builder()
-                                .notificationObjectId(tmpSavedNotificationObj.getId())
-                                .receiverId(receiverId)
-                                .build())
-                        .toList();
-
-                notificationRepository.saveAll(notifications);
+            for (String receiver : receivers) {
+                if (!oldReceivers.contains(receiver)) {
+                    Notification notification = Notification.builder()
+                            .notificationObjectId(savedNotificationObj.getId())
+                            .receiverId(receiver)
+                            .isRead(false)
+                            .build();
+                    oldNotifications.add(notification);
+                } else {
+                    Notification notification = oldNotifications.stream()
+                            .filter(noti -> noti.getReceiverId().equals(receiver))
+                            .findFirst()
+                            .orElse(null);
+                    assert notification != null;
+                    notification.setRead(false);
+                }
             }
-        }
 
-        NotificationObject tmpSavedNotificationObj = savedNotificationObj;
-        return receivers.stream()
-                .map(receiverId -> Notification.builder()
-                        .notificationObjectId(tmpSavedNotificationObj.getId())
-                        .receiverId(receiverId)
-                        .build())
-                .toList();
+            return notificationRepository.saveAll(oldNotifications);
+        }
     }
 
     @Override

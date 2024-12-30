@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface NotificationService {
     Slice<NotificationForUser> getNotifications(String userId, int limit, Instant after);
+    void markAsRead(String userId, String notificationId);
     NotificationForUser getPushedNotification(String notificationObjId);
 
     /**

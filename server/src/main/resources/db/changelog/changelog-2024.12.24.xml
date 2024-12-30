@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="35_add_post_report_table" author="Quang Nguyen">
+        <createTable tableName="post_report">
+            <column name="post_report_id" type="CHAR(26)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="post_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="CHAR(26)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="report_at" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="post_report"
+                                 baseColumnNames="post_id"
+                                 constraintName="fk_post_report_post"
+                                 referencedTableName="post"
+                                 referencedColumnNames="post_id" />
+        <addForeignKeyConstraint baseTableName="post_report"
+                                    baseColumnNames="user_id"
+                                    constraintName="fk_post_report_user"
+                                    referencedTableName="user"
+                                    referencedColumnNames="user_id" />
+    </changeSet>
+
+    <changeSet id="36_update_notification_tables" author="Quang Nguyen">
+        <dropColumn tableName="notification_object">
+            <column name="is_read"/>
+        </dropColumn>
+        <addColumn tableName="notification">
+            <column name="is_read" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

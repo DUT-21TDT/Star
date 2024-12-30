@@ -23,7 +23,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
     public List<NotificationForUser> getNotifications(int limit, Instant after, String userId) {
 
         String sql = "SELECT n.notification_id, " +
-                "           nob.notification_type, nob.artifact_id, nob.artifact_type, nob.is_read," +
+                "           nob.notification_type, nob.artifact_id, nob.artifact_type, n.is_read," +
                 "           nc.actor_id, nc.change_at, " +
                 "           (SELECT COUNT(distinct _nc.actor_id) FROM notification_change _nc WHERE _nc.notification_object_id = nob.notification_object_id), " +
                 "           u.username, u.avatar_url, nob.artifact_preview " +
@@ -80,7 +80,7 @@ public class NotificationRepositoryExtensionImpl implements NotificationReposito
 
     public Optional<NotificationForUser> getNotificationByNotificationObjectId(String notificationObjId) {
         String sql = "SELECT " +
-                "           nob.notification_type, nob.artifact_id, nob.artifact_type, nob.is_read," +
+                "           nob.notification_type, nob.artifact_id, nob.artifact_type, false," +
                 "           nc.actor_id, nc.change_at, " +
                 "           (SELECT COUNT(distinct _nc.actor_id) FROM notification_change _nc WHERE _nc.notification_object_id = nob.notification_object_id), " +
                 "           u.username, u.avatar_url, nob.artifact_preview " +

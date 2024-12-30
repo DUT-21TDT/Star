@@ -7,4 +7,5 @@ import java.time.Instant;
 
 public interface ManageNotificationUsecase {
     Slice<NotificationForUserResponse> getNotifications(int limit, Instant after);
+    void markAsRead(String notificationId);
 }

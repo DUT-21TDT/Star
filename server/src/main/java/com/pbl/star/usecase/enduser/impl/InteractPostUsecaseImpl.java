@@ -1,8 +1,10 @@
 package com.pbl.star.usecase.enduser.impl;
 
 import com.pbl.star.dtos.request.post.CreateReplyParams;
+import com.pbl.star.dtos.request.post.CreateReportParams;
 import com.pbl.star.models.entities.Post;
 import com.pbl.star.models.entities.PostLike;
+import com.pbl.star.models.entities.PostReport;
 import com.pbl.star.models.entities.PostRepost;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
@@ -65,7 +67,10 @@ public class InteractPostUsecaseImpl implements InteractPostUsecase {
     }
 
     @Override
-    public void reportPost(String postId) {
+    public void reportPost(String postId, CreateReportParams params) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        PostReport report = postInteractionService.reportPost(currentUserId, postId, params);
 
+        notificationProducer.pushReportPostMessage(report);
     }
 }

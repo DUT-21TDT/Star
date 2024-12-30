@@ -7,6 +7,7 @@ public enum NotificationType {
     LIKE_POST,
     REPLY_POST,
     REPOST_POST,
+    REPORT_POST,
     FOLLOW,
     REQUEST_FOLLOW,
     ACCEPT_FOLLOW

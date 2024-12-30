@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.SignalType;
 
@@ -31,6 +28,13 @@ public class NotificationController {
                                               @RequestParam(required = false) Instant after
     ) {
         return ResponseEntity.ok(manageNotificationUsecase.getNotifications(limit, after));
+    }
+
+    @PatchMapping("/{notificationId}/read")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> markAsRead(@PathVariable String notificationId) {
+        manageNotificationUsecase.markAsRead(notificationId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/sse-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

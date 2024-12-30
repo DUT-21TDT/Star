@@ -37,7 +37,4 @@ public class NotificationObject {
 
     @Column(name = "artifact_preview")
     private String artifactPreview;
-
-    @Column(name = "is_read")
-    private boolean isRead;
 }

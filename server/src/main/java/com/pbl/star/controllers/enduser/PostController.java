@@ -2,6 +2,7 @@ package com.pbl.star.controllers.enduser;
 
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.request.post.CreateReplyParams;
+import com.pbl.star.dtos.request.post.CreateReportParams;
 import com.pbl.star.usecase.enduser.InteractPostUsecase;
 import com.pbl.star.usecase.enduser.ManagePostUsecase;
 import jakarta.validation.Valid;
@@ -69,6 +70,15 @@ public class PostController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> deleteRepost(@PathVariable String postId) {
         postInteractUsecase.deleteRepostPost(postId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{postId}/reports")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> reportPost(@PathVariable String postId,
+                                        @RequestBody @Valid CreateReportParams params
+    ) {
+        postInteractUsecase.reportPost(postId, params);
         return ResponseEntity.ok().build();
     }
 }

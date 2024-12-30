@@ -24,4 +24,10 @@ public class ManageNotificationUsecaseImpl implements ManageNotificationUsecase 
         return notificationService.getNotifications(currentUserId, limit, after)
                 .map(notificationMapper::toDTO);
     }
+
+    @Override
+    public void markAsRead(String notificationId) {
+        String currentUserId = AuthUtil.getCurrentUser().getId();
+        notificationService.markAsRead(currentUserId, notificationId);
+    }
 }

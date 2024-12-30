@@ -25,6 +25,8 @@ public class PostForModResponse {
 
     private PostStatus status;
     private Integer violenceScore;
+    private Integer numberOfReports;
+
     private String idOfModerator;
     private String usernameOfModerator;
     private Instant moderatedAt;

@@ -24,4 +24,7 @@ public class Notification {
 
     @Column(name = "receiver_id")
     private String receiverId;
+
+    @Column(name = "is_read")
+    private boolean isRead;
 }

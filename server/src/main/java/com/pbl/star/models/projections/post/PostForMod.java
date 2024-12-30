@@ -13,6 +13,8 @@ import java.time.Instant;
 public final class PostForMod extends PostGeneral {
     private PostStatus status;
     private Integer violenceScore;
+    private Integer numberOfReports;
+
     private String idOfModerator;
     private String usernameOfModerator;
     private Instant moderatedAt;

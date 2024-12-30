@@ -1,20 +1,20 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.models.projections.user.OnInteractProfile;
+import com.pbl.star.dtos.request.post.CreateReportParams;
 import com.pbl.star.dtos.response.post.PostInteractionListResponse;
-import com.pbl.star.models.entities.Post;
-import com.pbl.star.models.entities.PostLike;
-import com.pbl.star.models.entities.PostRepost;
 import com.pbl.star.enums.InteractType;
 import com.pbl.star.enums.PostStatus;
+import com.pbl.star.enums.ReportStatus;
 import com.pbl.star.enums.RoomRole;
 import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.ModeratorAccessException;
-import com.pbl.star.repositories.PostLikeRepository;
-import com.pbl.star.repositories.PostRepository;
-import com.pbl.star.repositories.PostRepostRepository;
-import com.pbl.star.repositories.UserRoomRepository;
+import com.pbl.star.models.entities.Post;
+import com.pbl.star.models.entities.PostLike;
+import com.pbl.star.models.entities.PostReport;
+import com.pbl.star.models.entities.PostRepost;
+import com.pbl.star.models.projections.user.OnInteractProfile;
+import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.utils.SliceTransfer;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +32,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostRepostRepository postRepostRepository;
+    private final PostReportRepository postReportRepository;
     private final UserRoomRepository userRoomRepository;
 
     @Override
@@ -91,6 +92,27 @@ public class PostInteractionServiceImpl implements PostInteractionService {
                 .orElseThrow(() -> new EntityNotFoundException("Post is not exist, or user did not repost the post"));
 
         postRepostRepository.delete(postRepost);
+    }
+
+    @Override
+    public PostReport reportPost(String userId, String postId, CreateReportParams params) {
+        if (!postRepository.existsByIdAndDeleted(postId, false)) {
+            throw new EntityNotFoundException("Post does not exist");
+        }
+
+        if (postReportRepository.existsByPostIdAndUserId(postId, userId)) {
+            throw new EntityConflictException("User already reported the post");
+        }
+
+        PostReport postReport = PostReport.builder()
+                .postId(postId)
+                .userId(userId)
+                .reason(params.getReason())
+                .reportAt(Instant.now())
+                .status(ReportStatus.PENDING)
+                .build();
+
+        return postReportRepository.save(postReport);
     }
 
     @Override

@@ -1,9 +1,6 @@
 package com.pbl.star.services.external;
 
-import com.pbl.star.models.entities.Following;
-import com.pbl.star.models.entities.Post;
-import com.pbl.star.models.entities.PostLike;
-import com.pbl.star.models.entities.PostRepost;
+import com.pbl.star.models.entities.*;
 
 public interface NotificationProducer {
     void pushLikePostMessage(PostLike postLike);
@@ -14,6 +11,8 @@ public interface NotificationProducer {
 
     void pushRepostPostMessage(PostRepost postRepost);
     void pushDeleteRepostPostMessage(String postId, String actorId);
+
+    void pushReportPostMessage(PostReport postReport);
 
     void pushFollowMessage(Following following);
     void pushUnfollowMessage(Following following);
