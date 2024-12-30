@@ -1,16 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Avatar, Button, message, Popover } from "antd";
-import { useNavigate, useParams } from "react-router-dom";
-import { PhotoProvider, PhotoView } from "react-photo-view";
+import React, {useEffect, useRef, useState} from "react";
+import {Avatar, Button, message, Popover} from "antd";
+import {useNavigate, useParams} from "react-router-dom";
+import {PhotoProvider, PhotoView} from "react-photo-view";
 import ContainerInformationUser from "../profile/posts/container-information-user";
 import useEmblaCarousel from "embla-carousel-react";
 import default_image from "../../../assets/images/default_image.jpg";
-import { timeAgo } from "../../../utils/convertTime";
+import {timeAgo} from "../../../utils/convertTime";
 import "../../../assets/css/post-moderator.css";
-import { useChangeStatusPostByModerator } from "../../../hooks/post";
-import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEY } from "../../../utils/queriesKey";
+import {useChangeStatusPostByModerator} from "../../../hooks/post";
+import {useQueryClient} from "@tanstack/react-query";
+import {QUERY_KEY} from "../../../utils/queriesKey";
 import DOMPurify from "dompurify";
+import {HiEmojiHappy, HiEmojiSad, HiFlag} from "react-icons/hi";
+
 interface PostType {
   id: string;
   usernameOfCreator: string;
@@ -24,6 +26,7 @@ interface PostType {
   usernameOfModerator?: string | null;
   moderatedAt?: string | null;
   violenceScore: number;
+  numberOfReports: number;
   status: string;
   isChangeStatus?: string;
 }
@@ -107,6 +110,7 @@ const PostModerator: React.FC<IProps> = (props) => {
     usernameOfModerator,
     moderatedAt,
     violenceScore,
+    numberOfReports,
     status,
     isChangeStatus,
   } = postData;
@@ -169,12 +173,26 @@ const PostModerator: React.FC<IProps> = (props) => {
     return formattedDate;
   };
 
+  const getViolenceScoreIcon = (score: number | undefined) => {
+    if (score === undefined || score === null) return <HiEmojiHappy className="size-4 inline-block mb-1" />;
+    if (score > 80) return <HiEmojiSad className="inline-block mb-1" />;
+    return <HiEmojiHappy className="inline-block mb-1" />;
+  }
+
   const getViolenceScoreColor = (score: number | undefined) => {
     if (score === undefined) return "#999";
     if (score > 80) return "red";
-    if (score >= 21) return "#ffcc00";
+    if (score >= 21) return "#ff9100";
     return "green";
   };
+
+  const getReportColor = (numberOfReports: number | undefined) => {
+    if (numberOfReports === undefined) return "#999";
+    if (numberOfReports === 0) return "green";
+    if (numberOfReports > 50) return "red";
+    if (numberOfReports > 10) return "#ff9100";
+    return "#ffcc00";
+  }
 
   const { mutate: changeStatusPost } = useChangeStatusPostByModerator();
   const [loading, setLoading] = useState(false);
@@ -326,14 +344,20 @@ const PostModerator: React.FC<IProps> = (props) => {
             </div>
           </Popover>
           {violenceScore !== undefined && (
-            <div
-              style={{
-                marginTop: "8px",
-                fontSize: "14px",
-                color: getViolenceScoreColor(violenceScore),
-              }}
-            >
-              Violence Score: {violenceScore}
+            <div className="flex items-center gap-2">
+              <p
+                className="text-sm rounded-xl px-2 py-[2px] border-2"
+                style={{
+                  color: getViolenceScoreColor(violenceScore),
+                }}
+              >
+                {getViolenceScoreIcon(violenceScore)} {violenceScore}
+              </p>
+              <p className="text-sm rounded-xl px-2 py-[2px] border-2 cursor-pointer hover:bg-gray-100"
+                style={{ color: getReportColor(numberOfReports) }}>
+                {numberOfReports}
+                <HiFlag className="inline-block ml-1 mb-1" />
+              </p>
             </div>
           )}
         </div>
@@ -466,8 +490,8 @@ const PostModerator: React.FC<IProps> = (props) => {
             {status === "APPROVED"
               ? "Approved"
               : status === "REJECTED"
-              ? "Rejected"
-              : "Move to pending"}{" "}
+                ? "Rejected"
+                : "Move to pending"}{" "}
             by {usernameOfModerator} on {convertDateTime(moderatedAt)}
           </div>
         )}

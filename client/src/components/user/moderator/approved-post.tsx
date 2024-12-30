@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEY } from "../../../utils/queriesKey";
-import { useGetAllPendingPostForModerator } from "../../../hooks/post";
-import { useParams } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Spin} from "antd";
+import {LoadingOutlined} from "@ant-design/icons";
+import {useQueryClient} from "@tanstack/react-query";
+import {QUERY_KEY} from "../../../utils/queriesKey";
+import {useGetAllPendingPostForModerator} from "../../../hooks/post";
+import {useParams} from "react-router-dom";
 import PostModerator from "./post-moderator";
-import { debounce } from "../../../utils/debounce";
+import {debounce} from "../../../utils/debounce";
 
 interface PostType {
   id: string;
@@ -20,6 +20,7 @@ interface PostType {
   idOfModerator?: string | null;
   usernameOfModerator?: string | null;
   moderatedAt?: string | null;
+  numberOfReports: number;
   violenceScore: number;
   status: string;
 }

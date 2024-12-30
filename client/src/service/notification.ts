@@ -1,4 +1,5 @@
-import { instance } from "../utils/customizeAxios";
+import {instance} from "../utils/customizeAxios";
+
 type configTypeProfileWall = {
   limit: number;
   after: string | null;
@@ -13,6 +14,11 @@ const getNotifications = async (config: configTypeProfileWall) => {
   const response = await instance.get(url);
   return response.data;
 };
+
+const markNotificationAsRead = async (notificationId: string) => {
+  const response = await instance.patch(`/notifications/${notificationId}/read`);
+  return response.data;
+}
 
 const getActivitiesOnPostDetail = async (
   postId: string,
@@ -58,6 +64,7 @@ const getActivitiesRepostOnPostDetail = async (
 
 export {
   getNotifications,
+  markNotificationAsRead,
   getActivitiesOnPostDetail,
   getActivitiesLikeOnPostDetail,
   getActivitiesRepostOnPostDetail,

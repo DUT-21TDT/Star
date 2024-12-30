@@ -1,11 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import { QUERY_KEY } from "../utils/queriesKey";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {QUERY_KEY} from "../utils/queriesKey";
 import {
   getActivitiesLikeOnPostDetail,
   getActivitiesOnPostDetail,
   getActivitiesRepostOnPostDetail,
   getNotifications,
+  markNotificationAsRead,
 } from "../service/notification";
+
 type configType = {
   limit: number;
   after: string | null;
@@ -25,6 +27,12 @@ const useGetNotification = (config: configType) => {
     totalElements: result.data?.totalElements,
   };
 };
+
+const useMarkNotificationAsRead = () => {
+  return useMutation({
+    mutationFn: markNotificationAsRead,
+  });
+}
 
 const useGetAllActivitiesOnDetailPost = (
   postId: string,
@@ -106,6 +114,7 @@ const useGetAllActivitiesRepostOnDetailPost = (
 
 export {
   useGetNotification,
+  useMarkNotificationAsRead,
   useGetAllActivitiesOnDetailPost,
   useGetAllActivitiesLikeOnDetailPost,
   useGetAllActivitiesRepostOnDetailPost,

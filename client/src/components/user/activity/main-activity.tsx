@@ -166,7 +166,7 @@ const MainContentActivity = () => {
           borderBottom: "none",
           borderTopLeftRadius: "30px",
           borderTopRightRadius: "30px",
-          paddingTop: "5px",
+          // paddingTop: "5px",
           backgroundColor: "white",
           paddingRight: "3px",
           maxHeight: "calc(100vh - 60px)",

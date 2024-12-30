@@ -14,6 +14,7 @@ import ContainerInformationUser from "../profile/posts/container-information-use
 import {useNavigate} from "react-router-dom";
 import default_avatar from "../../../assets/images/default_image.jpg";
 import starLogo from "../../../assets/images/starLogoWhite.svg";
+import {useMarkNotificationAsRead} from "../../../hooks/notification";
 
 interface INotificationType {
   id: string;
@@ -35,6 +36,7 @@ interface IProps {
 }
 const ActivityItem: React.FC<IProps> = ({ notification }) => {
   const {
+    id,
     type,
     artifactId,
     lastActor,
@@ -42,6 +44,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
     changeAt,
     artifactType,
     artifactPreview,
+    read
   } = notification;
 
   const idOfLastActor = lastActor ? lastActor.id : null;
@@ -62,6 +65,8 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
       );
     }
   };
+
+  const { mutate: markNotificationAsRead } = useMarkNotificationAsRead();
 
   const navigate = useNavigate();
   const handleNavigateProfileUser = (e: React.MouseEvent, id: string) => {
@@ -117,6 +122,24 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
     }
   };
 
+  const handleClickOnNotification = (
+    e: React.MouseEvent,
+    id: string,
+    artifactId: string,
+    artifactType: string,
+    artifactPreview: string,
+    read: boolean
+  ) => {
+    if (!read) {
+      handleMarkNotificationAsRead(id);
+    }
+    handleNavigateToArtifact(e, artifactType, artifactId, artifactPreview);
+  };
+
+  const handleMarkNotificationAsRead = (notificationId: string) => {
+    markNotificationAsRead(notificationId);
+  };
+
   const handleNavigateToArtifact = (
     e: React.MouseEvent,
     artifactType: string,
@@ -164,7 +187,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
 
   return (
     <div
-      className="w-full flex items-start gap-4 my-3"
+      className={`w-full flex items-start gap-4 py-3 ${!read ? "bg-neutral-100" : ""}`}
       style={{
         borderBottom: "1px solid rgb(240,240,240)",
         paddingBottom: "5px",
@@ -188,7 +211,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
           cursor: "pointer",
         }}
         onClick={(e) =>
-          handleNavigateToArtifact(e, artifactType, artifactId, artifactPreview)
+          handleClickOnNotification(e, id, artifactId, artifactType, artifactPreview, read)
         }
       >
         <div>
@@ -238,6 +261,9 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
             {mapperMessageWithNotificationType(type)}
           </div>
         </div>
+        {!read && (
+          <span className="text-red-500 mr-8 text-2xl">•</span>
+        )}
       </div>
     </div>
   );
