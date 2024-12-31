@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../utils/queriesKey";
 import { useFetchAllPostsLikedOnNewsfeed } from "../../../hooks/post";
 import Post from "../profile/posts/Post";
-import RemoveDuplicatePost from "../../../utils/removeDuplicatePost";
 import CreatePost from "../profile/posts/create-post";
 import "../../../assets/css/newfeed.css";
 import { debounce } from "../../../utils/debounce";
@@ -26,6 +25,17 @@ interface PostType {
   nameOfRoom: string;
   isRemoved?: boolean;
 }
+
+const RemoveDuplicatePost = (posts: PostType[]): PostType[] => {
+  const uniquePostsMap = new Map<string, PostType>();
+  for (let i = posts.length - 1; i >= 0; i--) {
+    const post = posts[i];
+    if (!uniquePostsMap.has(post.id)) {
+      uniquePostsMap.set(post.id, post);
+    }
+  }
+  return Array.from(uniquePostsMap.values()).reverse();
+};
 
 const PostsLikedOnNewsFeed: React.FC = () => {
   const queryClient = useQueryClient();
