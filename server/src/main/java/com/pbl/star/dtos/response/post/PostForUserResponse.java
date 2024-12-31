@@ -1,5 +1,6 @@
 package com.pbl.star.dtos.response.post;
 
+import com.pbl.star.enums.PostStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class PostForUserResponse {
     private Instant createdAt;
     private String content;
     private List<String> postImageUrls;
+    private PostStatus status;
 
     private int numberOfLikes;
     private int numberOfComments;

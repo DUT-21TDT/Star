@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class AdminPostController {
 
     private final AdminManagePostUsecase adminManagePostUsecase;
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllPosts(@RequestParam(defaultValue = "0") @Min(0) int page,
                                          @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size,
                                          @ModelAttribute @Valid FilterPostParams filter)
@@ -24,12 +26,14 @@ public class AdminPostController {
     }
 
     @PatchMapping("/{postId}/hide")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> hidePost(@PathVariable String postId) {
         adminManagePostUsecase.hidePost(postId);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{postId}/unhide")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> unhidePost(@PathVariable String postId) {
         adminManagePostUsecase.unhidePost(postId);
         return ResponseEntity.ok().build();

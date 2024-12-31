@@ -347,7 +347,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.room_id, r.name, p.parent_post_id " +
+                "p.room_id, r.name, p.parent_post_id, p.status " +
                 "FROM post p " +
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "INNER JOIN room r ON p.room_id = r.room_id " +
@@ -379,6 +379,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .idOfRoom((String) result[12])
                         .nameOfRoom((String) result[13])
                         .idOfParentPost((String) result[14])
+                        .status(PostStatus.valueOf((String) result[15]))
                         .build()
         );
     }
@@ -482,6 +483,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   FROM post p0 " +
                 "   INNER JOIN \"user\" u0 ON p0.user_id = u0.user_id " +
                 "   WHERE p0.user_id = :targetUserId " +
+                "           AND p0.status = 'APPROVED' " +
                 "           AND p0.is_deleted = false " +
                 "           AND p0.is_hidden = FALSE " +
                 "           AND p0.parent_post_id is not null " +

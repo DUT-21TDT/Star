@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class AdminManageRoomMemberUsecaseImpl implements AdminManageRoomMemberUs
     public void removeModerator(String roomId, String userId) {
         UserRoom userRoom = userRoomService.removeModeratorFromRoom(userId, roomId);
 
-        notificationService.deleteModNotifications(userRoom.getRoomId(), userRoom.getUserId());
+        CompletableFuture.runAsync(() -> notificationService.deleteModNotifications(userRoom.getRoomId(), userRoom.getUserId()));
     }
 
     @Override

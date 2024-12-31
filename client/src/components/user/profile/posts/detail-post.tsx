@@ -1,6 +1,6 @@
-import { useParams } from "react-router-dom";
-import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import {useParams} from "react-router-dom";
+import {Spin} from "antd";
+import {LoadingOutlined} from "@ant-design/icons";
 import Post from "./Post";
 import ListReplyPost from "./list-reply-post";
 import React from "react";
@@ -20,6 +20,7 @@ interface PostDetail {
   reposted: boolean;
   nameOfRoom: string;
   idOfCreator: string;
+  status?: string;
 }
 
 interface IProps {
@@ -33,7 +34,7 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
 
   const [isOpenModal, setIsOpenModal] = React.useState(false);
 
-  const { dataPostDetail, isLoading, isError } = props;
+  const {dataPostDetail, isLoading, isError} = props;
 
   const {
     id,
@@ -49,12 +50,15 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
     reposted,
     nameOfRoom,
     idOfCreator,
+    status
   } = dataPostDetail;
+
+  const isApproved = status === "APPROVED";
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center mt-8">
-        <Spin indicator={<LoadingOutlined spin />} size="large" />
+        <Spin indicator={<LoadingOutlined spin/>} size="large"/>
       </div>
     );
   }
@@ -80,28 +84,33 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
           reposted={reposted}
           nameOfRoom={nameOfRoom}
           idOfCreator={idOfCreator}
+          disableReactButton={!isApproved}
         />
       </div>
-      <div
-        className="w-full flex justify-between items-center py-3 px-[20px]"
-        style={{
-          borderBottom: "1px solid #f0f0f0",
-        }}
-      >
-        <div className="font-[500] text-[15px]">Replies</div>
-        <div
-          className=" text-[15px] text-[#c3c3c3] hover:cursor-pointer"
-          onClick={() => setIsOpenModal(!isOpenModal)}
-        >
-          View activities
-        </div>
-      </div>
-      <ListReplyPost postId={postId} />
-      <ModalViewActiviesPost
-        isOpenModal={isOpenModal}
-        setIsOpenModal={setIsOpenModal}
-        dataDetailPost={dataPostDetail}
-      />
+      {isApproved &&
+        <>
+          <div
+            className="w-full flex justify-between items-center py-3 px-[20px]"
+            style={{
+              borderBottom: "1px solid #f0f0f0",
+            }}
+          >
+            <div className="font-[500] text-[15px]">Replies</div>
+            <div
+              className=" text-[15px] text-[#c3c3c3] hover:cursor-pointer"
+              onClick={() => setIsOpenModal(!isOpenModal)}
+            >
+              View activities
+            </div>
+          </div>
+          <ListReplyPost postId={postId}/>
+          <ModalViewActiviesPost
+            isOpenModal={isOpenModal}
+            setIsOpenModal={setIsOpenModal}
+            dataDetailPost={dataPostDetail}
+          />
+        </>
+      }
     </>
   );
 };
