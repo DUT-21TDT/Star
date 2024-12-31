@@ -52,6 +52,11 @@ const ModalConfirmReportPost: React.FC<IProps> = ({
   };
 
   const handleReport = () => {
+    if (!selectedReason) {
+      message.error("Please select a reason for reporting.");
+      return;
+    }
+
     if (selectedReason === "Other" && !otherReason.trim()) {
       message.error("Please provide a reason for reporting.");
       return;
