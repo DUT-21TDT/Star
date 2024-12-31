@@ -358,6 +358,110 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public List<Notification> reportPostNotification(String postId, String actorId, Instant timestamp) {
+        Post reportedPost = postRepository.findExistPostById(postId)
+                .orElse(null);
+
+        if (reportedPost == null) {
+            return null;
+        }
+
+        String roomId = reportedPost.getRoomId();
+        Room room = roomRepository.findById(roomId)
+                .orElse(null);
+
+        if (room == null) {
+            return null;
+        }
+
+        List<String> receivers = userRoomRepository.findModeratorIdsByRoomId(roomId);
+
+        if (receivers.isEmpty()) {
+            return null;
+        }
+
+        boolean isExistNotification = true;
+
+        // Upsert notification object
+        Optional<NotificationObject> notificationObjOpt = notificationObjectRepository.findByNotificationTypeAndRef(NotificationType.REPORT_POST, postId);
+        NotificationObject savedNotificationObj;
+
+        if (notificationObjOpt.isPresent()) {
+            savedNotificationObj = notificationObjOpt.get();
+        } else {
+            NotificationObject obj = NotificationObject.builder()
+                    .notificationType(NotificationType.REPORT_POST)
+                    .ref(postId)
+                    .artifactId(roomId)
+                    .artifactType(ArtifactType.ROOM)
+                    .artifactPreview(getPostPreview(reportedPost.getContent()))
+                    .build();
+            try {
+                isExistNotification = false;
+                savedNotificationObj = notificationObjectRepository.save(obj);
+            } catch (DataIntegrityViolationException e) {
+                savedNotificationObj = notificationObjectRepository.findByNotificationTypeAndRef(NotificationType.REPORT_POST, roomId)
+                        .orElseThrow(() -> new RuntimeException("Failed to resolve race condition"));
+
+                isExistNotification = true;
+            }
+        }
+
+        // Always create a new notification change
+        NotificationChange notificationChange = NotificationChange.builder()
+                .notificationObjectId(savedNotificationObj.getId())
+                .actorId(actorId)
+                .changeAt(timestamp)
+                .build();
+        notificationChangeRepository.save(notificationChange);
+
+        if (!isExistNotification) {
+            NotificationObject tmpSavedNotificationObj = savedNotificationObj;
+            List<Notification> notifications = receivers.stream()
+                    .map(receiverId -> Notification.builder()
+                            .notificationObjectId(tmpSavedNotificationObj.getId())
+                            .receiverId(receiverId)
+                            .isRead(false)
+                            .build())
+                    .toList();
+            return notificationRepository.saveAll(notifications);
+        } else {
+            List<Notification> oldNotifications = notificationRepository.findNotificationsByNotificationObjectId(savedNotificationObj.getId());
+            List<String> oldReceivers = oldNotifications.stream()
+                    .map(Notification::getReceiverId)
+                    .toList();
+            // Remove old receiver
+            List<String> removedReceiverIds = oldReceivers.stream()
+                    .filter(receiverId -> !receivers.contains(receiverId))
+                    .toList();
+
+            if (!removedReceiverIds.isEmpty()) {
+                notificationRepository.deleteByNotificationObjectIdAndReceiverIdIn(savedNotificationObj.getId(), removedReceiverIds);
+            }
+
+            for (String receiver : receivers) {
+                if (!oldReceivers.contains(receiver)) {
+                    Notification notification = Notification.builder()
+                            .notificationObjectId(savedNotificationObj.getId())
+                            .receiverId(receiver)
+                            .isRead(false)
+                            .build();
+                    oldNotifications.add(notification);
+                } else {
+                    Notification notification = oldNotifications.stream()
+                            .filter(noti -> noti.getReceiverId().equals(receiver))
+                            .findFirst()
+                            .orElse(null);
+                    assert notification != null;
+                    notification.setRead(false);
+                }
+            }
+
+            return notificationRepository.saveAll(oldNotifications);
+        }
+    }
+
+    @Override
     @Transactional
     public void deleteModNotifications(String roomId, String userId) {
         notificationRepository.deleteModNotificationsByRoomIdAndUserId(roomId, userId);

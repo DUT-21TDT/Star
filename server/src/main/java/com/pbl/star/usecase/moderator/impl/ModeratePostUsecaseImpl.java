@@ -1,10 +1,11 @@
 package com.pbl.star.usecase.moderator.impl;
 
+import com.pbl.star.dtos.request.post.RejectPostParams;
 import com.pbl.star.dtos.response.post.PostForModResponse;
-import com.pbl.star.mapper.post.PostDTOMapper;
-import com.pbl.star.models.entities.Post;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.ModeratorAccessException;
+import com.pbl.star.mapper.post.PostDTOMapper;
+import com.pbl.star.models.entities.Post;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.services.domain.UserRoomService;
@@ -49,9 +50,9 @@ public class ModeratePostUsecaseImpl implements ModeratePostUsecase {
     }
 
     @Override
-    public void rejectPost(String postId) {
+    public void rejectPost(String postId, RejectPostParams params) {
         String moderatorId = AuthUtil.getCurrentUser().getId();
-        Post rejectedPost = postInteractionService.moderatePostStatus(postId, PostStatus.REJECTED, moderatorId);
+        Post rejectedPost = postInteractionService.rejectPost(postId, moderatorId, params);
 
         notificationProducer.pushRejectPostMessage(rejectedPost);
     }

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../utils/queriesKey";
 import {
-  changeStatusPostByModerator,
+  approvePostByModerator,
   createAPost,
   deletePost,
   deleteRepost,
@@ -18,6 +18,8 @@ import {
   getRepliesOnUserWall,
   getRepostsOnWall,
   likePost,
+  pendPostByModerator,
+  rejectPostByModerator,
   replyPost,
   reportAPostToModerator,
   repostPost,
@@ -144,12 +146,36 @@ const useGetAllPendingPostForModerator = (
   };
 };
 
-const useChangeStatusPostByModerator = () => {
+// const useChangeStatusPostByModerator = () => {
+//   return useMutation({
+//     mutationFn: ({ status, postId }: { status: string; postId: string }) =>
+//       changeStatusPostByModerator(status, postId),
+//   });
+// };
+
+const useApprovePostByModerator = () => {
   return useMutation({
-    mutationFn: ({ status, postId }: { status: string; postId: string }) =>
-      changeStatusPostByModerator(status, postId),
+    mutationFn: (postId: string) => approvePostByModerator(postId),
   });
-};
+}
+
+const usePendPostByModerator = () => {
+  return useMutation({
+    mutationFn: (postId: string) => pendPostByModerator(postId),
+  });
+}
+
+const useRejectPostByModerator = () => {
+  return useMutation({
+    mutationFn: ({
+     postId,
+     reason
+    }: {
+      postId: string;
+      reason: string
+    }) => rejectPostByModerator(postId, reason),
+  });
+}
 
 const useDeletePost = () => {
   return useMutation({
@@ -310,7 +336,9 @@ export {
   useGetAllPostsInRoom,
   useGetAllPendingPostOnWall,
   useGetAllPendingPostForModerator,
-  useChangeStatusPostByModerator,
+  useApprovePostByModerator,
+  usePendPostByModerator,
+  useRejectPostByModerator,
   useDeletePost,
   useReplyPost,
   useGetPostDetailById,

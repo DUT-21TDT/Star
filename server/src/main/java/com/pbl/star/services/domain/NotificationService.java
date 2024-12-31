@@ -30,6 +30,7 @@ public interface NotificationService {
 
     List<Notification> createNewPostNotification(String roomId, String actorId, Instant timestamp);
     void undoNewPostNotification(String roomId, String actorId);
+    List<Notification> reportPostNotification(String postId, String actorId, Instant timestamp);
 
     void deleteModNotifications(String roomId, String userId);
 }

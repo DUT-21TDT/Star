@@ -1,6 +1,7 @@
 package com.pbl.star.services.domain;
 
 import com.pbl.star.dtos.request.post.CreateReportParams;
+import com.pbl.star.dtos.request.post.RejectPostParams;
 import com.pbl.star.dtos.response.post.PostInteractionListResponse;
 import com.pbl.star.enums.InteractType;
 import com.pbl.star.enums.PostStatus;
@@ -18,6 +19,7 @@ public interface PostInteractionService {
     void deleteRepostPost(String userId, String postId);
     PostReport reportPost(String userId, String postId, CreateReportParams params);
     Post moderatePostStatus(String postId, PostStatus status, String moderatorId);
+    Post rejectPost(String postId, String moderatorId, RejectPostParams params);
     void unmoderatePostStatus(String postId, String moderatorId);
     PostInteractionListResponse getActorProfilesOfPost(String currentUserId, String postId, InteractType type, int limit, Instant after);
 }

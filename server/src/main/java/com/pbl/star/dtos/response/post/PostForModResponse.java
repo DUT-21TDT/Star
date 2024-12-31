@@ -30,4 +30,5 @@ public class PostForModResponse {
     private String idOfModerator;
     private String usernameOfModerator;
     private Instant moderatedAt;
+    private String rejectReason;
 }

@@ -1,6 +1,7 @@
 package com.pbl.star.services.domain.impl;
 
 import com.pbl.star.dtos.request.post.CreateReportParams;
+import com.pbl.star.dtos.request.post.RejectPostParams;
 import com.pbl.star.dtos.response.post.PostInteractionListResponse;
 import com.pbl.star.enums.InteractType;
 import com.pbl.star.enums.PostStatus;
@@ -133,6 +134,27 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         post.setStatus(status);
         post.setModeratedBy(moderatorId);
         post.setModeratedAt(Instant.now());
+        post.setRejectReason(null);
+        return postRepository.save(post);
+    }
+
+    @Override
+    public Post rejectPost(String postId, String moderatorId, RejectPostParams params) {
+        Post post = postRepository.findExistPostById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+
+        if (!userRoomRepository.existsByUserIdAndRoomIdAndRole(moderatorId, post.getRoomId(), RoomRole.MODERATOR)) {
+            throw new ModeratorAccessException("User is not a moderator of the room");
+        }
+
+        if (post.getStatus() == PostStatus.REJECTED) {
+            throw new EntityConflictException("Post already has the status REJECTED");
+        }
+
+        post.setStatus(PostStatus.REJECTED);
+        post.setModeratedBy(moderatorId);
+        post.setModeratedAt(Instant.now());
+        post.setRejectReason(params.getReason());
         return postRepository.save(post);
     }
 
@@ -153,6 +175,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         post.setStatus(PostStatus.PENDING);
         post.setModeratedBy(null);
         post.setModeratedAt(null);
+        post.setRejectReason(null);
         postRepository.save(post);
     }
 

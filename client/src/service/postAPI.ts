@@ -1,4 +1,4 @@
-import { instance } from "../utils/customizeAxios";
+import {instance} from "../utils/customizeAxios";
 
 type configTypeProfileWall = {
   limit: number;
@@ -111,6 +111,21 @@ const changeStatusPostByModerator = async (status: string, postId: string) => {
   );
   return response.data;
 };
+
+const approvePostByModerator = async (postId: string) => {
+  const response = await instance.patch(`/moderator/posts/${postId}/approve`);
+  return response.data;
+}
+
+const pendPostByModerator = async (postId: string) => {
+  const response = await instance.patch(`/moderator/posts/${postId}/pend`);
+  return response.data;
+}
+
+const rejectPostByModerator = async (postId: string, reason: string) => {
+  const response = await instance.patch(`/moderator/posts/${postId}/reject`, { reason });
+  return response.data;
+}
 
 const deletePost = async (postId: string) => {
   const response = await instance.delete(`/posts/${postId}`);
@@ -284,6 +299,9 @@ export {
   getAllPendingPostInUserWall,
   getAllPendingPostForModerator,
   changeStatusPostByModerator,
+  approvePostByModerator,
+  pendPostByModerator,
+  rejectPostByModerator,
   deletePost,
   replyPost,
   getPostDetailById,
