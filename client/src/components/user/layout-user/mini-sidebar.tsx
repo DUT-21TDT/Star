@@ -95,6 +95,12 @@ const MiniSidebar: React.FC = () => {
       case "/room":
         setActiveIcon("room");
         break;
+      case "/following":
+        setActiveIcon("home");
+        break;
+      case "/liked":
+        setActiveIcon("home");
+        break;
       default:
         setActiveIcon("user");
         break;
@@ -194,7 +200,10 @@ const MiniSidebar: React.FC = () => {
               onClick={() => {
                 if (name === "plus") {
                   setOpenModalCreatePost(true);
-                } else if (name === "home" && path === "/") {
+                } else if (
+                  name === "home" &&
+                  (path === "/" || path === "/following" || path === "/liked")
+                ) {
                   window.location.reload();
                 } else if (iconNavigate) {
                   if (!pinned?.includes(key) || path !== "/") {

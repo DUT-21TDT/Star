@@ -33,7 +33,6 @@ const PostInRoomContainer = () => {
     { key: "1", label: "For you", url: "/" },
     { key: "2", label: "Following", url: "/following" },
     { key: "3", label: "Liked", url: "/liked" },
-    { key: "4", label: "Saved", url: "/saved" },
     {
       key: "5",
       label: "Room",

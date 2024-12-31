@@ -42,6 +42,14 @@ const router = createBrowserRouter(
           element: <NewFeed />,
         },
         {
+          path: "/following",
+          element: <NewFeed />,
+        },
+        {
+          path: "/liked",
+          element: <NewFeed />,
+        },
+        {
           path: "profile/:id",
           element: <Profile />,
         },

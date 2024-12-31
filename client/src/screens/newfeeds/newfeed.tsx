@@ -1,22 +1,23 @@
-import {ConfigProvider} from "antd";
-import {activityTheme, newFeedsTheme, roomUserTheme} from "../../utils/theme";
+import { ConfigProvider } from "antd";
+import { activityTheme, newFeedsTheme, roomUserTheme } from "../../utils/theme";
 import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
 import PostsOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed";
-import {useState} from "react";
-import {useGetAllRoomForUser} from "../../hooks/room";
-import {useNavigate} from "react-router-dom";
-import {useAppSelector} from "../../redux/store/hook";
+import { useState } from "react";
+import { useGetAllRoomForUser } from "../../hooks/room";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../redux/store/hook";
 import optionPin from "../../utils/optionPin";
 import HeaderRoom from "../../components/user/room/header-room";
 import MainRoomContent from "../../components/user/room/main-room";
 import HeaderPeople from "../../components/user/people/header-people";
 import MainPeopleContent from "../../components/user/people/main-people";
 import Profile from "../profile/profile";
-import {Helmet} from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
 import HeaderActivity from "../../components/user/activity/header-activity";
 import MainContentActivity from "../../components/user/activity/main-activity";
 import PostsFollowingOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed-following";
 import SuggestionPeopleOnNewFeed from "../../components/user/suggestion/suggestion-people";
+import PostsLikedOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed-liked";
 
 interface RoomType {
   id: number;
@@ -27,9 +28,38 @@ interface RoomType {
   participantsCount: number;
   isParticipant?: boolean;
 }
+const mapperCurrentItemActive = (path: string) => {
+  switch (path) {
+    case "/":
+      return {
+        label: "For you",
+        key: "1",
+      };
+    case "/following":
+      return {
+        label: "Following",
+        key: "2",
+      };
+    case "/liked":
+      return {
+        label: "Liked",
+        key: "3",
+      };
+    default:
+      return {
+        label: "For you",
+        key: "1",
+      };
+  }
+};
 
 const NewFeed = () => {
-  const [itemActive, setItemActive] = useState({ label: "For you", key: "1" });
+  const currentItemActive = window.location.pathname;
+
+  // const [itemActive, setItemActive] = useState({ label: "For you", key: "1" });
+  const [itemActive, setItemActive] = useState(
+    mapperCurrentItemActive(currentItemActive)
+  );
   const { listRoomJoined } = useGetAllRoomForUser(true);
   const childrenRoom = listRoomJoined.map((room: RoomType) => ({
     key: room.id,
@@ -56,19 +86,21 @@ const NewFeed = () => {
     { key: "1", label: "For you", url: "/" },
     { key: "2", label: "Following", url: "/following" },
     { key: "3", label: "Liked", url: "/liked" },
-    { key: "4", label: "Saved", url: "/saved" },
     {
       key: "5",
       label: "Room",
       children: childrenRoom,
     },
-  ].map(({ key, label, children }) => ({
+  ].map(({ key, label, url, children }) => ({
     key,
     label: (
       <div
         className="w-[200px] h-[40px] flex items-center text-[14px] font-semibold"
         onClick={() => {
           if (label !== "Room") {
+            if (url && !isHasPin) {
+              navigate(url);
+            }
             setItemActive({ label, key });
           }
         }}
@@ -276,7 +308,7 @@ const NewFeed = () => {
             )}
             {itemActive.label === "Liked" && (
               <>
-                <PostsOnNewsFeed />
+                <PostsLikedOnNewsFeed />
               </>
             )}
           </div>

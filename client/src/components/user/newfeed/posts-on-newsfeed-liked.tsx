@@ -1,14 +1,14 @@
-import React, {useEffect, useRef, useState} from "react";
-import {Spin} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
-import {useQueryClient} from "@tanstack/react-query";
-import {QUERY_KEY} from "../../../utils/queriesKey";
-import {useFetchAllPostsLikedOnNewsfeed} from "../../../hooks/post";
+import React, { useEffect, useRef, useState } from "react";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEY } from "../../../utils/queriesKey";
+import { useFetchAllPostsLikedOnNewsfeed } from "../../../hooks/post";
 import Post from "../profile/posts/Post";
 import RemoveDuplicatePost from "../../../utils/removeDuplicatePost";
 import CreatePost from "../profile/posts/create-post";
 import "../../../assets/css/newfeed.css";
-import {debounce} from "../../../utils/debounce";
+import { debounce } from "../../../utils/debounce";
 
 interface PostType {
   id: string;
@@ -27,16 +27,15 @@ interface PostType {
   isRemoved?: boolean;
 }
 
-const PostsFollowingOnNewsFeed: React.FC = () => {
+const PostsLikedOnNewsFeed: React.FC = () => {
   const queryClient = useQueryClient();
   const divRef = useRef(null);
   const [afterTime, setAfterTime] = useState<string | null>(null);
   const [allPosts, setAllPosts] = useState<PostType[]>([]);
-  const { dataPost, isLoading, hasNextPost } =
-    useFetchAllPostsLikedOnNewsfeed({
-      limit: 10,
-      after: afterTime,
-    });
+  const { dataPost, isLoading, hasNextPost } = useFetchAllPostsLikedOnNewsfeed({
+    limit: 10,
+    after: afterTime,
+  });
 
   // const handleScroll = () => {
   //   const isBottom =
@@ -56,7 +55,7 @@ const PostsFollowingOnNewsFeed: React.FC = () => {
       const isBottom = scrollTop + clientHeight >= scrollHeight - 2;
       if (isBottom && hasNextPost) {
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEY.fetchAllPostsFollowingOnNewsFeed(),
+          queryKey: QUERY_KEY.fetchAllPostsLikedOnNewsfeed(),
         });
       }
     }
@@ -100,7 +99,7 @@ const PostsFollowingOnNewsFeed: React.FC = () => {
   useEffect(() => {
     return () => {
       queryClient.resetQueries({
-        queryKey: QUERY_KEY.fetchAllPostsFollowingOnNewsFeed(),
+        queryKey: QUERY_KEY.fetchAllPostsLikedOnNewsfeed(),
       });
     };
   }, []);
@@ -190,4 +189,4 @@ const PostsFollowingOnNewsFeed: React.FC = () => {
     </>
   );
 };
-export default PostsFollowingOnNewsFeed;
+export default PostsLikedOnNewsFeed;

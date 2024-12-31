@@ -1,4 +1,4 @@
-import {instance} from "../utils/customizeAxios";
+import { instance } from "../utils/customizeAxios";
 
 type configTypeProfileWall = {
   limit: number;
@@ -201,13 +201,13 @@ const getAllPostFollowingOnNewFeed = async (config: configTypeProfileWall) => {
 const getLikedPostsOnNewsfeed = async (config: configTypeProfileWall) => {
   let url;
   if (config.after !== null) {
-    url = `/likes/posts?limit=${config.limit}&after=${config.after}`;
+    url = `/liked/posts?limit=${config.limit}&after=${config.after}`;
   } else {
-    url = `/likes/posts?limit=${config.limit}`;
+    url = `/liked/posts?limit=${config.limit}`;
   }
   const response = await instance.get(url);
   return response.data;
-}
+};
 
 const getAllPostAdmin = async (
   page: number,
@@ -288,5 +288,5 @@ export {
   getAllPostAdmin,
   hidePost,
   unhidePost,
-  getLikedPostsOnNewsfeed
+  getLikedPostsOnNewsfeed,
 };
