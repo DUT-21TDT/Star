@@ -45,4 +45,10 @@
             <column name="is_read" type="BOOLEAN" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="37_add_reject_reason_to_post" author="Quang Nguyen">
+        <addColumn tableName="post">
+            <column name="reject_reason" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

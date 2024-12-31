@@ -53,6 +53,9 @@ public class Post {
     @Column(name = "moderated_at")
     private Instant moderatedAt;
 
+    @Column(name = "reject_reason")
+    private String rejectReason;
+
     @Column(name = "is_deleted")
     private boolean isDeleted;
 

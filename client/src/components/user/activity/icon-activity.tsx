@@ -1,3 +1,5 @@
+import {HiFlag} from "react-icons/hi";
+
 const IconFollowed = () => {
   return (
     <div
@@ -135,6 +137,25 @@ const IconReply = () => {
   );
 }
 
+const IconReport = () => {
+  return (
+    <div
+      style={{
+        backgroundColor: "#ff9100",
+        width: "20px",
+        height: "20px",
+        borderRadius: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        border: "2px solid white",
+      }}
+    >
+      <HiFlag className='ml-[0.8px]' size={14} color="white" />
+    </div>
+  )
+}
+
 const IconInformation = () => {
   return (
     <div
@@ -167,4 +188,4 @@ const IconInformation = () => {
     </div>
   );
 };
-export { IconFollowed, IconLiked, IconReposted, IconInformation, IconApprove, IconReject, IconReply };
+export {IconFollowed, IconLiked, IconReposted, IconInformation, IconApprove, IconReject, IconReply, IconReport};

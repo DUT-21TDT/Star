@@ -2,7 +2,6 @@ package com.pbl.star.events.activity.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
-import com.pbl.star.enums.NotificationType;
 import com.pbl.star.events.activity.InteractPostEvent;
 import com.pbl.star.mapper.notification.NotificationDTOMapper;
 import com.pbl.star.models.entities.Notification;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 
 @Component
 public class ReportPostHandler implements UserActivityHandler {
@@ -41,7 +41,7 @@ public class ReportPostHandler implements UserActivityHandler {
         String actorId = event.getActorId();
         Instant timestamp = event.getTimestamp();
 
-        Notification noti = notificationService.createInteractPostNotification(postId, actorId, timestamp, NotificationType.REPORT_POST);
+        List<Notification> notis = notificationService.reportPostNotification(postId, actorId, timestamp);
 
 //        if (noti != null) {
 //            NotificationForUser pushedNoti = notificationService.getPushedNotification(noti.getNotificationObjectId());

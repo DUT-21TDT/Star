@@ -7,7 +7,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import default_image from "../../../assets/images/default_image.jpg";
 import {timeAgo} from "../../../utils/convertTime";
 import "../../../assets/css/post-moderator.css";
-import {useChangeStatusPostByModerator} from "../../../hooks/post";
+import {useApprovePostByModerator, usePendPostByModerator, useRejectPostByModerator} from "../../../hooks/post";
 import {useQueryClient} from "@tanstack/react-query";
 import {QUERY_KEY} from "../../../utils/queriesKey";
 import DOMPurify from "dompurify";
@@ -29,6 +29,7 @@ interface PostType {
   numberOfReports: number;
   status: string;
   isChangeStatus?: string;
+  rejectReason?: string;
 }
 
 interface IProps {
@@ -113,6 +114,7 @@ const PostModerator: React.FC<IProps> = (props) => {
     numberOfReports,
     status,
     isChangeStatus,
+    rejectReason,
   } = postData;
 
   const sanitizedContent = DOMPurify.sanitize(
@@ -194,29 +196,88 @@ const PostModerator: React.FC<IProps> = (props) => {
     return "#ffcc00";
   }
 
-  const { mutate: changeStatusPost } = useChangeStatusPostByModerator();
+  // const { mutate: changeStatusPost } = useChangeStatusPostByModerator();
+  const { mutate: approvePost } = useApprovePostByModerator();
+  const { mutate: pendPost } = usePendPostByModerator();
+  const { mutate: rejectPost } = useRejectPostByModerator();
+
+
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
-  const handleChangeStatusPostByModerator = (statusToChange: string) => {
+  // const handleChangeStatusPostByModerator = (statusToChange: string) => {
+  //   setLoading(true);
+  //   changeStatusPost(
+  //     { postId: id, status: statusToChange },
+  //     {
+  //       onSuccess: () => {
+  //         queryClient.invalidateQueries({
+  //           queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, status),
+  //         });
+  //         handleChangeStatusPostState(id, statusToChange);
+  //         setLoading(false);
+  //       },
+  //       onError: (error) => {
+  //         console.error(error);
+  //         message.error("Change status post failed");
+  //         setLoading(false);
+  //       },
+  //     }
+  //   );
+  // };
+
+  const handleApprovePost = () => {
     setLoading(true);
-    changeStatusPost(
-      { postId: id, status: statusToChange },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, status),
-          });
-          handleChangeStatusPostState(id, statusToChange);
-          setLoading(false);
-        },
-        onError: (error) => {
-          console.error(error);
-          message.error("Change status post failed");
-          setLoading(false);
-        },
-      }
-    );
-  };
+    approvePost(id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, status),
+        });
+        handleChangeStatusPostState(id, "APPROVED");
+        setLoading(false);
+      },
+      onError: (error) => {
+        console.error(error);
+        message.error("Approve post failed");
+        setLoading(false);
+      },
+    });
+  }
+
+  const handlePendPost = () => {
+    setLoading(true);
+    pendPost(id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, status),
+        });
+        handleChangeStatusPostState(id, "PENDING");
+        setLoading(false);
+      },
+      onError: (error) => {
+        console.error(error);
+        message.error("Pend post failed");
+        setLoading(false);
+      },
+    });
+  }
+
+  const handleRejectPost = (reason: string = "") => {
+    setLoading(true);
+    rejectPost({ postId: id, reason: reason }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEY.fetchAllPendingPostForModerator(roomId, status),
+        });
+        handleChangeStatusPostState(id, "REJECTED");
+        setLoading(false);
+      },
+      onError: (error) => {
+        console.error(error);
+        message.error("Reject post failed");
+        setLoading(false);
+      },
+    });
+  }
 
   if (isChangeStatus === "APPROVED") {
     return (
@@ -495,6 +556,11 @@ const PostModerator: React.FC<IProps> = (props) => {
             by {usernameOfModerator} on {convertDateTime(moderatedAt)}
           </div>
         )}
+        {status === "REJECTED" && rejectReason && (
+          <div style={{ marginTop: "8px", fontSize: "14px", color: "#999" }}>
+            Reason: {rejectReason}
+          </div>
+        )}
 
         <div
           style={{
@@ -518,7 +584,7 @@ const PostModerator: React.FC<IProps> = (props) => {
                 className="buttonChangeStatus"
                 loading={loading}
                 onClick={() => {
-                  handleChangeStatusPostByModerator("APPROVED");
+                  handleApprovePost();
                 }}
               >
                 Approve
@@ -532,7 +598,7 @@ const PostModerator: React.FC<IProps> = (props) => {
                 }}
                 className="buttonChangeStatus"
                 onClick={() => {
-                  handleChangeStatusPostByModerator("REJECTED");
+                  handleRejectPost("REJECTED");
                 }}
               >
                 Reject
@@ -550,7 +616,7 @@ const PostModerator: React.FC<IProps> = (props) => {
                 }}
                 className="buttonChangeStatus"
                 onClick={() => {
-                  handleChangeStatusPostByModerator("PENDING");
+                  handlePendPost();
                 }}
               >
                 Move to Pending
@@ -564,7 +630,7 @@ const PostModerator: React.FC<IProps> = (props) => {
                 }}
                 className="buttonChangeStatus"
                 onClick={() => {
-                  handleChangeStatusPostByModerator("REJECTED");
+                  handleRejectPost("REJECTED");
                 }}
               >
                 Reject
@@ -582,7 +648,7 @@ const PostModerator: React.FC<IProps> = (props) => {
                 }}
                 className="buttonChangeStatus"
                 onClick={() => {
-                  handleChangeStatusPostByModerator("PENDING");
+                  handlePendPost();
                 }}
               >
                 Move to Pending
@@ -596,7 +662,7 @@ const PostModerator: React.FC<IProps> = (props) => {
                 }}
                 className="buttonChangeStatus"
                 onClick={() => {
-                  handleChangeStatusPostByModerator("APPROVED");
+                  handleApprovePost();
                 }}
               >
                 Approve

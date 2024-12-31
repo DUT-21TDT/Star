@@ -112,7 +112,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .moderatedAt((Instant) row[14])
                         .isHidden((boolean) row[15])
                         .hideAt((Instant) row[16])
-                        .numberOfReports((Integer) row[17])
+                        .numberOfReports(((Long) row[17]).intValue())
                         .build()
                 )
                 .toList();
@@ -714,6 +714,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .usernameOfModerator((String) row[11])
                         .moderatedAt((Instant) row[12])
                         .numberOfReports(((Long) row[13]).intValue())
+                        .rejectReason((String) row[14])
                         .build()
                 )
                 .toList();
@@ -724,7 +725,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, p.status, p.violence_score, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
                 "p.room_id, p.moderated_by, u1.username, p.moderated_at, " +
-                "(SELECT COUNT(*) FROM post_report pr WHERE pr.post_id = p.post_id) AS number_of_reports " +
+                "(SELECT COUNT(*) FROM post_report pr WHERE pr.post_id = p.post_id) AS number_of_reports," +
+                "p.reject_reason " +
                 "FROM post p " +
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "LEFT JOIN \"user\" u1 ON p.moderated_by = u1.user_id " +

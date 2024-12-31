@@ -6,6 +6,7 @@ import {
   IconLiked,
   IconReject,
   IconReply,
+  IconReport,
   IconReposted,
 } from "./icon-activity";
 import React, {useState} from "react";
@@ -92,6 +93,8 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
         return <IconReject />;
       case "REPLY_POST":
         return <IconReply />;
+      case "REPORT_POST":
+        return <IconReport />;
       default:
         return <IconInformation />;
     }
@@ -102,21 +105,31 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
       case "NEW_PENDING_POST":
         return `Have posted in ${artifactPreview}`;
       case "APPROVE_POST":
-        return artifactPreview ? artifactPreview : "Your post has been approved";
+        // return artifactPreview ? artifactPreview : "Your post has been approved";
+        return `Approve your post "${artifactPreview}"`;
       case "REJECT_POST":
-        return artifactPreview ? artifactPreview : "Your post has been rejected";
+        // return artifactPreview ? artifactPreview : "Your post has been rejected";
+        return `Reject your post "${artifactPreview}"`;
       case "LIKE_POST":
-        return artifactPreview ? artifactPreview : `Liked your post`;
+        // return artifactPreview ? artifactPreview : `Liked your post`;
+        return `Like your post "${artifactPreview}"`;
       case "REPLY_POST":
-        return artifactPreview ? artifactPreview : `Replied to your post`;
+        // return artifactPreview ? artifactPreview : `Replied to your post`;
+        return `Reply to your post "${artifactPreview}"`;
       case "REPOST_POST":
-        return artifactPreview ? artifactPreview : `Reposted your post`;
+        // return artifactPreview ? artifactPreview : `Reposted your post`;
+        return `Repost your post "${artifactPreview}"`;
+      case "REPORT_POST":
+        return `Report a post "${artifactPreview}"`;
       case "FOLLOW":
-        return artifactPreview ? artifactPreview : `Followed you`;
+        // return artifactPreview ? artifactPreview : `Followed you`;
+        return `Followed you`;
       case "REQUEST_FOLLOW":
-        return artifactPreview ? artifactPreview : `Sent you a follow request`;
+        // return artifactPreview ? artifactPreview : `Sent you a follow request`;
+        return `Sent you a follow request`;
       case "ACCEPT_FOLLOW":
-        return "Your follow request has been accepted";
+        // return artifactPreview ? artifactPreview : `Accepted your follow request`;
+        return `Accepted your follow request`;
       default:
         return "You have a new notification";
     }
