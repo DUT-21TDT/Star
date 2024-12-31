@@ -2,6 +2,8 @@ package com.pbl.star.usecase.admin.impl;
 
 import com.pbl.star.dtos.response.user.UserInRoomResponse;
 import com.pbl.star.mapper.user.UserDTOMapper;
+import com.pbl.star.models.entities.UserRoom;
+import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.services.domain.UserRoomService;
 import com.pbl.star.usecase.admin.AdminManageRoomMemberUsecase;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import java.util.List;
 public class AdminManageRoomMemberUsecaseImpl implements AdminManageRoomMemberUsecase {
     // Services
     private final UserRoomService userRoomService;
+    private final NotificationService notificationService;
 
     // Mappers
     private final UserDTOMapper userMapper;
@@ -30,7 +33,9 @@ public class AdminManageRoomMemberUsecaseImpl implements AdminManageRoomMemberUs
 
     @Override
     public void removeModerator(String roomId, String userId) {
-        userRoomService.removeModeratorFromRoom(userId, roomId);
+        UserRoom userRoom = userRoomService.removeModeratorFromRoom(userId, roomId);
+
+        notificationService.deleteModNotifications(userRoom.getRoomId(), userRoom.getUserId());
     }
 
     @Override

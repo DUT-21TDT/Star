@@ -1,22 +1,23 @@
-import { ConfigProvider } from "antd";
-import { activityTheme, newFeedsTheme, roomUserTheme } from "../../utils/theme";
+import {ConfigProvider} from "antd";
+import {activityTheme, newFeedsTheme, roomUserTheme} from "../../utils/theme";
 import HeaderNewFeed from "../../components/user/newfeed/header-newfeed";
 import PostsOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed";
-import { useState } from "react";
-import { useGetAllRoomForUser } from "../../hooks/room";
-import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../redux/store/hook";
+import {useState} from "react";
+import {useGetAllRoomForUser} from "../../hooks/room";
+import {useNavigate} from "react-router-dom";
+import {useAppSelector} from "../../redux/store/hook";
 import optionPin from "../../utils/optionPin";
 import HeaderRoom from "../../components/user/room/header-room";
 import MainRoomContent from "../../components/user/room/main-room";
 import HeaderPeople from "../../components/user/people/header-people";
 import MainPeopleContent from "../../components/user/people/main-people";
 import Profile from "../profile/profile";
-import { Helmet } from "react-helmet-async";
+import {Helmet} from "react-helmet-async";
 import HeaderActivity from "../../components/user/activity/header-activity";
 import MainContentActivity from "../../components/user/activity/main-activity";
 import PostsFollowingOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed-following";
 import SuggestionPeopleOnNewFeed from "../../components/user/suggestion/suggestion-people";
+
 interface RoomType {
   id: number;
   key: number;
@@ -54,8 +55,8 @@ const NewFeed = () => {
   const menuItems = [
     { key: "1", label: "For you", url: "/" },
     { key: "2", label: "Following", url: "/following" },
-    { key: "3", label: "Like", url: "/like" },
-    { key: "4", label: "Save", url: "/save" },
+    { key: "3", label: "Liked", url: "/liked" },
+    { key: "4", label: "Saved", url: "/saved" },
     {
       key: "5",
       label: "Room",
@@ -271,6 +272,11 @@ const NewFeed = () => {
             {itemActive.label === "Following" && (
               <>
                 <PostsFollowingOnNewsFeed />
+              </>
+            )}
+            {itemActive.label === "Liked" && (
+              <>
+                <PostsOnNewsFeed />
               </>
             )}
           </div>

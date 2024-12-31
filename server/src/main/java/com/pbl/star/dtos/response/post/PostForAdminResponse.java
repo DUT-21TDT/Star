@@ -32,5 +32,5 @@ public class PostForAdminResponse {
     private boolean isHidden;
     private Instant hideAt;
 
-    private Integer numberOfReports = 999;
+    private Integer numberOfReports;
 }

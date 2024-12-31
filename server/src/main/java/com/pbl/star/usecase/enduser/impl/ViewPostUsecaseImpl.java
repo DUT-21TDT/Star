@@ -1,10 +1,10 @@
 package com.pbl.star.usecase.enduser.impl;
 
+import com.pbl.star.dtos.response.PaginationSlice;
 import com.pbl.star.dtos.response.post.*;
-import com.pbl.star.mapper.post.PostDTOMapper;
-import com.pbl.star.dtos.response.CustomSlice;
 import com.pbl.star.enums.InteractType;
 import com.pbl.star.enums.PostStatus;
+import com.pbl.star.mapper.post.PostDTOMapper;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.services.domain.PostService;
 import com.pbl.star.usecase.enduser.ViewPostUsecase;
@@ -45,6 +45,13 @@ public class ViewPostUsecaseImpl implements ViewPostUsecase {
     }
 
     @Override
+    public PaginationSlice<PostForUserResponse> getLikedPosts(int limit, Instant after) {
+        String userId = AuthUtil.getCurrentUser().getId();
+        return postService.getLikedPostsOfUser(userId, limit, after)
+                .map(postMapper::toDTO);
+    }
+
+    @Override
     public Slice<PostForUserResponse> getPostsOnUserWall(String userId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.getPostsOnUserWall(currentUserId, userId, limit, after)
@@ -58,7 +65,7 @@ public class ViewPostUsecaseImpl implements ViewPostUsecase {
     }
 
     @Override
-    public CustomSlice<PostForUserResponse> getRepliesOfPost(String postId, int limit, Instant after) {
+    public PaginationSlice<PostForUserResponse> getRepliesOfPost(String postId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return postService.getReplies(currentUserId, postId, limit, after)
                 .map(postMapper::toDTO);

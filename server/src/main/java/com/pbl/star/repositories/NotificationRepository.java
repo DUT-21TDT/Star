@@ -19,4 +19,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
     Optional<Notification> findByNotificationObjectId(String notificationObjectId);
 
     void deleteByNotificationObjectIdAndReceiverIdIn(String notificationObjectId, List<String> receiverIds);
+
+    @Query("DELETE FROM Notification n WHERE n.receiverId = ?2 AND " +
+            "n.notificationObjectId IN " +
+            "(SELECT n.notificationObjectId FROM NotificationObject nob " +
+            "INNER JOIN Post p ON nob.artifactId = p.id " +
+            "WHERE p.roomId = ?1 AND nob.notificationType in ('NEW_PENDING_POST', 'APPROVE_POST', 'REJECT_POST'))")
+    void deleteModNotificationsByRoomIdAndUserId(String roomId, String userId);
 }

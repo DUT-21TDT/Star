@@ -95,6 +95,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
     }
 
     @Override
+    @Transactional
     public PostReport reportPost(String userId, String postId, CreateReportParams params) {
         if (!postRepository.existsByIdAndDeleted(postId, false)) {
             throw new EntityNotFoundException("Post does not exist");

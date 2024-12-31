@@ -1,25 +1,28 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { QUERY_KEY } from "../utils/queriesKey";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {QUERY_KEY} from "../utils/queriesKey";
 import {
-  getAllPostOnNewsFeed,
-  getPostOnProfileWall,
-  createAPost,
-  getPostPresignedURL,
-  getAllPostInRoom,
-  getAllPendingPostInUserWall,
-  getAllPendingPostForModerator,
   changeStatusPostByModerator,
+  createAPost,
   deletePost,
-  replyPost,
+  deleteRepost,
+  getAllPendingPostForModerator,
+  getAllPendingPostInUserWall,
+  getAllPostFollowingOnNewFeed,
+  getAllPostInRoom,
+  getAllPostOnNewsFeed,
+  getLikedPostsOnNewsfeed,
   getPostDetailById,
+  getPostOnProfileWall,
+  getPostPresignedURL,
   getRepliesByPostId,
   getRepliesOnUserWall,
-  repostPost,
-  deleteRepost,
   getRepostsOnWall,
-  getAllPostFollowingOnNewFeed,
+  likePost,
+  replyPost,
+  repostPost,
+  unlikePost,
 } from "../service/postAPI";
-import { likePost, unlikePost } from "../service/postAPI";
+
 type configTypeProfileWall = {
   limit: number;
   after: string | null;
@@ -277,6 +280,20 @@ const useFetchAllPostsFollowingOnNewsFeed = (config: configTypeProfileWall) => {
   };
 };
 
+const useFetchAllPostsLikedOnNewsfeed = (config: configTypeProfileWall) => {
+  const result = useQuery({
+    queryKey: QUERY_KEY.fetchAllPostsLikedOnNewsfeed(),
+    queryFn: () => getLikedPostsOnNewsfeed(config),
+  });
+  return {
+    dataPost: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextPost: !result.data?.last,
+    afterTime: result.data?.nextCursor,
+  };
+}
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -299,4 +316,5 @@ export {
   useDeleteRepost,
   useGetRepostsOnWall,
   useFetchAllPostsFollowingOnNewsFeed,
+  useFetchAllPostsLikedOnNewsfeed,
 };
