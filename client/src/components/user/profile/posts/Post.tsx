@@ -2,8 +2,8 @@ import { Avatar, Button, Dropdown, MenuProps, message, Popover } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import {
   DeleteOutlined,
-  EditOutlined,
   EllipsisOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import ReactButton from "./react-button";
 import "../../../../assets/css/posts.css";
@@ -17,6 +17,7 @@ import { useAppSelector } from "../../../../redux/store/hook";
 import ModalConfirmDeletePost from "./modal-confirm-delete-post";
 import { useDeletePost } from "../../../../hooks/post";
 import DOMPurify from "dompurify";
+import ModalConfirmReportPost from "./modal-confirm-report-post";
 
 interface IProps {
   id: string;
@@ -207,18 +208,27 @@ const Post: React.FC<IProps> = (props) => {
         setOpenModalDeletePost(true);
       },
     },
+  ];
+
+  // report post
+  const [openModalReportPost, setOpenModalReportPost] = useState(false);
+
+  const itemsMenuReport: MenuProps["items"] = [
     {
       label: (
         <div className="w-[120px] h-[35px] text-[16px] flex gap-3 items-center">
-          <EditOutlined
+          <WarningOutlined
             style={{
               fontSize: "16px",
             }}
           />
-          <span>Edit</span>
+          <span>Report</span>
         </div>
       ),
-      key: "2",
+      key: "1",
+      onClick: () => {
+        setOpenModalReportPost(true);
+      },
     },
   ];
 
@@ -345,84 +355,31 @@ const Post: React.FC<IProps> = (props) => {
           </Popover>
 
           {currentUserId === idOfCreator ? (
-            <Dropdown menu={{ items }} placement="bottomRight">
+            <Dropdown
+              menu={{ items }}
+              placement="bottomRight"
+              trigger={["click"]}
+            >
               <Button
                 icon={<EllipsisOutlined />}
                 style={{ borderRadius: "50%", width: "25px", height: "25px" }}
               />
             </Dropdown>
           ) : (
-            <Button
-              icon={<EllipsisOutlined />}
-              style={{ borderRadius: "50%", width: "25px", height: "25px" }}
-            />
+            <Dropdown
+              menu={{ items: itemsMenuReport }}
+              placement="bottomRight"
+              trigger={["click"]}
+            >
+              <Button
+                icon={<EllipsisOutlined />}
+                style={{ borderRadius: "50%", width: "25px", height: "25px" }}
+              />
+            </Dropdown>
           )}
         </div>
-        {/* <div>
-          <p
-            style={{
-              lineHeight: "22px",
-              fontSize: "15px",
-              textAlign: "left",
-              marginTop: "4px",
-              wordBreak: "break-word",
-            }}
-            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-          ></p>
-        </div> */}
+
         <ContentWithSeeMore sanitizedContent={sanitizedContent} />
-        {/* {postImageUrls && postImageUrls.length > 0 && (
-          <div
-            className="embla mt-2"
-            ref={emblaRef}
-            style={{ overflow: "hidden", maxHeight: "400px" }}
-          >
-            <div
-              className="embla__container"
-              style={{
-                display: "flex",
-                cursor: isDraggingImg ? "grabbing" : "grab",
-              }}
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-            >
-              <PhotoProvider maskOpacity={0.7}>
-                {postImageUrls.map((url, index) => (
-                  <div
-                    className="embla__slide"
-                    key={url}
-                    style={{
-                      flex: "0 0 auto",
-                      marginRight: "15px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "white",
-                    }}
-                  >
-                    <PhotoView key={index} src={url}>
-                      <img
-                        key={url}
-                        src={url}
-                        alt="Post Image"
-                        style={{
-                          maxHeight: "400px",
-                          maxWidth: "560px",
-                          width: "auto",
-                          objectFit: "cover",
-                          objectPosition: "center",
-                          borderRadius: "15px",
-                          aspectRatio: "auto",
-                        }}
-                        loading="lazy"
-                      />
-                    </PhotoView>
-                  </div>
-                ))}
-              </PhotoProvider>
-            </div>
-          </div>
-        )} */}
 
         {postImageUrls && postImageUrls.length > 0 && (
           <div
@@ -548,6 +505,25 @@ const Post: React.FC<IProps> = (props) => {
           openModal={openModalDeletePost}
           setOpenModal={setOpenModalDeletePost}
           handleDeletePost={handleDeletePost}
+        />
+        <ModalConfirmReportPost
+          openModal={openModalReportPost}
+          setOpenModal={setOpenModalReportPost}
+          dataDetailPost={{
+            id: id,
+            usernameOfCreator: usernameOfCreator,
+            avatarUrlOfCreator: avatarUrlOfCreator,
+            createdAt: createdAt,
+            content: content,
+            postImageUrls: postImageUrls,
+            numberOfLikes: numberOfLikes,
+            numberOfComments: numberOfComments,
+            numberOfReposts: numberOfReposts,
+            liked: liked,
+            reposted: reposted,
+            nameOfRoom: nameOfRoom || "",
+            idOfCreator: idOfCreator || "",
+          }}
         />
       </div>
     </div>

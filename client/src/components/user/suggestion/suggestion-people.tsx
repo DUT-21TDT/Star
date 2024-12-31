@@ -7,6 +7,7 @@ import { endSession, revokeToken } from "../../../service/userAPI";
 import Cookies from "js-cookie";
 import { removeInformationUser } from "../../../redux/slice/user-slice";
 import default_avatar from "../../../assets/images/default_image.jpg";
+import optionPin from "../../../utils/optionPin";
 interface ISuggestionItem {
   userId: string;
   username: string;
@@ -106,7 +107,7 @@ const FooterLinks = () => {
 };
 
 const SuggestionPeopleOnNewFeed = () => {
-  const { id, username, avatarUrl, firstName, lastName } = useAppSelector(
+  const { id, username, avatarUrl, firstName, lastName, pin } = useAppSelector(
     (state) => state.user
   );
   const { data } = useGetListSuggestion();
@@ -132,6 +133,22 @@ const SuggestionPeopleOnNewFeed = () => {
     }
   };
 
+  const isPinnedRoom = pin?.includes(optionPin.ROOM);
+  const isPinnedProfile = pin?.includes(optionPin.PROFILE);
+  const isPinnedPeople = pin?.includes(optionPin.PEOPLE);
+  const isPinnedActivity = pin?.includes(optionPin.ACTIVITY);
+
+  const isHasPin =
+    isPinnedRoom || isPinnedProfile || isPinnedPeople || isPinnedActivity;
+
+  const isHomepage =
+    window.location.pathname === "/" ||
+    window.location.pathname === "/following" ||
+    window.location.pathname === "/liked";
+
+  if (isHasPin && isHomepage) {
+    return;
+  }
   return (
     <div>
       <div
@@ -141,6 +158,7 @@ const SuggestionPeopleOnNewFeed = () => {
           border: "1px solid #dbdbdb",
           borderRadius: "20px",
           padding: "15px 15px 0px 15px",
+          marginRight: "20px",
         }}
       >
         <div className="flex items-center justify-between">
