@@ -50,13 +50,14 @@ public class UserRoomServiceImpl implements UserRoomService {
 
     @Override
     @Transactional
-    public void removeMemberFromRoom(@NonNull String userId,
+    public UserRoom removeMemberFromRoom(@NonNull String userId,
                                      @NonNull String roomId) {
 
         UserRoom userRoom = userRoomRepository.findByUserIdAndRoomId(userId, roomId)
                 .orElseThrow(() -> new EntityNotFoundException("User is not a member of the room"));
 
         userRoomRepository.delete(userRoom);
+        return userRoom;
     }
 
     @Override
@@ -86,7 +87,7 @@ public class UserRoomServiceImpl implements UserRoomService {
 
     @Override
     @Transactional
-    public void removeModeratorFromRoom(@NonNull String userId,
+    public UserRoom removeModeratorFromRoom(@NonNull String userId,
                                         @NonNull String roomId) {
 
         UserRoom userRoom = userRoomRepository.findByUserIdAndRoomId(userId, roomId)
@@ -97,7 +98,7 @@ public class UserRoomServiceImpl implements UserRoomService {
         }
 
         userRoom.setRole(RoomRole.MEMBER);
-        userRoomRepository.save(userRoom);
+        return userRoomRepository.save(userRoom);
     }
 
     @Override

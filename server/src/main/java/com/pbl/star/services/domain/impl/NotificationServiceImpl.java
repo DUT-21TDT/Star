@@ -38,6 +38,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional
     public void markAsRead(String userId, String notificationId) {
         Notification noti = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
@@ -325,10 +326,6 @@ public class NotificationServiceImpl implements NotificationService {
                 notificationRepository.deleteByNotificationObjectIdAndReceiverIdIn(savedNotificationObj.getId(), removedReceiverIds);
             }
 
-            List<String> newReceiverIds = receivers.stream()
-                    .filter(newReceiverId -> !oldReceivers.contains(newReceiverId))
-                    .toList();
-
             for (String receiver : receivers) {
                 if (!oldReceivers.contains(receiver)) {
                     Notification notification = Notification.builder()
@@ -358,5 +355,11 @@ public class NotificationServiceImpl implements NotificationService {
                 .orElseThrow(() -> new RuntimeException("Notification object not found"));
 
         notificationChangeRepository.deleteFirstByNotificationObjectIdAndActorId(notificationObj.getId(), actorId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteModNotifications(String roomId, String userId) {
+        notificationRepository.deleteModNotificationsByRoomIdAndUserId(roomId, userId);
     }
 }

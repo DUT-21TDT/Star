@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public final class PostForUser extends PostGeneral {
+public class PostForUser extends PostGeneral {
     private int numberOfLikes;
     private int numberOfComments;
     private int numberOfReposts;

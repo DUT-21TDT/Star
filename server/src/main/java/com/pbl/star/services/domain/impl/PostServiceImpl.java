@@ -3,7 +3,7 @@ package com.pbl.star.services.domain.impl;
 import com.pbl.star.dtos.request.post.CreatePostParams;
 import com.pbl.star.dtos.request.post.CreateReplyParams;
 import com.pbl.star.dtos.request.post.FilterPostParams;
-import com.pbl.star.dtos.response.CustomSlice;
+import com.pbl.star.dtos.response.PaginationSlice;
 import com.pbl.star.enums.FollowRequestStatus;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.EntityNotFoundException;
@@ -151,6 +151,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public PaginationSlice<PostForUser> getLikedPostsOfUser(String userId, int limit, Instant after) {
+        List<LikedPostForUser> likedPostsList = postRepository.findExistPostsLikedByUserAndStatus(limit + 1, after, PostStatus.APPROVED, userId);
+        Slice<PostForUser> likedPosts = SliceTransfer.trimToSlice(likedPostsList, limit).map(post -> post);
+
+        PaginationSlice<PostForUser> likedPostsPage = new PaginationSlice<>(likedPosts);
+
+        if (!likedPostsList.isEmpty()) {
+            likedPostsPage.setNextCursor(likedPostsList.getLast().getLikedAt());
+        }
+
+        return likedPostsPage;
+    }
+
+    @Override
     public Slice<PostForUser> getPostsInRoom(String roomId, PostStatus status, int limit, Instant after) {
         if (!roomRepository.existsById(roomId)) {
             throw new EntityNotFoundException("Room does not exist");
@@ -221,11 +235,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public CustomSlice<PostForUser> getReplies(String userId, String postId, int limit, Instant after) {
+    public PaginationSlice<PostForUser> getReplies(String userId, String postId, int limit, Instant after) {
         List<PostForUser> repliesList = postRepository.findExistRepliesOfPostAsUser(limit + 1, after, userId, postId);
         Slice<PostForUser> replies = SliceTransfer.trimToSlice(repliesList, limit);
 
-        CustomSlice<PostForUser> repliesPage = new CustomSlice<>(replies);
+        PaginationSlice<PostForUser> repliesPage = new PaginationSlice<>(replies);
 
         if (after == null) {
             repliesPage.setTotalElements(postRepository.countExistRepliesOfPost(postId));

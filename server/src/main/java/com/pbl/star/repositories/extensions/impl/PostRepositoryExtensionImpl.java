@@ -281,6 +281,61 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
+    public List<LikedPostForUser> findExistPostsLikedByUserAndStatus(int limit, Instant after, PostStatus status, String currentUserId) {
+        String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
+                "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
+                "   (SELECT COUNT(*) FROM post p1 WHERE p1.parent_post_id = p.post_id and p1.is_deleted = FALSE) AS number_of_comments, " +
+                "   (SELECT COUNT(*) FROM post_repost pr WHERE pr.post_id = p.post_id) AS number_of_reposts, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
+                "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
+                "p.room_id, r.name, pl.like_at " +
+                "FROM post_like pl " +
+                "INNER JOIN post p ON pl.post_id = p.post_id " +
+                "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
+                "INNER JOIN room r ON p.room_id = r.room_id " +
+                "WHERE p.is_deleted = FALSE " +
+                "AND p.is_hidden = FALSE " +
+                "AND p.parent_post_id is null " +
+                "AND pl.user_id = :currentUserId " +
+                "AND p.status = :status " +
+                (after == null ? "" : "AND pl.like_at < :after ") +
+                "ORDER BY pl.like_at DESC, p.post_id DESC ";
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+        query
+                .setParameter("currentUserId", currentUserId)
+                .setParameter("status", status.name())
+                .setMaxResults(limit);
+
+        if (after != null) {
+            query.setParameter("after", after);
+        }
+
+        List<Object[]> resultList = query.getResultList();
+        return resultList.stream()
+                .map(row -> (LikedPostForUser) LikedPostForUser.builder()
+                        .id((String) row[0])
+                        .idOfCreator((String) row[1])
+                        .usernameOfCreator((String) row[2])
+                        .avatarUrlOfCreator((String) row[3])
+                        .createdAt((Instant) row[4])
+                        .content((String) row[5])
+                        .numberOfLikes(((Long) row[6]).intValue())
+                        .numberOfComments(((Long) row[7]).intValue())
+                        .numberOfReposts(((Long) row[8]).intValue())
+                        .isLiked((boolean) row[9])
+                        .isReposted((boolean) row[10])
+                        .postImageUrls(row[11] == null ? null : List.of(((String) row[11]).split(",")))
+                        .idOfRoom((String) row[12])
+                        .nameOfRoom((String) row[13])
+                        .likedAt((Instant) row[14])
+                        .build()
+                )
+                .toList();
+    }
+
+    @Override
     public Optional<PostForUser> findExistPostByIdAsUser(String currentUserId, String postId) {
 
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +

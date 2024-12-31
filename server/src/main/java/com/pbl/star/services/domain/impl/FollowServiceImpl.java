@@ -1,8 +1,6 @@
 package com.pbl.star.services.domain.impl;
 
-import com.pbl.star.models.projections.follow.FollowCount;
-import com.pbl.star.dtos.response.CustomSlice;
-import com.pbl.star.models.entities.Following;
+import com.pbl.star.dtos.response.PaginationSlice;
 import com.pbl.star.enums.FollowRequestAction;
 import com.pbl.star.enums.FollowRequestStatus;
 import com.pbl.star.enums.SuggestType;
@@ -10,6 +8,8 @@ import com.pbl.star.exceptions.EntityConflictException;
 import com.pbl.star.exceptions.EntityNotFoundException;
 import com.pbl.star.exceptions.IllegalRequestArgumentException;
 import com.pbl.star.exceptions.ResourceOwnershipException;
+import com.pbl.star.models.entities.Following;
+import com.pbl.star.models.projections.follow.FollowCount;
 import com.pbl.star.models.projections.user.*;
 import com.pbl.star.repositories.FollowingRepository;
 import com.pbl.star.repositories.UserRepository;
@@ -113,7 +113,7 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public CustomSlice<OnFollowProfile> getFollowingsOfUser(String currentUserId, String targetUserId, int limit, Instant after) {
+    public PaginationSlice<OnFollowProfile> getFollowingsOfUser(String currentUserId, String targetUserId, int limit, Instant after) {
 
         if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
             throw new ResourceOwnershipException("User has private profile");
@@ -121,7 +121,7 @@ public class FollowServiceImpl implements FollowService {
 
         List<OnFollowProfile> followingsList = followingRepository.getFollowingsOfUser(limit + 1, after, currentUserId, targetUserId);
         Slice<OnFollowProfile> followings = SliceTransfer.trimToSlice(followingsList, limit);
-        CustomSlice<OnFollowProfile> followingsPage = new CustomSlice<>(followings);
+        PaginationSlice<OnFollowProfile> followingsPage = new PaginationSlice<>(followings);
 
         if (after == null) {
             followingsPage.setTotalElements(
@@ -133,7 +133,7 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public CustomSlice<OnFollowProfile> getFollowersOfUser(String currentUserId, String targetUserId, int limit, Instant after) {
+    public PaginationSlice<OnFollowProfile> getFollowersOfUser(String currentUserId, String targetUserId, int limit, Instant after) {
 
         if (resourceAccessControl.isPrivateProfileBlock(currentUserId, targetUserId)) {
             throw new ResourceOwnershipException("User has private profile");
@@ -141,7 +141,7 @@ public class FollowServiceImpl implements FollowService {
 
         List<OnFollowProfile> followersList = followingRepository.getFollowersOfUser(limit + 1, after, currentUserId, targetUserId);
         Slice<OnFollowProfile> followers = SliceTransfer.trimToSlice(followersList, limit);
-        CustomSlice<OnFollowProfile> followersPage = new CustomSlice<>(followers);
+        PaginationSlice<OnFollowProfile> followersPage = new PaginationSlice<>(followers);
 
         if (after == null) {
             followersPage.setTotalElements(
@@ -153,11 +153,11 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public CustomSlice<OnFollowRequestProfile> getFollowRequestsOfUser(String userId, int limit, Instant after) {
+    public PaginationSlice<OnFollowRequestProfile> getFollowRequestsOfUser(String userId, int limit, Instant after) {
 
         List<OnFollowRequestProfile> requestsList = followingRepository.getFollowRequestsOfUser(limit + 1, after, userId);
         Slice<OnFollowRequestProfile> requests = SliceTransfer.trimToSlice(requestsList, limit);
-        CustomSlice<OnFollowRequestProfile> requestsPage = new CustomSlice<>(requests);
+        PaginationSlice<OnFollowRequestProfile> requestsPage = new PaginationSlice<>(requests);
 
         if (after == null) {
             requestsPage.setTotalElements(

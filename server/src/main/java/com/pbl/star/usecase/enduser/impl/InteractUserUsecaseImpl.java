@@ -1,6 +1,6 @@
 package com.pbl.star.usecase.enduser.impl;
 
-import com.pbl.star.dtos.response.CustomSlice;
+import com.pbl.star.dtos.response.PaginationSlice;
 import com.pbl.star.dtos.response.follow.FollowCountResponse;
 import com.pbl.star.dtos.response.follow.FollowResponse;
 import com.pbl.star.dtos.response.user.OnFollowProfileResponse;
@@ -52,21 +52,21 @@ public class InteractUserUsecaseImpl implements InteractUserUsecase {
     }
 
     @Override
-    public CustomSlice<OnFollowProfileResponse> getFollowers(String userId, int limit, Instant after) {
+    public PaginationSlice<OnFollowProfileResponse> getFollowers(String userId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return followService.getFollowersOfUser(currentUserId, userId, limit, after)
                 .map(userMapper::toDTO);
     }
 
     @Override
-    public CustomSlice<OnFollowProfileResponse> getFollowings(String userId, int limit, Instant after) {
+    public PaginationSlice<OnFollowProfileResponse> getFollowings(String userId, int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return followService.getFollowingsOfUser(currentUserId, userId, limit, after)
                 .map(userMapper::toDTO);
     }
 
     @Override
-    public CustomSlice<OnFollowReqProfileResponse> getFollowRequests(int limit, Instant after) {
+    public PaginationSlice<OnFollowReqProfileResponse> getFollowRequests(int limit, Instant after) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
         return followService.getFollowRequestsOfUser(currentUserId, limit, after)
                 .map(userMapper::toDTO);

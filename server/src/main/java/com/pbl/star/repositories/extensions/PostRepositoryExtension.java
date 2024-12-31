@@ -13,6 +13,7 @@ public interface PostRepositoryExtension {
     List<PostForAdmin> findExistPostsAsAdmin(Pageable pageable, FilterPostParams filter);
     long countExistPostsAsAdmin(FilterPostParams filter);
     List<PostForUser> findExistPostsOfUsersByStatusAsUser(int limit, Instant after, PostStatus status, List<String> userIds);
+    List<LikedPostForUser> findExistPostsLikedByUserAndStatus(int limit, Instant after, PostStatus status, String currentUserId);
     List<PostForUser> findExistPostsInRoomsByStatusAsUser(int limit, Instant after, PostStatus status, List<String> roomIds);
     Optional<PostForUser> findExistPostByIdAsUser(String currentUserId, String postId);
     List<PostForUser> findExistRepliesOfPostAsUser(int limit, Instant after, String currentUserId, String postId);
