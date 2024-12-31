@@ -16,6 +16,7 @@ public class PostForAdmin extends PostGeneral {
     private String idOfModerator;
     private String usernameOfModerator;
     private Instant moderatedAt;
+    private Integer numberOfReports;
 
     private boolean isHidden;
     private Instant hideAt;

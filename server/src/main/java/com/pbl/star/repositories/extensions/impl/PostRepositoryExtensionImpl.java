@@ -38,7 +38,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
         String sql = "SELECT p.post_id, p.user_id, p.parent_post_id, u1.username, u1.avatar_url, p.room_id, r.name," +
                 "p.created_at, p.content, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.status, p.violence_score, p.moderated_by, u2.username, p.moderated_at, p.is_hidden, p.hide_at " +
+                "p.status, p.violence_score, p.moderated_by, u2.username, p.moderated_at, p.is_hidden, p.hide_at, " +
+                "(SELECT COUNT(*) FROM post_report pr WHERE pr.post_id = p.post_id) AS number_of_reports " +
                 "FROM post p " +
                 "INNER JOIN \"user\" u1 " +
                 "ON p.user_id = u1.user_id " +
@@ -111,6 +112,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .moderatedAt((Instant) row[14])
                         .isHidden((boolean) row[15])
                         .hideAt((Instant) row[16])
+                        .numberOfReports((Integer) row[17])
                         .build()
                 )
                 .toList();
