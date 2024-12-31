@@ -265,6 +265,14 @@ const unhidePost = async (postId: string) => {
   return response.data;
 };
 
+const reportAPostToModerator = async (postId: string, reason: string) => {
+  const data = {
+    reason,
+  };
+  const response = await instance.post(`/posts/${postId}/reports`, data);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -289,4 +297,5 @@ export {
   hidePost,
   unhidePost,
   getLikedPostsOnNewsfeed,
+  reportAPostToModerator,
 };

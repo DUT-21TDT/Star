@@ -129,21 +129,21 @@ const StatCard: React.FC<StatCardProps> = ({
           }}
         >
           {count}{" "}
-            <span>
-              <svg
-                aria-label="Next"
-                role="img"
-                viewBox="0 0 24 24"
-                height={16}
-                width={16}
-                fill="none"
-                stroke="#000000"
-                opacity={label !== "Views" ? 1 : 0}
-              >
-                <title>Next</title>
-                <polyline points="7.498 3 16.502 12 7.498 21"></polyline>
-              </svg>
-            </span>
+          <span>
+            <svg
+              aria-label="Next"
+              role="img"
+              viewBox="0 0 24 24"
+              height={16}
+              width={16}
+              fill="none"
+              stroke="#000000"
+              opacity={label !== "Views" ? 1 : 0}
+            >
+              <title>Next</title>
+              <polyline points="7.498 3 16.502 12 7.498 21"></polyline>
+            </svg>
+          </span>
         </div>
       </div>
     </div>
@@ -428,7 +428,7 @@ const ModalViewActiviesPost = ({
             />
             <StatCard
               icon={<RepostIcon width="30" height="30" />}
-              label="Reports"
+              label="Reposts"
               count={repostsCount}
               setIsOpenModalPeopleLikedPost={setIsOpenModalPeopleLikedPost}
               setIsOpenModalPeopleRepostedPost={

@@ -16,7 +16,6 @@ import { Helmet } from "react-helmet-async";
 import HeaderActivity from "../../components/user/activity/header-activity";
 import MainContentActivity from "../../components/user/activity/main-activity";
 import PostsFollowingOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed-following";
-import SuggestionPeopleOnNewFeed from "../../components/user/suggestion/suggestion-people";
 import PostsLikedOnNewsFeed from "../../components/user/newfeed/posts-on-newsfeed-liked";
 
 interface RoomType {
@@ -284,7 +283,7 @@ const NewFeed = () => {
                 : "220vw"
             }`,
             width: "calc(100% - 200px)",
-            marginLeft: "200px",
+            // marginLeft: "200px",
           }}
         >
           <div
@@ -312,7 +311,7 @@ const NewFeed = () => {
               </>
             )}
           </div>
-          {!isHasPin && <SuggestionPeopleOnNewFeed />}
+          {/* {!isHasPin && <SuggestionPeopleOnNewFeed />} */}
 
           {renderContentPinned()}
         </div>

@@ -1,5 +1,5 @@
-import {useMutation, useQuery} from "@tanstack/react-query";
-import {QUERY_KEY} from "../utils/queriesKey";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { QUERY_KEY } from "../utils/queriesKey";
 import {
   changeStatusPostByModerator,
   createAPost,
@@ -19,6 +19,7 @@ import {
   getRepostsOnWall,
   likePost,
   replyPost,
+  reportAPostToModerator,
   repostPost,
   unlikePost,
 } from "../service/postAPI";
@@ -235,9 +236,7 @@ const useGetPostDetails = (postId: string) => {
   };
 };
 
-const useFetchAllPost = () => {
-
-};
+const useFetchAllPost = () => {};
 
 const useRepostPost = () => {
   return useMutation({
@@ -292,7 +291,14 @@ const useFetchAllPostsLikedOnNewsfeed = (config: configTypeProfileWall) => {
     hasNextPost: !result.data?.last,
     afterTime: result.data?.nextCursor,
   };
-}
+};
+
+const useReportPost = () => {
+  return useMutation({
+    mutationFn: ({ postId, reason }: { postId: string; reason: string }) =>
+      reportAPostToModerator(postId, reason),
+  });
+};
 
 export {
   useFetchAllPostsOnWall,
@@ -317,4 +323,5 @@ export {
   useGetRepostsOnWall,
   useFetchAllPostsFollowingOnNewsFeed,
   useFetchAllPostsLikedOnNewsfeed,
+  useReportPost,
 };
