@@ -109,7 +109,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationChange notificationChange = NotificationChange.builder()
                 .notificationObjectId(savedNotificationObj.getId())
                 .actorId(actorId)
-                .changeAt(timestamp)
+                .changeAt(Instant.now())
                 .build();
         notificationChangeRepository.save(notificationChange);
 
@@ -161,7 +161,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationChange notificationChange = NotificationChange.builder()
                 .notificationObjectId(savedNotificationObj.getId())
                 .actorId(followerId)
-                .changeAt(timestamp)
+                .changeAt(Instant.now())
                 .build();
 
         notificationChangeRepository.save(notificationChange);
@@ -223,7 +223,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationChange notificationChange = NotificationChange.builder()
                 .notificationObjectId(savedNotificationObj.getId())
                 .actorId(null)
-                .changeAt(timestamp)
+                .changeAt(Instant.now())
                 .build();
 
         notificationChangeRepository.save(notificationChange);
@@ -298,7 +298,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationChange notificationChange = NotificationChange.builder()
                 .notificationObjectId(savedNotificationObj.getId())
                 .actorId(actorId)
-                .changeAt(timestamp)
+                .changeAt(Instant.now())
                 .build();
         notificationChangeRepository.save(notificationChange);
 
@@ -411,7 +411,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationChange notificationChange = NotificationChange.builder()
                 .notificationObjectId(savedNotificationObj.getId())
                 .actorId(actorId)
-                .changeAt(timestamp)
+                .changeAt(Instant.now())
                 .build();
         notificationChangeRepository.save(notificationChange);
 
