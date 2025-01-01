@@ -21,7 +21,16 @@ public class ModPostViewController {
     public ResponseEntity<?> getPostsInRoomAsMod(@PathVariable String roomId,
                                                  @RequestParam(defaultValue = "PENDING") PostStatus status,
                                                  @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
-                                                 @RequestParam(required = false) Instant after) {
+                                                 @RequestParam(required = false) Instant after
+    ) {
         return ResponseEntity.ok(postManageUsecase.getPostsInRoomAsMod(roomId, status, limit, after));
+    }
+
+    @GetMapping("/posts/{postId}/reports")
+    public ResponseEntity<?> getReportsForPost(@PathVariable String postId,
+                                               @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
+                                               @RequestParam(required = false) Instant after
+    ) {
+        return ResponseEntity.ok(postManageUsecase.getReportsOfPost(postId, limit, after));
     }
 }

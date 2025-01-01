@@ -14,11 +14,13 @@ import com.pbl.star.models.entities.Post;
 import com.pbl.star.models.entities.PostLike;
 import com.pbl.star.models.entities.PostReport;
 import com.pbl.star.models.entities.PostRepost;
+import com.pbl.star.models.projections.report.ReportForMod;
 import com.pbl.star.models.projections.user.OnInteractProfile;
 import com.pbl.star.repositories.*;
 import com.pbl.star.services.domain.PostInteractionService;
 import com.pbl.star.utils.SliceTransfer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -139,6 +141,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
     }
 
     @Override
+    @Transactional
     public Post rejectPost(String postId, String moderatorId, RejectPostParams params) {
         Post post = postRepository.findExistPostById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
@@ -220,5 +223,18 @@ public class PostInteractionServiceImpl implements PostInteractionService {
                 .repostsCount(repostsCount)
                 .viewsCount(viewCount)
                 .build();
+    }
+
+    @Override
+    public Slice<ReportForMod> getReportsForMod(String moderatorId, String postId, int limit, Instant after) {
+        Post post = postRepository.findExistPostById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+
+        if (!userRoomRepository.existsByUserIdAndRoomIdAndRole(moderatorId, post.getRoomId(), RoomRole.MODERATOR)) {
+            throw new ModeratorAccessException("User is not a moderator of the room");
+        }
+
+        List<ReportForMod> reports = postReportRepository.getReportsOfPost(postId, limit + 1, after);
+        return SliceTransfer.trimToSlice(reports, limit);
     }
 }

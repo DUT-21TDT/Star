@@ -1,23 +1,20 @@
-import { Avatar, Button, Dropdown, MenuProps, message, Popover } from "antd";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  DeleteOutlined,
-  EllipsisOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+import {Avatar, Button, Dropdown, MenuProps, message, Popover} from "antd";
+import React, {useEffect, useRef, useState} from "react";
+import {DeleteOutlined, EllipsisOutlined,} from "@ant-design/icons";
 import ReactButton from "./react-button";
 import "../../../../assets/css/posts.css";
 import default_image from "../../../../assets/images/default_image.jpg";
-import { timeAgo } from "../../../../utils/convertTime";
-import { useNavigate } from "react-router-dom";
+import {timeAgo} from "../../../../utils/convertTime";
+import {useNavigate} from "react-router-dom";
 import ContainerInformationUser from "./container-information-user";
 import useEmblaCarousel from "embla-carousel-react";
-import { PhotoProvider, PhotoView } from "react-photo-view";
-import { useAppSelector } from "../../../../redux/store/hook";
+import {PhotoProvider, PhotoView} from "react-photo-view";
+import {useAppSelector} from "../../../../redux/store/hook";
 import ModalConfirmDeletePost from "./modal-confirm-delete-post";
-import { useDeletePost } from "../../../../hooks/post";
+import {useDeletePost} from "../../../../hooks/post";
 import DOMPurify from "dompurify";
 import ModalConfirmReportPost from "./modal-confirm-report-post";
+import {HiFlag} from "react-icons/hi";
 
 interface IProps {
   id: string;
@@ -217,11 +214,7 @@ const Post: React.FC<IProps> = (props) => {
     {
       label: (
         <div className="w-[120px] h-[35px] text-[16px] flex gap-3 items-center">
-          <WarningOutlined
-            style={{
-              fontSize: "16px",
-            }}
-          />
+          <HiFlag size={16} />
           <span>Report</span>
         </div>
       ),

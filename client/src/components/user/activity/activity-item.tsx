@@ -167,7 +167,7 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
         break;
       }
       case "ROOM": {
-        if (type === "NEW_PENDING_POST") {
+        if (type === "NEW_PENDING_POST" || type === "REPORT_POST") {
           navigate(`/moderator/${artifactId}/pending`, {
             state: { roomName: artifactPreview },
           });

@@ -9,6 +9,8 @@ import com.pbl.star.models.entities.Post;
 import com.pbl.star.models.entities.PostLike;
 import com.pbl.star.models.entities.PostReport;
 import com.pbl.star.models.entities.PostRepost;
+import com.pbl.star.models.projections.report.ReportForMod;
+import org.springframework.data.domain.Slice;
 
 import java.time.Instant;
 
@@ -22,4 +24,5 @@ public interface PostInteractionService {
     Post rejectPost(String postId, String moderatorId, RejectPostParams params);
     void unmoderatePostStatus(String postId, String moderatorId);
     PostInteractionListResponse getActorProfilesOfPost(String currentUserId, String postId, InteractType type, int limit, Instant after);
+    Slice<ReportForMod> getReportsForMod(String currentUserId, String postId, int limit, Instant after);
 }

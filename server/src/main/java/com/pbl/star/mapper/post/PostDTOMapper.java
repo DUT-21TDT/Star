@@ -2,6 +2,7 @@ package com.pbl.star.mapper.post;
 
 import com.pbl.star.dtos.response.post.*;
 import com.pbl.star.models.projections.post.*;
+import com.pbl.star.models.projections.report.ReportForMod;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -16,4 +17,6 @@ public abstract class PostDTOMapper {
     public abstract PostForModResponse toDTO(PostForMod post);
     @Mapping(source = "hidden", target = "isHidden")
     public abstract PostForAdminResponse toDTO(PostForAdmin post);
+
+    public abstract ReportForModResponse toDTO(ReportForMod report);
 }

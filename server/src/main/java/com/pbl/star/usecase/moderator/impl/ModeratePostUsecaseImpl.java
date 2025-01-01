@@ -2,6 +2,7 @@ package com.pbl.star.usecase.moderator.impl;
 
 import com.pbl.star.dtos.request.post.RejectPostParams;
 import com.pbl.star.dtos.response.post.PostForModResponse;
+import com.pbl.star.dtos.response.post.ReportForModResponse;
 import com.pbl.star.enums.PostStatus;
 import com.pbl.star.exceptions.ModeratorAccessException;
 import com.pbl.star.mapper.post.PostDTOMapper;
@@ -61,5 +62,12 @@ public class ModeratePostUsecaseImpl implements ModeratePostUsecase {
     public void returnPostToPending(String postId) {
         String moderatorId = AuthUtil.getCurrentUser().getId();
         postInteractionService.unmoderatePostStatus(postId, moderatorId);
+    }
+
+    @Override
+    public Slice<ReportForModResponse> getReportsOfPost(String postId, int limit, Instant after) {
+        String moderatorId = AuthUtil.getCurrentUser().getId();
+        return postInteractionService.getReportsForMod(moderatorId, postId, limit, after)
+                .map(postMapper::toDTO);
     }
 }

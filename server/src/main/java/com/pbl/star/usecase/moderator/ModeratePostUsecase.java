@@ -2,6 +2,7 @@ package com.pbl.star.usecase.moderator;
 
 import com.pbl.star.dtos.request.post.RejectPostParams;
 import com.pbl.star.dtos.response.post.PostForModResponse;
+import com.pbl.star.dtos.response.post.ReportForModResponse;
 import com.pbl.star.enums.PostStatus;
 import org.springframework.data.domain.Slice;
 
@@ -12,4 +13,5 @@ public interface ModeratePostUsecase {
     void approvePost(String postId);
     void rejectPost(String postId, RejectPostParams params);
     void returnPostToPending(String postId);
+    Slice<ReportForModResponse> getReportsOfPost(String postId, int limit, Instant after);
 }
