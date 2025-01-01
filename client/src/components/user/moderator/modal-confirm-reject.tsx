@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Modal, Button, Input, Radio, message, Avatar, Popover } from "antd";
-import { useReportPost } from "../../../../hooks/post";
-import default_image from "../../../../assets/images/default_image.jpg";
+import default_image from "../../../assets/images/default_image.jpg";
 import { useNavigate } from "react-router-dom";
-import ContainerInformationUser from "./container-information-user";
+
 import DOMPurify from "dompurify";
-import { timeAgo } from "../../../../utils/convertTime";
+import ContainerInformationUser from "../profile/posts/container-information-user";
+import { timeAgo } from "../../../utils/convertTime";
+
 type DataDetailPost = {
   id: string;
   usernameOfCreator: string;
@@ -13,31 +14,25 @@ type DataDetailPost = {
   createdAt: string;
   content: string;
   postImageUrls: string[] | null;
-  numberOfLikes: number;
-  numberOfComments: number;
-  numberOfReposts: number;
-  liked: boolean;
-  reposted: boolean;
-  nameOfRoom: string;
-  idOfCreator: string;
+  idOfCreator: string | undefined;
 };
 interface IProps {
   dataDetailPost: DataDetailPost;
-  openModal: boolean;
-  setOpenModal: (value: boolean) => void;
+  isOpenModal: boolean;
+  setIsOpenModal: (value: boolean) => void;
+  handleRejectPost: (reason: string) => void;
 }
 
-const ModalConfirmReportPost: React.FC<IProps> = ({
+const ModalConfirmRejectPost: React.FC<IProps> = ({
   dataDetailPost,
-  openModal,
-  setOpenModal,
+  isOpenModal,
+  setIsOpenModal,
+  handleRejectPost,
 }) => {
   const [selectedReason, setSelectedReason] = useState<string>("");
   const [otherReason, setOtherReason] = useState<string>("");
-  const { mutate: postReport } = useReportPost();
   const TextArea = Input.TextArea;
   const {
-    id: postId,
     usernameOfCreator,
     avatarUrlOfCreator,
     createdAt,
@@ -46,54 +41,16 @@ const ModalConfirmReportPost: React.FC<IProps> = ({
   } = dataDetailPost;
 
   const handleCancel = () => {
-    setOpenModal(false);
+    setIsOpenModal(false);
     setSelectedReason("");
     setOtherReason("");
   };
 
-  const handleReport = () => {
-    if (!selectedReason) {
-      message.error("Please select a reason for reporting.");
-      return;
-    }
-
-    if (selectedReason === "Other" && !otherReason.trim()) {
-      message.error("Please provide a reason for reporting.");
-      return;
-    }
-    const finalReason =
-      selectedReason === "Other" ? otherReason : selectedReason;
-
-    postReport(
-      {
-        postId: postId,
-        reason: finalReason,
-      },
-      {
-        onSuccess: () => {
-          message.success("Report submitted successfully.");
-          setOpenModal(false);
-        },
-        onError: (error) => {
-          console.error("Error:", error);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const status = (error as any)?.response
-            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (error as any)?.response?.status
-            : null;
-          if (status === 409) {
-            return message.error("You have already reported this post.");
-          } else message.error("An error occurred. Please try again later.");
-        },
-      }
-    );
-  };
-
   const reasons = [
-    "Contains misleading or fraudulent information.",
-    "Includes offensive language or inappropriate symbols.",
-    "Involves intimidation or targeted harassment.",
-    "Depicts violence or promotes harmful behavior.",
+    "Violates community standards or group rules.",
+    "Content is not relevant to the topic or purpose of the group.",
+    "Language is offensive, divisive, or inappropriate.",
+    "Encourages illegal or unsafe behavior.",
     "Other",
   ];
 
@@ -131,10 +88,25 @@ const ModalConfirmReportPost: React.FC<IProps> = ({
     }
   );
 
+  const submitRejectPost = () => {
+    if (!selectedReason) {
+      message.error("Please select a reason for rejecting.");
+      return;
+    }
+
+    if (selectedReason === "Other" && !otherReason.trim()) {
+      message.error("Please provide a reason for rejecting.");
+      return;
+    }
+    const finalReason =
+      selectedReason === "Other" ? otherReason : selectedReason;
+    handleRejectPost(finalReason);
+  };
+
   return (
     <Modal
-      title={<p className="text-center text-[18px] pt-2">Report post?</p>}
-      open={openModal}
+      title={<p className="text-center text-[18px] pt-2">Reject post?</p>}
+      open={isOpenModal}
       onCancel={handleCancel}
       footer={null}
       width={500}
@@ -224,8 +196,8 @@ const ModalConfirmReportPost: React.FC<IProps> = ({
             </div>
           </div>
         </div>
-        <p className="text-[16px] font-normal py-2 w-full px-2 font-semibold">
-          Choose the reason why you report this post:
+        <p className="text-[16px]  py-2 w-full px-2 font-semibold">
+          Choose the reason why you reject this post:
         </p>
         <div className="w-full">
           <Radio.Group
@@ -263,10 +235,10 @@ const ModalConfirmReportPost: React.FC<IProps> = ({
         <div className="flex justify-end w-full mt-2">
           <Button
             type="primary"
-            onClick={handleReport}
+            onClick={submitRejectPost}
             style={{ backgroundColor: "black" }}
           >
-            Report
+            Reject
           </Button>
         </div>
       </div>
@@ -274,4 +246,4 @@ const ModalConfirmReportPost: React.FC<IProps> = ({
   );
 };
 
-export default ModalConfirmReportPost;
+export default ModalConfirmRejectPost;
