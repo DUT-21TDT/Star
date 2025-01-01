@@ -89,8 +89,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostForUser getPostById(String currentUserId, String postId) {
-        return postRepository.findExistPostByIdAsUser(currentUserId, postId)
+        PostForUser post = postRepository.findExistPostByIdAsUser(currentUserId, postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist"));
+
+        if (!post.getStatus().equals(PostStatus.APPROVED) && !post.getIdOfCreator().equals(currentUserId)) {
+            throw new EntityNotFoundException("Post does not exist");
+        }
+
+        return post;
     }
 
     @Override

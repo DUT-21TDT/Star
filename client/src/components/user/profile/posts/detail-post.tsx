@@ -1,10 +1,11 @@
 import {useParams} from "react-router-dom";
-import {Spin} from "antd";
+import {Avatar, Spin} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import Post from "./Post";
 import ListReplyPost from "./list-reply-post";
 import React from "react";
 import ModalViewActiviesPost from "../../activity/modal-view-activites-posts";
+import starLogo from "../../../../assets/images/starLogoWhite.svg";
 
 interface PostDetail {
   id: string;
@@ -21,6 +22,7 @@ interface PostDetail {
   nameOfRoom: string;
   idOfCreator: string;
   status?: string;
+  rejectReason?: string;
 }
 
 interface IProps {
@@ -50,10 +52,12 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
     reposted,
     nameOfRoom,
     idOfCreator,
-    status
+    status,
+    rejectReason
   } = dataPostDetail;
 
   const isApproved = status === "APPROVED";
+  const isRejected = status === "REJECTED";
 
   if (isLoading) {
     return (
@@ -111,8 +115,35 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
           />
         </>
       }
+      {isRejected && (
+        <div className='w-full flex items-start gap-3 m-4'>
+          <Avatar size={45} src={starLogo} className='mt-[3px]'/>
+          <div className="flex items-center justify-between pb-5 cursor-pointer">
+            <div>
+              <div className="flex font-semibold cursor-pointer gap-1">
+                {"Moderators"}
+              </div>
+              <div
+                style={{
+                  fontSize: "16px",
+                  color: "#ababab",
+                  fontWeight: 400,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 1,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {rejectReason}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
-  );
+  )
+    ;
 };
 
 export default MainContentDetailPost;
