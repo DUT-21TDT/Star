@@ -10,6 +10,7 @@ import {
   getAllPostFollowingOnNewFeed,
   getAllPostInRoom,
   getAllPostOnNewsFeed,
+  getAllReportedPosts,
   getLikedPostsOnNewsfeed,
   getPostDetailById,
   getPostOnProfileWall,
@@ -157,25 +158,20 @@ const useApprovePostByModerator = () => {
   return useMutation({
     mutationFn: (postId: string) => approvePostByModerator(postId),
   });
-}
+};
 
 const usePendPostByModerator = () => {
   return useMutation({
     mutationFn: (postId: string) => pendPostByModerator(postId),
   });
-}
+};
 
 const useRejectPostByModerator = () => {
   return useMutation({
-    mutationFn: ({
-     postId,
-     reason
-    }: {
-      postId: string;
-      reason: string
-    }) => rejectPostByModerator(postId, reason),
+    mutationFn: ({ postId, reason }: { postId: string; reason: string }) =>
+      rejectPostByModerator(postId, reason),
   });
-}
+};
 
 const useDeletePost = () => {
   return useMutation({
@@ -326,6 +322,26 @@ const useReportPost = () => {
   });
 };
 
+const useFetchAllReportedPosts = (
+  postId: string,
+  config: configTypeProfileWall,
+  enable: boolean
+) => {
+  const result = useQuery({
+    queryKey: [QUERY_KEY.fetchAllReportedPosts(postId), config],
+    queryFn: () => getAllReportedPosts(postId, config),
+    enabled: enable,
+  });
+  return {
+    dataReported: result.data?.content || [],
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasNextReported: !result.data?.last,
+    afterTimeNextReported:
+      result.data?.content[result.data?.content.length - 1]?.createdAt,
+  };
+};
+
 export {
   useFetchAllPostsOnWall,
   useFetchAllPostsOnNewsFeed,
@@ -352,4 +368,5 @@ export {
   useFetchAllPostsFollowingOnNewsFeed,
   useFetchAllPostsLikedOnNewsfeed,
   useReportPost,
+  useFetchAllReportedPosts,
 };

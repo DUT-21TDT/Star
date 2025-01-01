@@ -76,7 +76,14 @@ const ModalConfirmReportPost: React.FC<IProps> = ({
         },
         onError: (error) => {
           console.error("Error:", error);
-          message.error("An error occurred. Please try again later.");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const status = (error as any)?.response
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (error as any)?.response?.status
+            : null;
+          if (status === 409) {
+            return message.error("You have already reported this post.");
+          } else message.error("An error occurred. Please try again later.");
         },
       }
     );
