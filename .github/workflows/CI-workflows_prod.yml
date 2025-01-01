@@ -34,6 +34,7 @@ jobs:
       RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
       RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
       RABBITMQ_VHOST: ${{ secrets.RABBITMQ_VHOST }}
+      PREDICT_SERVER_URL: ${{ secrets.PREDICT_SERVER_URL }}
 
     steps:
       - uses: actions/checkout@v4
