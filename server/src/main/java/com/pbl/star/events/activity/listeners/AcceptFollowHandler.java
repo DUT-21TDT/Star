@@ -2,12 +2,10 @@ package com.pbl.star.events.activity.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbl.star.configurations.JacksonConfig;
-import com.pbl.star.dtos.response.notification.NotificationForUserResponse;
 import com.pbl.star.enums.NotificationType;
 import com.pbl.star.events.activity.FollowUserEvent;
 import com.pbl.star.mapper.notification.NotificationDTOMapper;
 import com.pbl.star.models.entities.Notification;
-import com.pbl.star.models.projections.notification.NotificationForUser;
 import com.pbl.star.services.domain.NotificationService;
 import com.pbl.star.services.external.SSEManager;
 import org.springframework.amqp.core.Message;
@@ -47,11 +45,11 @@ public class AcceptFollowHandler implements UserActivityHandler {
 
         Notification noti = notificationService.createFollowUserNotification(followingId, followerId, followeeId, timestamp, NotificationType.ACCEPT_FOLLOW);
 
-        if (noti != null) {
-            NotificationForUser pushedNoti = notificationService.getPushedNotification(noti.getNotificationObjectId());
-            NotificationForUserResponse pushedNotiRes = mapper.toDTO(pushedNoti);
-            sseManager.sendNotification(noti.getReceiverId(), pushedNotiRes);
-        }
+//        if (noti != null) {
+//            NotificationForUser pushedNoti = notificationService.getPushedNotification(noti.getNotificationObjectId());
+//            NotificationForUserResponse pushedNotiRes = mapper.toDTO(pushedNoti);
+//            sseManager.sendNotification(noti.getReceiverId(), pushedNotiRes);
+//        }
     }
 
     @Override

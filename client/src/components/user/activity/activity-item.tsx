@@ -167,13 +167,20 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
         break;
       }
       case "ROOM": {
-        if (type === "NEW_PENDING_POST" || type === "REPORT_POST") {
+        if (type === "NEW_PENDING_POST" ) {
           navigate(`/moderator/${artifactId}/pending`, {
             state: { roomName: artifactPreview },
           });
           window.scrollTo(0, 0);
           break;
-        } else {
+        } else if (type === "REPORT_POST") {
+          navigate(`/moderator/${artifactId}/approved`, {
+            state: { roomName: artifactPreview },
+          });
+          window.scrollTo(0, 0);
+          break;
+        }
+        else {
           navigate(`/room/${artifactId}/posts`);
           window.scrollTo(0, 0);
           break;

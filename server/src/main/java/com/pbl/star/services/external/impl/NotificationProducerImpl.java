@@ -212,6 +212,7 @@ public class NotificationProducerImpl implements NotificationProducer {
     @Override
     public void pushNewPendingPostMessage(Post post) {
         NewPendingPostEvent event = new NewPendingPostEvent();
+        event.setPostId(post.getId());
         event.setActorId(post.getUserId());
         event.setRoomId(post.getRoomId());
         event.setTimestamp(post.getCreatedAt());
