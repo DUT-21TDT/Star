@@ -23,6 +23,7 @@ public class PostForUserResponse {
     private String content;
     private List<String> postImageUrls;
     private PostStatus status;
+    private String rejectReason;
 
     private int numberOfLikes;
     private int numberOfComments;

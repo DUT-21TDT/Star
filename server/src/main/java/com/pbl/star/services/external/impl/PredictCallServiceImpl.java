@@ -27,6 +27,7 @@ public class PredictCallServiceImpl implements PredictCallService {
                 .bodyValue(reqBody) // Truyền body
                 .retrieve()
                 .bodyToMono(String.class) // Không cần xử lý response
+                .doOnError(error -> System.err.println("Error occurred during async call: "))
                 .subscribe(
                         response -> System.out.println("Request successful."),
                         error -> System.err.println("Error occurred: " + error.getMessage())
