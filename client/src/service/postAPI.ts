@@ -1,4 +1,4 @@
-import {instance} from "../utils/customizeAxios";
+import { instance } from "../utils/customizeAxios";
 
 type configTypeProfileWall = {
   limit: number;
@@ -115,17 +115,19 @@ const changeStatusPostByModerator = async (status: string, postId: string) => {
 const approvePostByModerator = async (postId: string) => {
   const response = await instance.patch(`/moderator/posts/${postId}/approve`);
   return response.data;
-}
+};
 
 const pendPostByModerator = async (postId: string) => {
   const response = await instance.patch(`/moderator/posts/${postId}/pend`);
   return response.data;
-}
+};
 
 const rejectPostByModerator = async (postId: string, reason: string) => {
-  const response = await instance.patch(`/moderator/posts/${postId}/reject`, { reason });
+  const response = await instance.patch(`/moderator/posts/${postId}/reject`, {
+    reason,
+  });
   return response.data;
-}
+};
 
 const deletePost = async (postId: string) => {
   const response = await instance.delete(`/posts/${postId}`);
@@ -288,6 +290,20 @@ const reportAPostToModerator = async (postId: string, reason: string) => {
   return response.data;
 };
 
+const getAllReportedPosts = async (
+  postId: string,
+  config: configTypeProfileWall
+) => {
+  let url;
+  if (config.after !== null) {
+    url = `/moderator/posts/${postId}/reports?limit=${config.limit}&after=${config.after}`;
+  } else {
+    url = `/moderator/posts/${postId}/reports?limit=${config.limit}`;
+  }
+  const response = await instance.get(url);
+  return response.data;
+};
+
 export {
   getPostOnProfileWall,
   getAllPostOnNewsFeed,
@@ -316,4 +332,5 @@ export {
   unhidePost,
   getLikedPostsOnNewsfeed,
   reportAPostToModerator,
+  getAllReportedPosts,
 };

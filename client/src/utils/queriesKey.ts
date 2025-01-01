@@ -60,4 +60,5 @@ export const QUERY_KEY = {
     postId,
   ],
   fetchListPeopleSuggestion: () => ["fetchListPeopleSuggestion"],
+  fetchAllReportedPosts: (postId: string) => ["fetchAllReportedPosts", postId],
 };
