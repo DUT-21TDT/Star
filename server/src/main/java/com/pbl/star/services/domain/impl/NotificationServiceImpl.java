@@ -392,8 +392,8 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationObject obj = NotificationObject.builder()
                     .notificationType(NotificationType.REPORT_POST)
                     .ref(postId)
-                    .artifactId(roomId)
-                    .artifactType(ArtifactType.ROOM)
+                    .artifactId(postId)
+                    .artifactType(ArtifactType.POST)
                     .artifactPreview(getPostPreview(reportedPost.getContent()))
                     .build();
             try {

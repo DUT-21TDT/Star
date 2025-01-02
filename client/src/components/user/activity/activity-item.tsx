@@ -173,12 +173,6 @@ const ActivityItem: React.FC<IProps> = ({ notification }) => {
           });
           window.scrollTo(0, 0);
           break;
-        } else if (type === "REPORT_POST") {
-          navigate(`/moderator/${artifactId}/approved`, {
-            state: { roomName: artifactPreview },
-          });
-          window.scrollTo(0, 0);
-          break;
         }
         else {
           navigate(`/room/${artifactId}/posts`);
