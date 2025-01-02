@@ -25,6 +25,7 @@ interface PostType {
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;
+  canModerate?: boolean;
 }
 
 const PostsOnNewsFeed: React.FC = () => {
@@ -164,6 +165,7 @@ const PostsOnNewsFeed: React.FC = () => {
                 nameOfRoom,
                 isRemoved,
                 reposted,
+                canModerate,
               } = post;
               return (
                 <Post
@@ -183,6 +185,7 @@ const PostsOnNewsFeed: React.FC = () => {
                   isRemoved={isRemoved}
                   reposted={reposted}
                   handleDeletePostSuccess={handleDeletePostSuccess}
+                  canModerate={canModerate}
                 />
               );
             })}

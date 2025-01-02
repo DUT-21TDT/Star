@@ -20,6 +20,7 @@ interface PostType {
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;
+  canModerate?: boolean;
 }
 interface IProps {
   roomId: string;
@@ -118,6 +119,7 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
             idOfCreator,
             nameOfRoom,
             isRemoved,
+            canModerate,
           } = post;
           return (
             <Post
@@ -137,6 +139,7 @@ const PostsInRoom: React.FC<IProps> = ({ roomId }) => {
               nameOfRoom={nameOfRoom}
               isRemoved={isRemoved}
               handleDeletePostSuccess={handleDeletePostSuccess}
+              canModerate={canModerate}
             />
           );
         })}

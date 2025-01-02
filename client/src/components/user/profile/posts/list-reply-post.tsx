@@ -26,6 +26,7 @@ interface PostType {
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;
+  canModerate?: boolean;
 }
 
 const ListReplyPost: React.FC<IProps> = (props) => {

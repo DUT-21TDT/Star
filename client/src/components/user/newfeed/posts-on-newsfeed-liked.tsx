@@ -24,6 +24,7 @@ interface PostType {
   idOfCreator: string;
   nameOfRoom: string;
   isRemoved?: boolean;
+  canModerate?: boolean;
 }
 
 const RemoveDuplicatePost = (posts: PostType[]): PostType[] => {
@@ -172,6 +173,7 @@ const PostsLikedOnNewsFeed: React.FC = () => {
                 nameOfRoom,
                 isRemoved,
                 reposted,
+                canModerate,
               } = post;
               return (
                 <Post
@@ -191,6 +193,7 @@ const PostsLikedOnNewsFeed: React.FC = () => {
                   isRemoved={isRemoved}
                   reposted={reposted}
                   handleDeletePostSuccess={handleDeletePostSuccess}
+                  canModerate={canModerate}
                 />
               );
             })}

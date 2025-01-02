@@ -1,6 +1,6 @@
-import {useParams} from "react-router-dom";
-import {Avatar, Spin} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
+import { useParams } from "react-router-dom";
+import { Avatar, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import Post from "./Post";
 import ListReplyPost from "./list-reply-post";
 import React from "react";
@@ -23,6 +23,7 @@ interface PostDetail {
   idOfCreator: string;
   status?: string;
   rejectReason?: string;
+  canModerate?: boolean;
 }
 
 interface IProps {
@@ -36,7 +37,7 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
 
   const [isOpenModal, setIsOpenModal] = React.useState(false);
 
-  const {dataPostDetail, isLoading, isError} = props;
+  const { dataPostDetail, isLoading, isError } = props;
 
   const {
     id,
@@ -53,7 +54,8 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
     nameOfRoom,
     idOfCreator,
     status,
-    rejectReason
+    rejectReason,
+    canModerate,
   } = dataPostDetail;
 
   const isApproved = status === "APPROVED";
@@ -62,7 +64,7 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center mt-8">
-        <Spin indicator={<LoadingOutlined spin/>} size="large"/>
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
       </div>
     );
   }
@@ -89,9 +91,10 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
           nameOfRoom={nameOfRoom}
           idOfCreator={idOfCreator}
           disableReactButton={!isApproved}
+          canModerate={canModerate}
         />
       </div>
-      {isApproved &&
+      {isApproved && (
         <>
           <div
             className="w-full flex justify-between items-center py-3 px-[20px]"
@@ -107,17 +110,17 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
               View activities
             </div>
           </div>
-          <ListReplyPost postId={postId}/>
+          <ListReplyPost postId={postId} />
           <ModalViewActiviesPost
             isOpenModal={isOpenModal}
             setIsOpenModal={setIsOpenModal}
             dataDetailPost={dataPostDetail}
           />
         </>
-      }
+      )}
       {isRejected && (
-        <div className='w-full flex items-start gap-3 m-4'>
-          <Avatar size={45} src={starLogo} className='mt-[3px]'/>
+        <div className="w-full flex items-start gap-3 m-4">
+          <Avatar size={45} src={starLogo} className="mt-[3px]" />
           <div className="flex items-center justify-between pb-5 cursor-pointer">
             <div>
               <div className="flex font-semibold cursor-pointer gap-1">
@@ -142,8 +145,7 @@ const MainContentDetailPost: React.FC<IProps> = (props) => {
         </div>
       )}
     </>
-  )
-    ;
+  );
 };
 
 export default MainContentDetailPost;

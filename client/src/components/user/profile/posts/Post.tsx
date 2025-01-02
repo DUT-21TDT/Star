@@ -1,20 +1,24 @@
-import {Avatar, Button, Dropdown, MenuProps, message, Popover} from "antd";
-import React, {useEffect, useRef, useState} from "react";
-import {DeleteOutlined, EllipsisOutlined,} from "@ant-design/icons";
+import { Avatar, Button, Dropdown, MenuProps, message, Popover } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import ReactButton from "./react-button";
 import "../../../../assets/css/posts.css";
 import default_image from "../../../../assets/images/default_image.jpg";
-import {timeAgo} from "../../../../utils/convertTime";
-import {useNavigate} from "react-router-dom";
+import { timeAgo } from "../../../../utils/convertTime";
+import { useNavigate } from "react-router-dom";
 import ContainerInformationUser from "./container-information-user";
 import useEmblaCarousel from "embla-carousel-react";
-import {PhotoProvider, PhotoView} from "react-photo-view";
-import {useAppSelector} from "../../../../redux/store/hook";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import { useAppSelector } from "../../../../redux/store/hook";
 import ModalConfirmDeletePost from "./modal-confirm-delete-post";
-import {useDeletePost} from "../../../../hooks/post";
+import {
+  useDeletePost,
+  useRejectPostByModerator,
+} from "../../../../hooks/post";
 import DOMPurify from "dompurify";
 import ModalConfirmReportPost from "./modal-confirm-report-post";
-import {HiFlag} from "react-icons/hi";
+import { HiFlag } from "react-icons/hi";
+import ModalConfirmRejectPost from "../../moderator/modal-confirm-reject";
 
 interface IProps {
   id: string;
@@ -38,6 +42,7 @@ interface IProps {
   handleDeletePostSuccess?: (id: string) => void;
   isRemoved?: boolean;
   isShowReplies?: boolean;
+  canModerate?: boolean;
 }
 
 const ContentWithSeeMore: React.FC<{ sanitizedContent: string }> = ({
@@ -118,6 +123,7 @@ const Post: React.FC<IProps> = (props) => {
     isRemoved,
     handleDeletePostSuccess,
     isShowReplies,
+    canModerate,
   } = props;
 
   const sanitizedContent = DOMPurify.sanitize(
@@ -173,6 +179,7 @@ const Post: React.FC<IProps> = (props) => {
   const [openModalDeletePost, setOpenModalDeletePost] = useState(false);
   const currentUserId = useAppSelector((state) => state.user.id);
   const { mutate: deletePost } = useDeletePost();
+  const { mutate: rejectPost } = useRejectPostByModerator();
 
   const handleDeletePost = () => {
     deletePost(id, {
@@ -187,6 +194,26 @@ const Post: React.FC<IProps> = (props) => {
         setOpenModalDeletePost(false);
       },
     });
+  };
+
+  const handleRejectPost = (reason: string) => {
+    rejectPost(
+      {
+        postId: id,
+        reason,
+      },
+      {
+        onSuccess: () => {
+          if (handleDeletePostSuccess) {
+            handleDeletePostSuccess(id);
+          }
+        },
+        onError: (error) => {
+          console.error("Error:", error);
+          message.error("Reject post failed");
+        },
+      }
+    );
   };
   const items: MenuProps["items"] = [
     {
@@ -209,6 +236,7 @@ const Post: React.FC<IProps> = (props) => {
 
   // report post
   const [openModalReportPost, setOpenModalReportPost] = useState(false);
+  const [openModalConfirmReject, setOpenModalConfirmReject] = useState(false);
 
   const itemsMenuReport: MenuProps["items"] = [
     {
@@ -224,7 +252,24 @@ const Post: React.FC<IProps> = (props) => {
       },
     },
   ];
-
+  if (canModerate) {
+    itemsMenuReport.push({
+      label: (
+        <div className="w-[120px] h-[35px] text-[16px] flex gap-3 items-center">
+          <DeleteOutlined
+            style={{
+              fontSize: "16px",
+            }}
+          />
+          <span>Reject</span>
+        </div>
+      ),
+      key: "2",
+      onClick: () => {
+        setOpenModalConfirmReject(true);
+      },
+    });
+  }
   if (isRemoved) {
     return (
       <div
@@ -371,9 +416,7 @@ const Post: React.FC<IProps> = (props) => {
             </Dropdown>
           )}
         </div>
-
         <ContentWithSeeMore sanitizedContent={sanitizedContent} />
-
         {postImageUrls && postImageUrls.length > 0 && (
           <div
             className="embla mt-2"
@@ -464,7 +507,6 @@ const Post: React.FC<IProps> = (props) => {
             )}
           </div>
         )}
-
         {disableReactButton && (
           <div
             style={{
@@ -517,6 +559,21 @@ const Post: React.FC<IProps> = (props) => {
             nameOfRoom: nameOfRoom || "",
             idOfCreator: idOfCreator || "",
           }}
+        />
+
+        <ModalConfirmRejectPost
+          isOpenModal={openModalConfirmReject}
+          setIsOpenModal={setOpenModalConfirmReject}
+          dataDetailPost={{
+            id: id,
+            usernameOfCreator: usernameOfCreator,
+            avatarUrlOfCreator: avatarUrlOfCreator,
+            createdAt: createdAt,
+            content: content,
+            postImageUrls: postImageUrls,
+            idOfCreator: idOfCreator,
+          }}
+          handleRejectPost={handleRejectPost}
         />
       </div>
     </div>
