@@ -24,6 +24,7 @@ public class PostForUserResponse {
     private List<String> postImageUrls;
     private PostStatus status;
     private String rejectReason;
+    private Boolean canModerate;
 
     private int numberOfLikes;
     private int numberOfComments;

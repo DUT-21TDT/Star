@@ -24,4 +24,5 @@ abstract class PostGeneral {
     protected List<String> postImageUrls;
     private PostStatus status;
     private String rejectReason;
+    private Boolean canModerate;
 }

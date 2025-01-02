@@ -237,7 +237,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.room_id, r.name " +
+                "p.room_id, r.name, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM user_room ur WHERE ur.room_id = p.room_id AND ur.user_id = :currentUserId AND ur.role = 'MODERATOR') THEN TRUE ELSE FALSE END) AS can_moderate " +
                 "FROM post p " +
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "INNER JOIN room r ON p.room_id = r.room_id " +
@@ -279,6 +280,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 .postImageUrls(source[11] == null ? null : List.of(((String) source[11]).split(",")))
                 .idOfRoom((String) source[12])
                 .nameOfRoom((String) source[13])
+                .canModerate((Boolean) source[14])
                 .build();
     }
 
@@ -291,7 +293,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.room_id, r.name, pl.like_at " +
+                "p.room_id, r.name, pl.like_at, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM user_room ur WHERE ur.room_id = p.room_id AND ur.user_id = :currentUserId AND ur.role = 'MODERATOR') THEN TRUE ELSE FALSE END) AS can_moderate " +
                 "FROM post_like pl " +
                 "INNER JOIN post p ON pl.post_id = p.post_id " +
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
@@ -332,6 +335,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .idOfRoom((String) row[12])
                         .nameOfRoom((String) row[13])
                         .likedAt((Instant) row[14])
+                        .canModerate((Boolean) row[15])
                         .build()
                 )
                 .toList();
@@ -347,7 +351,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls, " +
-                "p.room_id, r.name, p.parent_post_id, p.status, p.reject_reason " +
+                "p.room_id, r.name, p.parent_post_id, p.status, p.reject_reason, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM user_room ur WHERE ur.room_id = p.room_id AND ur.user_id = :currentUserId AND ur.role = 'MODERATOR') THEN TRUE ELSE FALSE END) AS can_moderate " +
                 "FROM post p " +
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "INNER JOIN room r ON p.room_id = r.room_id " +
@@ -381,6 +386,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                         .idOfParentPost((String) result[14])
                         .status(PostStatus.valueOf((String) result[15]))
                         .rejectReason((String) result[16])
+                        .canModerate((Boolean) result[17])
                         .build()
         );
     }
@@ -395,7 +401,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_like pl WHERE pl.post_id = p.post_id AND pl.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_liked, " +
                 "   (CASE WHEN EXISTS (SELECT 1 FROM post_repost pr WHERE pr.post_id = p.post_id AND pr.user_id = :currentUserId) THEN TRUE ELSE FALSE END) AS is_reposted, " +
                 "(SELECT string_agg(pi.image_url, ',' ORDER BY pi.position) FROM post_image pi WHERE pi.post_id = p.post_id) AS post_image_urls," +
-                "p.parent_post_id " +
+                "p.parent_post_id, " +
+                "   (CASE WHEN EXISTS (SELECT 1 FROM user_room ur WHERE ur.room_id = p.room_id AND ur.user_id = :currentUserId AND ur.role = 'MODERATOR') THEN TRUE ELSE FALSE END) AS can_moderate " +
                 "FROM post p " +
                 "INNER JOIN \"user\" u ON p.user_id = u.user_id " +
                 "WHERE p.is_deleted = false " +
@@ -434,6 +441,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                                 List.of(((String) row[11]).split(","))
                         )
                         .idOfParentPost((String) row[12])
+                        .canModerate((Boolean) row[13])
                         .build()
 
                 )
@@ -531,6 +539,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "   INNER JOIN room r ON p1.room_id = r.room_id " +
                 "   WHERE p1.is_deleted = false " +
                 "   AND p1.is_hidden = FALSE " +
+                "   AND p1.status = 'APPROVED' " +
                 ") as p ON r.parent_post_id = p.post_id " +
                 "ORDER BY r.created_at DESC, r.post_id ";
 
