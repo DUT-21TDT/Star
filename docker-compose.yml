@@ -1,5 +1,5 @@
 services:
-  frontend:
+  frontend_star:
     image: "${ECR_CLIENT_URL}:${BRANCH}-${SHA}"
     container_name: frontend_${BRANCH}
     working_dir: /app
@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
 
-  backend:
+  backend_star:
     image: "${ECR_SERVER_URL}:${BRANCH}-${SHA}"
     container_name: backend_${BRANCH}
     working_dir: /run
