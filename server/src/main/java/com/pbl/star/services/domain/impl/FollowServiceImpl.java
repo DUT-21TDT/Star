@@ -18,6 +18,7 @@ import com.pbl.star.services.helper.ResourceAccessControl;
 import com.pbl.star.utils.RandomSuggest;
 import com.pbl.star.utils.SliceTransfer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -176,6 +177,12 @@ public class FollowServiceImpl implements FollowService {
         }
 
         return followingRepository.countFollowSection(currentUserId, targetUserId);
+    }
+
+    @Override
+    @Cacheable(value = "followSuggestions", key = "#currentUserId")
+    public List<OnSuggestionProfile> suggestFollowCache(String currentUserId, int limit) {
+        return suggestFollow(currentUserId, limit);
     }
 
     @Override

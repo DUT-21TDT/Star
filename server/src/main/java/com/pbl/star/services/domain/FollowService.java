@@ -21,4 +21,5 @@ public interface FollowService {
     PaginationSlice<OnFollowRequestProfile> getFollowRequestsOfUser(String userId, int limit, Instant after);
     FollowCount countFollowSection(String currentUserId, String targetUserId);
     List<OnSuggestionProfile> suggestFollow(String currentUserId, int limit);
+    List<OnSuggestionProfile> suggestFollowCache(String currentUserId, int limit);
 }

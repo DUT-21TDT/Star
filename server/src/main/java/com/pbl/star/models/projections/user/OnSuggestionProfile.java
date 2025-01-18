@@ -1,13 +1,13 @@
 package com.pbl.star.models.projections.user;
 
 import com.pbl.star.enums.SuggestType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OnSuggestionProfile {
     private String userId;
     private String username;
