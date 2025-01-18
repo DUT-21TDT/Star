@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { useGetRepliesByPostId } from "../../../../hooks/post";
+import {useEffect, useState} from "react";
+import {useGetRepliesByPostId} from "../../../../hooks/post";
 import Post from "./Post";
-import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import RemoveDuplicatePost from "../../../../utils/removeDuplicatePost";
-import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEY } from "../../../../utils/queriesKey";
-import { debounce } from "../../../../utils/debounce";
+import {Spin} from "antd";
+import {LoadingOutlined} from "@ant-design/icons";
+import {useQueryClient} from "@tanstack/react-query";
+import {QUERY_KEY} from "../../../../utils/queriesKey";
+import {debounce} from "../../../../utils/debounce";
 
 interface IProps {
   postId: string;
@@ -44,6 +43,24 @@ const ListReplyPost: React.FC<IProps> = (props) => {
     setAfterTime(null);
     setAllPosts([]);
   }, [postId]);
+
+  const RemoveDuplicatePost = (posts: PostType[]): PostType[] => {
+    return posts.filter((post, index, self) => {
+      return (
+        index ===
+        self.findIndex((t) => t.id === post.id)
+      );
+    });
+    // const uniquePostsMap = new Map<string, PostType>();
+    // for (let i = posts.length - 1; i >= 0; i--) {
+    //   const post = posts[i];
+    //   if (!uniquePostsMap.has(post.id)) {
+    //     uniquePostsMap.set(post.id, post);
+    //   }
+    // }
+    // // return Array.from(uniquePostsMap.values()).reverse();
+    // return Array.from(uniquePostsMap.values());
+  };
 
   useEffect(() => {
     if (dataPost && dataPost.length > 0) {

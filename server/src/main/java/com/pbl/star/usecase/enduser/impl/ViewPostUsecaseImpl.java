@@ -65,9 +65,9 @@ public class ViewPostUsecaseImpl implements ViewPostUsecase {
     }
 
     @Override
-    public PaginationSlice<PostForUserResponse> getRepliesOfPost(String postId, int limit, Instant after) {
+    public PaginationSlice<PostForUserResponse> getRepliesOfPost(String postId, int limit, Instant timestamp) {
         String currentUserId = AuthUtil.getCurrentUser().getId();
-        return postService.getReplies(currentUserId, postId, limit, after)
+        return postService.getReplies(currentUserId, postId, limit, timestamp)
                 .map(postMapper::toDTO);
     }
 

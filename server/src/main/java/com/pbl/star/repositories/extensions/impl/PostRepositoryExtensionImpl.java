@@ -392,7 +392,7 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
     }
 
     @Override
-    public List<PostForUser> findExistRepliesOfPostAsUser(int limit, Instant after, String currentUserId, String postId) {
+    public List<PostForUser> findExistRepliesOfPostAsUser(int limit, Instant timestamp, String currentUserId, String postId) {
 
         String sql = "SELECT p.post_id, u.user_id, u.username, u.avatar_url, p.created_at, p.content, " +
                 "   (SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS number_of_likes, " +
@@ -409,8 +409,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 "AND p.is_hidden = FALSE " +
                 "AND p.parent_post_id = :postId " +
                 "AND p.status = 'APPROVED' " +
-                (after == null ? "" : "AND p.created_at < :after ") +
-                "ORDER BY p.created_at DESC, p.post_id DESC ";
+                (timestamp == null ? "" : "AND p.created_at > :timestamp ") +
+                "ORDER BY p.created_at, p.post_id DESC ";
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query
@@ -418,8 +418,8 @@ public class PostRepositoryExtensionImpl implements PostRepositoryExtension {
                 .setParameter("postId", postId)
                 .setMaxResults(limit);
 
-        if (after != null) {
-            query.setParameter("after", after);
+        if (timestamp != null) {
+            query.setParameter("timestamp", timestamp);
         }
 
         List<Object[]> resultList = query.getResultList();

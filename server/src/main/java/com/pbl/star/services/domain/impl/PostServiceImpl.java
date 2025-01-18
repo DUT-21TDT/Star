@@ -241,13 +241,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PaginationSlice<PostForUser> getReplies(String userId, String postId, int limit, Instant after) {
-        List<PostForUser> repliesList = postRepository.findExistRepliesOfPostAsUser(limit + 1, after, userId, postId);
+    public PaginationSlice<PostForUser> getReplies(String userId, String postId, int limit, Instant timestamp) {
+        List<PostForUser> repliesList = postRepository.findExistRepliesOfPostAsUser(limit + 1, timestamp, userId, postId);
         Slice<PostForUser> replies = SliceTransfer.trimToSlice(repliesList, limit);
 
         PaginationSlice<PostForUser> repliesPage = new PaginationSlice<>(replies);
 
-        if (after == null) {
+        if (timestamp == null) {
             repliesPage.setTotalElements(postRepository.countExistRepliesOfPost(postId));
         }
 

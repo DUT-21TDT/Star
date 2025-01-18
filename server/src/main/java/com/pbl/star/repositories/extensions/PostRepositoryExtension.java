@@ -16,7 +16,7 @@ public interface PostRepositoryExtension {
     List<LikedPostForUser> findExistPostsLikedByUserAndStatus(int limit, Instant after, PostStatus status, String currentUserId);
     List<PostForUser> findExistPostsInRoomsByStatusAsUser(int limit, Instant after, PostStatus status, List<String> roomIds);
     Optional<PostForUser> findExistPostByIdAsUser(String currentUserId, String postId);
-    List<PostForUser> findExistRepliesOfPostAsUser(int limit, Instant after, String currentUserId, String postId);
+    List<PostForUser> findExistRepliesOfPostAsUser(int limit, Instant timestamp, String currentUserId, String postId);
     List<ReplyOnWall> findExistRepliesOnWallAsUser(int limit, Instant after, String currentUserId, String targetUserId);
 
     List<PendingPostForUser> findExistPendingPostsOfUser(int limit, Instant after, String userId);

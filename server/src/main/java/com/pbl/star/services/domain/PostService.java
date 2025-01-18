@@ -25,7 +25,7 @@ public interface PostService {
     Slice<PostForMod> getPostsInRoomAsMod(String roomId, PostStatus status, int limit, Instant after);
     Post deletePostOfUser(String postId, String userId);
     Post createReply(String userId, String postId, CreateReplyParams createReplyParams);
-    PaginationSlice<PostForUser> getReplies(String userId, String postId, int limit, Instant after);
+    PaginationSlice<PostForUser> getReplies(String userId, String postId, int limit, Instant timestamp);
     Slice<ReplyOnWall> getRepliesOnWall(String currentUserId, String targetUserId, int limit, Instant after);
     Slice<RepostOnWall> getRepostsOnWall(String currentUserId, String targetUserId, int limit, Instant after);
     void updateHideStatus(String postId, boolean hide);
